@@ -94,6 +94,9 @@ def one_at_a_time(M, nets, s0):
         ("вес частоты 1,0", {"b_freq": 1.0}, {}), ("вес частоты 1,5", {"b_freq": 1.5}, {}),
         ("билет через хаб 80% прямого", {"hub_fare_factor": 0.8}, {}), ("билет через хаб 100%", {"hub_fare_factor": 1.0}, {}),
         ("без субсидий", {"subsidy_on": False}, {}), ("субсидии −7,6%", {}, {"subsidy": 0.924}),
+        ("перегонов нет", {"ferry_share": 0.0}, {}), ("перегон на каждый оборот", {"ferry_share": 1.0}, {}),
+        ("база хаба 50 млн/год", {"hub_base_fixed_rub_year": 50e6}, {}), ("база хаба 300 млн/год", {"hub_base_fixed_rub_year": 300e6}, {}),
+        ("базы ещё Пермь и Омск", {"rw_bases": ["SVX", "MOW", "PEE", "OMS"]}, {}),
         ("Самара закрыта 2%", {}, {"hub_closed": 0.02}), ("Самара закрыта 5%", {}, {"hub_closed": 0.05}),
         ("Самара закрыта 10%", {}, {"hub_closed": 0.10}),
     ]
@@ -111,7 +114,8 @@ def monte_carlo(M, nets, s0, n=500, seed=42):
     rows = []
     for _ in range(n):
         pch = {"cost_bh_rub": rng.uniform(570_000, 690_000), "vot_rub_h": rng.uniform(500, 1000),
-               "b_freq": rng.uniform(1.0, 1.5), "hub_fare_factor": rng.uniform(0.8, 1.0)}
+               "b_freq": rng.uniform(1.0, 1.5), "hub_fare_factor": rng.uniform(0.8, 1.0),
+               "ferry_share": rng.uniform(0.0, 1.0), "hub_base_fixed_rub_year": rng.uniform(50e6, 300e6)}
         cch = {"demand": rng.uniform(0.8, 1.2), "fare": rng.uniform(0.85, 1.1),
                "subsidy": rng.uniform(0.9, 1.0), "hub_closed": rng.uniform(0.0, 0.10)}
         saved = with_params(pch)
@@ -171,10 +175,14 @@ def main():
         r = profits(M, nets, s0, {**BASE_CASE, "hub_closed": c})
         rows.append((c, r["H3 гибрид"] - r["H2 прямые"]))
     th = next((c for c, d in rows if d < 0), None)
-    print(f"\nПорог надёжности: гибрид лучше прямых, пока Самара закрыта меньше ~{th:.1%} времени (сейчас 10%)")
+    if th == 0:
+        print("\nПорог надёжности: гибрид не лучше прямых даже при 0% закрытий Самары")
+    else:
+        print(f"\nПорог надёжности: гибрид лучше прямых, пока Самара закрыта меньше ~{th:.1%} времени (сейчас 10%)")
 
-    rt = routes_table(M)
-    print(f"\nТаблица маршрутов гибрида: {len(rt)} маршрутов → results/routes_table.csv")
+    winner = {v: k for k, v in MODES.items()}[oat.iloc[0]["лучшая"]] if oat.iloc[0]["лучшая"] in MODES.values() else "прямые"
+    rt = routes_table(M, winner)
+    print(f"\nТаблица маршрутов победителя ({winner}): {len(rt)} маршрутов → results/routes_table.csv")
     print(rt[["маршрут", "рейсов_нед_сейчас", "рейсов_нед_в_решении", "статус", "пассажиров_в_год"]].to_string(index=False))
 
 

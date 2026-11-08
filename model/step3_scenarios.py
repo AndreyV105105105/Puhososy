@@ -67,32 +67,65 @@ def rw_legs(net, M):
     return {p: c["WZ"] for p, c in net["direct"].items() if "WZ" in c and p in M["km"]}
 
 
-def block_hours(net, M):
-    return sum(2 * f * 52 * block_h(M["km"][p]) for p, f in rw_legs(net, M).items())
+def bases(net):
+    """Где базируются самолёты: базы из параметров + Самара, если хаб уже запущен (открыта новая спица)."""
+    b = list(P["rw_bases"])
+    if net.get("hub") and net["hub"].get("active"):
+        b.append(HUB)
+    return b
+
+
+def ferry_km(p, net, M):
+    """Сколько лететь пустым до рейса: 0, если рейс касается базы, иначе от ближайшей базы до ближайшего конца."""
+    bs = bases(net)
+    if p[0] in bs or p[1] in bs:
+        return 0.0
+    pt = lambda c: P["moscow_point"] if c == "MOW" else M["coords"][c]
+    return min(dist_km(*pt(b), *M["coords"][c]) for b in bs for c in p)
+
+
+def block_hours(net, M, split=False):
+    """Блок-часы Red Wings в год: рейсы с пассажирами + перегоны без пассажиров."""
+    flown = ferry = 0.0
+    for p, f in rw_legs(net, M).items():
+        flown += 2 * f * 52 * block_h(M["km"][p])
+        fk = ferry_km(p, net, M)
+        if fk:
+            ferry += P["ferry_share"] * f * 52 * 2 * block_h(fk)   # подлёт и возврат на каждый оборот
+    return (flown, ferry) if split else flown + ferry
 
 
 # ---------------- оценка сети ----------------
 def evaluate(net, M, case, detail=False):
-    """Пересчитать всю сеть: пассажиры Red Wings, деньги, время пассажиров."""
+    """Пересчитать всю сеть: пассажиры Red Wings, деньги, время пассажиров, доступность городов."""
     hub = net.get("hub")
     fare_k = case["fare"]
-    pairs, load = [], {}
+    rw_opts, load = [], {}          # варианты, где летит Red Wings: (пассажиры, плечи, тариф, перевозок)
     hours_total = moscow = 0.0
     connected = 0
+    pair_time = {}
     for (i, j), T0 in M["demand"].items():
         T = T0 * case["demand"]
         _, opts = ch.options(i, j, M["ap"], net, M["fc"])
-        d = T * sum(o["доля"] for o in opts if o["вариант"] == "прямой" and o["перевозчик"] == "WZ")
-        h = T * sum(o["доля"] for o in opts if o["вариант"] == "через хаб")
-        hours_total += T * sum(o["доля"] * o["часы"] for o in opts)
+        k = M["km"][(i, j)]
+        for o in opts:
+            if o["перевозчик"] != "WZ" or not o["плечи"]:
+                continue
+            pax = T * o["доля"]
+            if o["вариант"] == "через хаб":
+                price = P["hub_fare_factor"] * ch.fare(k, 1, M["fc"])
+            elif o["вариант"] == "доехать до аэропорта":
+                price = o["тариф_рейса"]
+            else:
+                price = ch.fare(k, 1, M["fc"])
+            rw_opts.append((pax, o["плечи"], price * fare_k))
+            for leg in o["плечи"]:
+                load[leg] = load.get(leg, 0) + pax
+        t = sum(o["доля"] * o["часы"] for o in opts)
+        pair_time[(i, j)] = t
+        hours_total += T * t
         moscow += T * sum(o["доля"] for o in opts if o["вариант"] == "через Москву")
         connected += any(o["вариант"] in ("прямой", "через хаб") for o in opts)
-        pairs.append((i, j, d, h))
-        if d:
-            load[(i, j)] = load.get((i, j), 0) + d
-        if h:
-            for leg in (key(i, HUB), key(HUB, j)):
-                load[leg] = load.get(leg, 0) + h
 
     # вместимость: если пассажиров больше, чем мест, лишние «не помещаются» (спилл)
     legs = rw_legs(net, M)
@@ -105,29 +138,38 @@ def evaluate(net, M, case, detail=False):
 
     rev = trips = segs = 0.0
     carried = {p: 0.0 for p in legs}
-    for i, j, d, h in pairs:
-        k = M["km"][(i, j)]
-        if d:
-            dc = d * fit[(i, j)]
-            rev += dc * ch.fare(k, 1, M["fc"]) * fare_k
-            trips += dc; segs += dc; carried[(i, j)] += dc
-        if h:
-            l1, l2 = key(i, HUB), key(HUB, j)
-            hc = h * min(fit[l1], fit[l2])
-            rev += hc * P["hub_fare_factor"] * ch.fare(k, 1, M["fc"]) * fare_k
-            trips += hc; segs += 2 * hc
-            carried[l1] += hc; carried[l2] += hc
+    for pax, lg, price in rw_opts:
+        if any(l not in fit for l in lg):
+            continue                                 # рейс вне модели (город без пассажиропотока в данных)
+        c = pax * min(fit[l] for l in lg)
+        rev += c * price
+        trips += c
+        segs += c * len(lg)                          # стыковочный пассажир = 2 перевозки, как в статистике
+        for l in lg:
+            carried[l] += c
 
-    bh = block_hours(net, M)
-    cost = bh * (P["cost_bh_rub"] + P["opportunity_rub_per_bh"])
+    flown, ferry = block_hours(net, M, split=True)
+    bh = flown + ferry
+    fixed = P["hub_base_fixed_rub_year"] if (hub and hub.get("active")) else 0.0
+    cost = bh * (P["cost_bh_rub"] + P["opportunity_rub_per_bh"]) + fixed
     sub = sum(2 * f * 52 * subsidy_per_flight(M["km"][p]) for p, f in legs.items()) * case["subsidy"]
+
+    # индекс доступности Хансена: для каждого города сумма «масс» других городов, взвешенных
+    # по времени в пути; итог — средний по городам
+    m = M["ap"]["пасс_2025_млн"]
+    acc = 0.0
+    for (i, j), t in pair_time.items():
+        w = math.exp(-P["accessibility_decay_h"] * t)
+        acc += (m[j] + m[i]) * w
     res = dict(пассажиров=trips, перевозок=segs, выручка=rev, затраты=cost, субсидии=sub,
-               прибыль=rev - cost + sub, блок_часы=bh, пасс_часы=hours_total, через_Москву=moscow,
-               пар_без_Москвы=connected)
+               прибыль=rev - cost + sub, блок_часы=bh, перегоны_бч=ferry, база_хаба=fixed,
+               пасс_часы=hours_total, через_Москву=moscow, пар_без_Москвы=connected,
+               доступность=acc / len(M["cities"]))
     if detail:
         res["legs"] = [dict(i=p[0], j=p[1], рейсов_нед=f, км=round(M["km"][p]), пасс_в_год=round(carried[p]),
                             загрузка=round(carried[p] / (2 * f * 52 * P["seats_rw"]), 2),
-                            блок_часов_в_год=round(2 * f * 52 * block_h(M["km"][p])))
+                            блок_часов_в_год=round(2 * f * 52 * block_h(M["km"][p])),
+                            перегон_км=round(ferry_km(p, net, M)))
                        for p, f in legs.items()]
     return res
 
@@ -166,6 +208,7 @@ def apply(net, move):
     if kind == "спица":
         other = p[0] if p[1] == HUB else p[1]
         new["hub"]["spokes"][other] = f
+        new["hub"]["active"] = True                  # первая новая спица = открываем базу в Самаре
     return new
 
 
@@ -212,7 +255,7 @@ def base_network(M, mode):
         # действующие рейсы Red Wings из Самары становятся первыми спицами хаба
         spokes = {(p[0] if p[1] == HUB else p[1]): c["WZ"] for p, c in net["direct"].items()
                   if HUB in p and "WZ" in c and p in M["km"]}
-        net["hub"] = {"city": HUB, "spokes": spokes}
+        net["hub"] = {"city": HUB, "spokes": spokes, "active": False}
     return net
 
 
@@ -238,7 +281,10 @@ def main():
                 "субсидии_млрд": round(d("субсидии") / 1e9, 2),
                 "прирост_доли_пп": round(d("перевозок") / (P["market_total_mln"] * 1e6) * 100, 3),
                 "сэкономлено_пасс_часов_млн": round(-d("пасс_часы") / 1e6, 2),
-                "доля_через_Москву": round(r["через_Москву"] / s0["через_Москву"] - 1, 3),
+                "перегоны_самолётов": round(d("перегоны_бч") / BH_PER_AIRCRAFT, 2),
+                "база_хаба_млн": round(r["база_хаба"] / 1e6),
+                "доступность_прирост_%": round((r["доступность"] / s0["доступность"] - 1) * 100, 2),
+                "через_Москву_изменение_%": round((r["через_Москву"] / s0["через_Москву"] - 1) * 100, 1),
                 "пар_без_Москвы_было_стало": f"{s0['пар_без_Москвы']} → {r['пар_без_Москвы']}",
             })
             tag = f"{mode}_{case_name}"
