@@ -100,7 +100,7 @@ def options(i, j, airports, net, fc):
         opts.append(dict(вариант="через хаб", перевозчик="WZ",
                          часы=block_h(k1) + P["mct_hub_h"] + block_h(k2), пересадок=1,
                          рейсов_нед=min(hub["spokes"][i], hub["spokes"][j]),
-                         цена=P["through_fare_factor"] * (fare(k1, 1, fc) + fare(k2, 1, fc))))
+                         цена=P["hub_fare_factor"] * fare(km, 1, fc)))
     # 4) поезд
     if km <= P["rail_max_km"]:
         rk = km * P["rail_detour"]
