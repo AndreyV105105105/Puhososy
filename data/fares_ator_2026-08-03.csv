@@ -1,0 +1,25 @@
+откуда,куда,тариф_без_багажа_руб,перевозчик_без_багажа,тариф_с_багажом_руб,перевозчик_с_багажом,в_обход_Москвы,тип,дата,источник_url
+Москва,Сочи,16125,Победа,19665,Победа,нет,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Москва,Санкт-Петербург,4822,S7 Airlines,6819,S7 Airlines,нет,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Москва,Новосибирск,12177,Победа,15571,Победа,нет,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Москва,Екатеринбург,7090,Победа,10241,Победа,нет,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Москва,Казань,5363,Победа,8008,Nordwind,нет,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Москва,Калининград,12362,Smartavia,14705,Smartavia,нет,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Москва,Минеральные Воды,12169,Победа,15622,Победа,нет,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Санкт-Петербург,Сочи,17561,Smartavia,20701,Smartavia,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Санкт-Петербург,Москва,4195,Победа,6817,S7 Airlines,нет,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Санкт-Петербург,Новосибирск,14061,Smartavia,17055,Smartavia,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Санкт-Петербург,Екатеринбург,11187,Победа,13835,Smartavia,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Санкт-Петербург,Казань,8437,Nordwind,8877,Nordwind,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Санкт-Петербург,Калининград,8538,Победа,11099,Nordwind,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Санкт-Петербург,Минеральные Воды,19450,Россия,23123,Россия,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Казань,Санкт-Петербург,7450,Nordwind,8239,Nordwind,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Казань,Калининград,17339,Nordwind,20669,Nordwind,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Казань,Минеральные Воды,19302,Икар,21964,Икар,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Екатеринбург,Сочи,16086,Победа,19831,Победа,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Екатеринбург,Москва,8370,Победа,11448,Победа,нет,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Екатеринбург,Новосибирск,14719,S7 Airlines,19085,S7 Airlines,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Екатеринбург,Санкт-Петербург,11187,Победа,13835,Smartavia,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Екатеринбург,Казань,8033,Red Wings,10381,Red Wings,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Екатеринбург,Калининград,19887,Победа,24340,Победа,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
+Екатеринбург,Минеральные Воды,17864,Уральские авиалинии,22029,Уральские авиалинии,да,минимальный тариф,2026-08-03,https://www.atorus.ru/article/konec-ery-deshevykh-biletov-avgust-2026-niveliroval-letnee-padenie-cen-68784
