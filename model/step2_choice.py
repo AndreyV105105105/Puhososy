@@ -1,0 +1,224 @@
+"""
+ШАГ 2. Как полетит пассажир — логит-модель выбора (multinomial logit, McFadden).
+
+Для каждой пары городов есть несколько вариантов: прямой рейс каждого перевозчика,
+пересадка в Москве, пересадка в хабе (в сценариях с хабом), поезд.
+У каждого варианта есть «полезность» U — чем больше, тем привлекательнее:
+    U = b_time*часы + b_transfer*пересадки + b_freq*ln(рейсов в неделю) + b_fare*цена
+Доля варианта: s_r = e^U_r / сумма e^U_k  (так устроена логит-модель).
+
+Почему так:
+  - b_freq*ln(f) даёт ту самую «S-кривую» из авиационной практики: доля перевозчика ~ f^1,35;
+  - b_fare = b_time / стоимость часа: 750 ₽ дороже = на час дольше. Время и деньги согласованы.
+
+Пассажиров варианта = спрос пары (шаг 1) × доля варианта.
+
+Запуск: python model/step2_choice.py   (сначала step1_demand.py)
+Выход:  results/choice_S0.csv — текущая сеть (сценарий S0) по всем парам городов
+"""
+import math
+import numpy as np
+import pandas as pd
+
+from params import PARAMS
+from common import load_airports, dist_km, block_h, RESULTS, DATA
+
+P = PARAMS
+B_FARE = P["b_time"] / P["vot_rub_h"]       # полезность за 1 ₽
+EXTRA_POINTS = {"Москва": P["moscow_point"], "Санкт-Петербург": (59.8003, 30.2625)}  # LED, для тарифов
+
+
+# ---------------- данные ----------------
+def demand_model():
+    """Коэффициенты итоговой гравитационной модели из шага 1."""
+    c = pd.read_csv(RESULTS / "demand_coefs.csv", encoding="utf-8-sig")
+    row = c[c["вариант"].str.startswith("ИТОГ")].iloc[0]
+    return row["ln_k"], row["a"], row["theta"], row["хаб_поправка"]
+
+
+def fare_model(airports):
+    """Тариф ≈ a + b*км + c*[в обход Москвы]. Подбираем по 24 парам АТОР (минимальные тарифы, август 2026)."""
+    f = pd.read_csv(DATA / "fares_ator_2026-08-03.csv", encoding="utf-8-sig")
+    coords = {r["город"]: (r["lat"], r["lon"]) for _, r in airports.reset_index().iterrows()}
+    coords.update(EXTRA_POINTS)
+    km = np.array([dist_km(*coords[o], *coords[d]) for o, d in zip(f["откуда"], f["куда"])])
+    bypass = (f["в_обход_Москвы"] == "да").astype(float).values
+    X = np.column_stack([np.ones(len(f)), km, bypass])
+    coef, *_ = np.linalg.lstsq(X, f["тариф_без_багажа_руб"].values, rcond=None)
+    return coef
+
+
+def network_from_boards(airports):
+    """Текущая сеть (S0): прямые рейсы между нашими городами и рейсы в Москву, рейсов в неделю в одну сторону."""
+    b = pd.read_csv(DATA / "boards_week.csv", encoding="utf-8-sig")
+    # в Москву: все перевозчики (тут Аэрофлот — настоящий, не кодшеринг)
+    to_mow = b[b["куда"].isin(P["moscow_airports"])].groupby("откуда")["рейсов_нед"].sum().to_dict()
+    # между нашими городами: без дублей кодшеринга
+    r = b[b["откуда"].isin(airports.index) & b["куда"].isin(airports.index)
+          & ~b["перевозчик_IATA"].isin(P["codeshare_exclude"])].copy()
+    r["i"] = r[["откуда", "куда"]].min(axis=1)
+    r["j"] = r[["откуда", "куда"]].max(axis=1)
+    # табло есть с обоих концов → сумма по двум направлениям / 2 = рейсов в одну сторону
+    g = (r.groupby(["i", "j", "перевозчик_IATA"])["рейсов_нед"].sum() / 2).reset_index()
+    direct = {}
+    for _, x in g.iterrows():
+        direct.setdefault((x.i, x.j), {})[x["перевозчик_IATA"]] = x["рейсов_нед"]
+    return {"direct": direct, "to_moscow": to_mow, "hub": None}
+
+
+# ---------------- модель выбора ----------------
+def fare(km, bypass, fc):
+    return fc[0] + fc[1] * km + fc[2] * bypass
+
+
+def utility(hours, transfers, freq, price, asc=0.0):
+    return (P["b_time"] * hours + P["b_transfer"] * transfers
+            + P["b_freq"] * math.log(max(freq, 0.1)) + B_FARE * price + asc)
+
+
+def options(i, j, airports, net, fc):
+    """Все варианты добраться из i в j и их характеристики."""
+    pt = lambda a: (airports.loc[a, "lat"], airports.loc[a, "lon"])
+    km = dist_km(*pt(i), *pt(j))
+    opts = []
+    # 1) прямые рейсы — отдельный вариант на каждого перевозчика
+    for carrier, f in net["direct"].get((min(i, j), max(i, j)), {}).items():
+        opts.append(dict(вариант="прямой", перевозчик=carrier, часы=block_h(km), пересадок=0,
+                         рейсов_нед=f, цена=fare(km, 1, fc)))
+    # 2) через Москву — есть всегда, частота = узкое место из двух плеч
+    k1, k2 = dist_km(*pt(i), *P["moscow_point"]), dist_km(*P["moscow_point"], *pt(j))
+    f_m = min(net["to_moscow"].get(i, 0), net["to_moscow"].get(j, 0))
+    if f_m > 0:
+        opts.append(dict(вариант="через Москву", перевозчик="разные",
+                         часы=block_h(k1) + P["mct_moscow_h"] + block_h(k2), пересадок=1, рейсов_нед=f_m,
+                         цена=P["through_fare_factor"] * (fare(k1, 0, fc) + fare(k2, 0, fc))))
+    # 3) через наш хаб — только в сценариях с хабом и если оба города — его «спицы»
+    hub = net.get("hub")
+    if hub and i in hub["spokes"] and j in hub["spokes"] and hub["city"] not in (i, j):
+        h = hub["city"]
+        k1, k2 = dist_km(*pt(i), *pt(h)), dist_km(*pt(h), *pt(j))
+        opts.append(dict(вариант="через хаб", перевозчик="WZ",
+                         часы=block_h(k1) + P["mct_hub_h"] + block_h(k2), пересадок=1,
+                         рейсов_нед=min(hub["spokes"][i], hub["spokes"][j]),
+                         цена=P["through_fare_factor"] * (fare(k1, 1, fc) + fare(k2, 1, fc))))
+    # 4) поезд
+    if km <= P["rail_max_km"]:
+        rk = km * P["rail_detour"]
+        opts.append(dict(вариант="поезд", перевозчик="РЖД", часы=rk / P["rail_speed_kmh"], пересадок=0,
+                         рейсов_нед=P["rail_freq_week"], цена=rk * P["rail_rub_per_km"], asc=P["asc_train"]))
+    # доли по логиту
+    u = np.array([utility(o["часы"], o["пересадок"], o["рейсов_нед"], o["цена"], o.get("asc", 0)) for o in opts])
+    s = np.exp(u - u.max()); s /= s.sum()          # вычитаем max для численной устойчивости
+    for o, share in zip(opts, s):
+        o["доля"] = share
+    return km, opts
+
+
+def run_network(net, airports, fc, dem, scale=1.0):
+    """Для всех пар городов: спрос × доли → пассажиры по вариантам.
+    scale — поправочный множитель рынка (см. calibrate_scale)."""
+    ln_k, a, theta, hub_coef = dem
+    cities = [c for c in airports.index if pd.notna(airports.loc[c, "пасс_2025_млн"])]
+    m = airports["пасс_2025_млн"]
+    rows = []
+    for x in range(len(cities)):
+        for y in range(x + 1, len(cities)):
+            i, j = sorted((cities[x], cities[y]))
+            km, opts = options(i, j, airports, net, fc)
+            # спрос «откуда–куда» (флажок хаба = 0: транзитных пассажиров S7 в нём нет)
+            T = scale * math.exp(ln_k + a * math.log(m[i] * m[j]) - theta * math.log(km))
+            # то, что видно на табло: на рейсах из транзитного хаба летят ещё и пересаживающиеся
+            hub_flag = any(c in P["transfer_hubs"] for c in (i, j))
+            sh = lambda cond: sum(o["доля"] for o in opts if cond(o))
+            rows.append(dict(i=i, j=j, km=round(km), спрос=round(T),
+                             множ_табло=math.exp(hub_coef) if hub_flag else 1.0,
+                             доля_прямой=sh(lambda o: o["вариант"] == "прямой"),
+                             доля_RW_прямой=sh(lambda o: o["вариант"] == "прямой" and o["перевозчик"] == "WZ"),
+                             доля_хаб=sh(lambda o: o["вариант"] == "через хаб"),
+                             доля_Москва=sh(lambda o: o["вариант"] == "через Москву"),
+                             доля_поезд=sh(lambda o: o["вариант"] == "поезд")))
+    df = pd.DataFrame(rows)
+    for col in ["прямой", "RW_прямой", "хаб", "Москва", "поезд"]:
+        df[f"пасс_{col}"] = (df["спрос"] * df[f"доля_{col}"]).round()
+    return df
+
+
+def calibrate_scale(df):
+    """Шаг 1 подобран по прямым рейсам, а здесь спрос делится ещё на Москву и поезд.
+    Подбираем один множитель рынка так, чтобы прямых пассажиров в модели было столько же, сколько на табло.
+    (Плюс он снимает систематическое занижение при переходе от логарифмов обратно к числам.)"""
+    obs = pd.read_csv(RESULTS / "demand_calibration.csv", encoding="utf-8-sig")[["i", "j", "T_obs"]]
+    v = df.merge(obs, on=["i", "j"])
+    v = v[v["пасс_прямой"] > 0]
+    model_board = (v["пасс_прямой"] * v["множ_табло"]).sum()
+    return v["T_obs"].sum() / model_board
+
+
+def log_error(df):
+    """Ошибка модели на парах с прямыми рейсами: корень из среднего квадрата ошибки в логарифмах."""
+    obs = pd.read_csv(RESULTS / "demand_calibration.csv", encoding="utf-8-sig")[["i", "j", "T_obs"]]
+    v = df.merge(obs, on=["i", "j"])
+    v = v[v["пасс_прямой"] > 0]
+    e = np.log(v["пасс_прямой"] * v["множ_табло"] / v["T_obs"])
+    return float(np.sqrt((e ** 2).mean()))
+
+
+def calibrate(net, airports, fc, dem):
+    """Калибровка шага 2 по факту табло:
+    1) константа поезда asc_train — перебираем значения и берём то, где ошибка на прямых рейсах минимальна
+       (она отражает всё, что не описано временем и ценой: дорогу до вокзала, комфорт, наличие прямого поезда);
+    2) множитель рынка scale — чтобы прямых пассажиров в модели было столько же, сколько на табло."""
+    rows = []
+    for asc in np.arange(-8, 0.01, 0.5):
+        P["asc_train"] = float(asc)
+        scale = calibrate_scale(run_network(net, airports, fc, dem))
+        err = log_error(run_network(net, airports, fc, dem, scale))
+        rows.append(dict(asc_train=asc, scale=scale, ошибка_лог=err))
+    grid = pd.DataFrame(rows)
+    grid.to_csv(RESULTS / "choice_calibration.csv", index=False, encoding="utf-8-sig")
+    best = grid.loc[grid["ошибка_лог"].idxmin()]
+    P["asc_train"] = float(best["asc_train"])
+    return float(best["scale"]), best
+
+
+def validate(df):
+    obs = pd.read_csv(RESULTS / "demand_calibration.csv", encoding="utf-8-sig")[["i", "j", "T_obs"]]
+    v = df.merge(obs, on=["i", "j"])
+    v = v[v["пасс_прямой"] > 0].copy()
+    v["модель_табло"] = v["пасс_прямой"] * v["множ_табло"]
+    corr = np.corrcoef(np.log(v["модель_табло"]), np.log(v["T_obs"]))[0, 1]
+    v["модель/факт"] = (v["модель_табло"] / v["T_obs"]).round(2)
+    print(f"\nПроверка на {len(v)} парах с прямыми рейсами: всего модель/факт = "
+          f"{v['модель_табло'].sum()/v['T_obs'].sum():.2f}, корреляция (лог) = {corr:.2f}, "
+          f"медианная ошибка = {np.median(np.abs(v['модель/факт'] - 1)):.0%}")
+    sel = v[(v.i == "KUF") | (v.j == "KUF")]
+    print("Пары с Самарой (модель/факт):", ", ".join(f"{a}-{b} {r}" for a, b, r in zip(sel.i, sel.j, sel["модель/факт"])))
+
+
+def main():
+    airports = load_airports()
+    fc = fare_model(airports)
+    dem = demand_model()
+    net = network_from_boards(airports)
+    scale, best = calibrate(net, airports, fc, dem)
+    df = run_network(net, airports, fc, dem, scale)
+    print(f"Калибровка: константа поезда = {best['asc_train']:.1f} (≈ {best['asc_train']/P['b_time']:.1f} ч «неудобства»), "
+          f"множитель рынка = {scale:.2f}")
+    df.round(3).to_csv(RESULTS / "choice_S0.csv", index=False, encoding="utf-8-sig")
+
+    print(f"Тариф ≈ {fc[0]:.0f} ₽ + {fc[1]:.2f} ₽/км + {fc[2]:.0f} ₽ если в обход Москвы")
+    air = df[["пасс_прямой", "пасс_хаб", "пасс_Москва"]].sum().sum()
+    print(f"\nS0 — текущая сеть, {len(df)} пар городов (14 аэропортов):")
+    print(f"  авиапассажиров между регионами: {air/1e6:.2f} млн/год")
+    print(f"  из них через Москву: {df['пасс_Москва'].sum()/air:.0%}  ← «москвоцентричность»")
+    print(f"  поездом: {df['пасс_поезд'].sum()/1e6:.2f} млн/год")
+    print(f"  Red Wings прямыми рейсами: {df['пасс_RW_прямой'].sum()/1e3:.0f} тыс./год")
+
+    validate(df)
+    print("\nПары с наибольшей долей через Москву (кандидаты для хаба или прямых рейсов):")
+    top = df[df["пасс_прямой"] == 0].sort_values("пасс_Москва", ascending=False)
+    print(top[["i", "j", "km", "спрос", "доля_Москва", "доля_поезд", "пасс_Москва"]].head(10).round(2).to_string(index=False))
+
+
+if __name__ == "__main__":
+    main()
