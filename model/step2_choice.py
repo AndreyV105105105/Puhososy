@@ -139,6 +139,17 @@ def options(i, j, airports, net, fc):
                          часы=block_h(k1) + P["mct_hub_h"] + block_h(k2), пересадок=1,
                          рейсов_нед=min(hub["spokes"][i], hub["spokes"][j]),
                          цена=P["hub_fare_factor"] * fare(km, 1, fc), плечи=[key(i, h), key(h, j)]))
+    # 3б) через действующий хаб Red Wings в Екатеринбурге: обе «спицы» — рейсы Red Wings из Кольцово
+    e = P["existing_hub"]
+    if e not in (i, j):
+        f1 = net["direct"].get(key(i, e), {}).get("WZ", 0)
+        f2 = net["direct"].get(key(e, j), {}).get("WZ", 0)
+        if f1 and f2:
+            k1, k2 = D(i, e), D(e, j)
+            opts.append(dict(вариант="через Екатеринбург", перевозчик="WZ",
+                             часы=block_h(k1) + P["mct_existing_hub_h"] + block_h(k2), пересадок=1,
+                             рейсов_нед=min(f1, f2), цена=P["hub_fare_factor"] * fare(km, 1, fc),
+                             плечи=[key(i, e), key(e, j)]))
     # 4) доехать на машине до соседнего аэропорта A (≤ 400 км) и улететь оттуда прямым рейсом
     for src, dst in ((i, j), (j, i)):
         for a in airports.index:
@@ -172,8 +183,10 @@ def options(i, j, airports, net, fc):
     # доли по логиту
     u = np.array([utility(o["часы"], o["пересадок"], o["рейсов_нед"], o["цена"], o.get("asc", 0)) for o in opts])
     s = np.exp(u - u.max()); s /= s.sum()          # вычитаем max для численной устойчивости
+    logsum = float(u.max() + math.log(np.exp(u - u.max()).sum()))   # «ожидаемая полезность» всех вариантов
     for o, share in zip(opts, s):
         o["доля"] = share
+        o["logsum"] = logsum
     return km, opts
 
 
@@ -192,7 +205,7 @@ def run_network(net, airports, fc, dem, scale=1.0):
             # спрос «откуда–куда» (флажок хаба = 0: транзитных пассажиров S7 в нём нет)
             T = scale * math.exp(ln_k + a * math.log(m[i] * m[j]) - theta * math.log(km))
             for o in opts:
-                if o["вариант"] in ("прямой", "доехать до аэропорта"):
+                if o["вариант"] in ("прямой", "доехать до аэропорта", "через Екатеринбург"):
                     for leg in o["плечи"]:
                         legs[leg] = legs.get(leg, 0) + T * o["доля"]
             sh = lambda cond: sum(o["доля"] for o in opts if cond(o))
@@ -201,11 +214,12 @@ def run_network(net, airports, fc, dem, scale=1.0):
                              доля_RW_прямой=sh(lambda o: o["вариант"] == "прямой" and o["перевозчик"] == "WZ"),
                              доля_доехать=sh(lambda o: o["вариант"] == "доехать до аэропорта"),
                              доля_хаб=sh(lambda o: o["вариант"] == "через хаб"),
+                             доля_через_SVX=sh(lambda o: o["вариант"] == "через Екатеринбург"),
                              доля_Москва=sh(lambda o: o["вариант"] == "через Москву"),
                              доля_поезд=sh(lambda o: o["вариант"] == "поезд"),
                              доля_авто=sh(lambda o: o["вариант"] == "машина/автобус")))
     df = pd.DataFrame(rows)
-    for col in ["прямой", "RW_прямой", "доехать", "хаб", "Москва", "поезд", "авто"]:
+    for col in ["прямой", "RW_прямой", "доехать", "хаб", "через_SVX", "Москва", "поезд", "авто"]:
         df[f"пасс_{col}"] = (df["спрос"] * df[f"доля_{col}"]).round()
     # поток на рейсах, как его видно на табло: из транзитного хаба летят ещё и пересаживающиеся
     lf = pd.DataFrame([dict(i=k[0], j=k[1], модель=v) for k, v in legs.items()])
@@ -282,11 +296,12 @@ def main():
     df.round(3).to_csv(RESULTS / "choice_S0.csv", index=False, encoding="utf-8-sig")
 
     print(f"Тариф ≈ {fc[0]:.0f} ₽ + {fc[1]:.2f} ₽/км + {fc[2]:.0f} ₽ если в обход Москвы")
-    air = df[["пасс_прямой", "пасс_доехать", "пасс_хаб", "пасс_Москва"]].sum().sum()
+    air = df[["пасс_прямой", "пасс_доехать", "пасс_хаб", "пасс_через_SVX", "пасс_Москва"]].sum().sum()
     print(f"\nS0 — текущая сеть, {len(df)} пар городов (14 аэропортов):")
     print(f"  авиапассажиров между регионами: {air/1e6:.2f} млн/год")
     print(f"  из них через Москву: {df['пасс_Москва'].sum()/air:.0%}  ← «москвоцентричность»")
     print(f"  доехали до соседнего аэропорта: {df['пасс_доехать'].sum()/1e6:.2f} млн/год")
+    print(f"  пересели в Екатеринбурге на рейсы Red Wings: {df['пасс_через_SVX'].sum()/1e3:.0f} тыс./год")
     print(f"  поездом: {df['пасс_поезд'].sum()/1e6:.2f} млн/год, машиной/автобусом: {df['пасс_авто'].sum()/1e6:.2f} млн/год")
     print(f"  Red Wings прямыми рейсами: {df['пасс_RW_прямой'].sum()/1e3:.0f} тыс./год")
 

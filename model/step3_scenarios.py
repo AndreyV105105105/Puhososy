@@ -113,7 +113,7 @@ def evaluate(net, M, case, detail=False):
             if o["перевозчик"] != "WZ" or not o["плечи"]:
                 continue
             pax = T * o["доля"]
-            if o["вариант"] == "через хаб":
+            if o["вариант"] in ("через хаб", "через Екатеринбург"):
                 price = P["hub_fare_factor"] * ch.fare(k, 1, M["fc"])
             elif o["вариант"] == "доехать до аэропорта":
                 price = o["тариф_рейса"]
@@ -123,10 +123,12 @@ def evaluate(net, M, case, detail=False):
             for leg in o["плечи"]:
                 load[leg] = load.get(leg, 0) + pax
         t = sum(o["доля"] * o["часы"] for o in opts)
-        pair_time[(i, j)] = t
+        # для индекса доступности берём «обобщённое время» из логсуммы (время + цена + частота + пересадки):
+        # любой новый вариант поездки его только улучшает — так и должно вести себя понятие «доступность»
+        pair_time[(i, j)] = -opts[0]["logsum"] / abs(P["b_time"])
         hours_total += T * t
         moscow += T * sum(o["доля"] for o in opts if o["вариант"] == "через Москву")
-        connected += any(o["вариант"] in ("прямой", "через хаб") for o in opts)
+        connected += any(o["вариант"] in ("прямой", "через хаб", "через Екатеринбург") for o in opts)
 
     # вместимость: если пассажиров больше, чем мест, лишние «не помещаются» (спилл)
     legs = rw_legs(net, M)
@@ -155,8 +157,8 @@ def evaluate(net, M, case, detail=False):
     cost = bh * (P["cost_bh_rub"] + P["opportunity_rub_per_bh"]) + fixed
     sub = sum(2 * f * 52 * subsidy_per_flight(M["km"][p]) for p, f in legs.items()) * case["subsidy"]
 
-    # индекс доступности Хансена: для каждого города сумма «масс» других городов, взвешенных
-    # по времени в пути; итог — средний по городам
+    # индекс доступности Хансена (логсуммовая форма, Ben-Akiva): для каждого города сумма «масс» других
+    # городов, взвешенных по обобщённому времени пути; итог — средний по городам, важно изменение в %
     m = M["ap"]["пасс_2025_млн"]
     acc = 0.0
     for (i, j), t in pair_time.items():
