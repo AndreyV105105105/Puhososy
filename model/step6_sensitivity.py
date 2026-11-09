@@ -42,11 +42,12 @@ def load_network(M, mode):
 def profits(M, nets, s0, case):
     """Прирост прибыли каждой гипотезы против текущей сети при заданных условиях, млрд ₽."""
     M, asc = recalibrated(M, P["vot_rub_h"], P["b_freq"])
-    saved_asc, P["asc_train"] = P["asc_train"], asc
+    saved_asc = (P["asc_train"], P["asc_car"])
+    P["asc_train"], P["asc_car"] = asc
     base = sc.evaluate(s0, M, case)["прибыль"]
     out = {MODES[m]: (sc.evaluate(n, M, case)["прибыль"] - base) / 1e9 for m, n in nets.items()}
     out["S0 не расширяться"] = 0.0          # честная альтернатива: если все в минусе, лучше не открывать рейсы
-    P["asc_train"] = saved_asc
+    P["asc_train"], P["asc_car"] = saved_asc
     return out
 
 
@@ -60,10 +61,10 @@ def recalibrated(M, vot, b_freq):
     gv = min((500, 625, 750, 875, 1000), key=lambda x: abs(x - vot))
     gf = min((1.0, 1.25, 1.35, 1.5), key=lambda x: abs(x - b_freq))
     if (gv, gf) not in CAL_CACHE:
-        saved = {k: P[k] for k in ("vot_rub_h", "b_freq", "asc_train")}
+        saved = {k: P[k] for k in ("vot_rub_h", "b_freq", "asc_train", "asc_car")}
         P.update(vot_rub_h=gv, b_freq=gf); ch.B_FARE = P["b_time"] / gv
-        scale, best = ch.calibrate(ch.network_from_boards(M["ap"]), M["ap"], M["fc"], ch.demand_model())
-        CAL_CACHE[(gv, gf)] = (scale, P["asc_train"])
+        scale, best = ch.calibrate(ch.network_from_boards(M["ap"]), M["ap"], M["fc"], ch.demand_model(), quick=True)
+        CAL_CACHE[(gv, gf)] = (scale, (P["asc_train"], P["asc_car"]))
         P.update(saved); ch.B_FARE = P["b_time"] / P["vot_rub_h"]
     scale, asc = CAL_CACHE[(gv, gf)]
     M2 = dict(M)
@@ -95,7 +96,7 @@ def one_at_a_time(M, nets, s0):
         ("билет через хаб 80% прямого", {"hub_fare_factor": 0.8}, {}), ("билет через хаб 100%", {"hub_fare_factor": 1.0}, {}),
         ("без субсидий", {"subsidy_on": False}, {}), ("субсидии −7,6%", {}, {"subsidy": 0.924}),
         ("перегонов нет", {"ferry_share": 0.0}, {}), ("перегон на каждый оборот", {"ferry_share": 1.0}, {}),
-        ("база хаба 50 млн/год", {"hub_base_fixed_rub_year": 50e6}, {}), ("база хаба 300 млн/год", {"hub_base_fixed_rub_year": 300e6}, {}),
+        ("база хаба 45 млн/год", {"hub_base_fixed_rub_year": 45e6}, {}), ("база хаба 231 млн/год", {"hub_base_fixed_rub_year": 231e6}, {}),
         ("базы ещё Пермь и Омск", {"rw_bases": ["SVX", "MOW", "PEE", "OMS"]}, {}),
         ("Самара закрыта 2%", {}, {"hub_closed": 0.02}), ("Самара закрыта 5%", {}, {"hub_closed": 0.05}),
         ("Самара закрыта 10%", {}, {"hub_closed": 0.10}),
@@ -115,7 +116,7 @@ def monte_carlo(M, nets, s0, n=500, seed=42):
     for _ in range(n):
         pch = {"cost_bh_rub": rng.uniform(570_000, 690_000), "vot_rub_h": rng.uniform(500, 1000),
                "b_freq": rng.uniform(1.0, 1.5), "hub_fare_factor": rng.uniform(0.8, 1.0),
-               "ferry_share": rng.uniform(0.0, 1.0), "hub_base_fixed_rub_year": rng.uniform(50e6, 300e6)}
+               "ferry_share": rng.uniform(0.0, 1.0), "hub_base_fixed_rub_year": rng.uniform(45e6, 231e6)}
         cch = {"demand": rng.uniform(0.8, 1.2), "fare": rng.uniform(0.85, 1.1),
                "subsidy": rng.uniform(0.9, 1.0), "hub_closed": rng.uniform(0.0, 0.10)}
         saved = with_params(pch)

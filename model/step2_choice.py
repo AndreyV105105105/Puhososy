@@ -77,6 +77,22 @@ def utility(hours, transfers, freq, price, asc=0.0):
 
 
 _GEO = {}
+_RAIL = None
+
+
+def rail_table():
+    """Факт РЖД по 9 парам (Даня): {(i, j): (часы, поездов в неделю, цена купе или None)}."""
+    global _RAIL
+    if _RAIL is None:
+        _RAIL = {}
+        path = DATA / "rail.csv"
+        if path.exists():
+            r = pd.read_csv(path, encoding="utf-8-sig")
+            for _, x in r.iterrows():
+                k = (x.i, x.j) if x.i < x.j else (x.j, x.i)
+                price = None if pd.isna(x["купе_руб"]) else float(x["купе_руб"])   # пустая цена ≠ 0
+                _RAIL[k] = (x["быстрейший_мин"] / 60, float(x["поездов_нед"]), price)
+    return _RAIL
 
 
 def _geo(airports):
@@ -137,11 +153,22 @@ def options(i, j, airports, net, fc):
                                  часы=kg / P["ground_speed_kmh"] + P["ground_buffer_h"] + block_h(ka), пересадок=1,
                                  рейсов_нед=f, цена=kg * P["ground_rub_per_km"] + fare(ka, 1, fc),
                                  плечи=[key(a, dst)], тариф_рейса=fare(ka, 1, fc)))
-    # 5) поезд
+    # 5) поезд: факт РЖД, если пара есть в data/rail.csv, иначе формула
     if km <= P["rail_max_km"]:
         rk = km * P["rail_detour"]
-        opts.append(dict(вариант="поезд", перевозчик="РЖД", часы=rk / P["rail_speed_kmh"], пересадок=0,
-                         рейсов_нед=P["rail_freq_week"], цена=rk * P["rail_rub_per_km"], asc=P["asc_train"], плечи=[]))
+        hours, freq, price = rk / P["rail_speed_kmh"], P["rail_freq_week"], rk * P["rail_rub_per_km"]
+        fact = rail_table().get(key(i, j))
+        if fact:
+            hours, freq = fact[0], fact[1]
+            price = fact[2] if fact[2] is not None else price
+        if freq > 0:
+            opts.append(dict(вариант="поезд", перевозчик="РЖД", часы=hours, пересадок=0,
+                             рейсов_нед=freq, цена=price, asc=P["asc_train"], плечи=[]))
+    # 6) машина или междугородний автобус
+    if km <= P["road_max_km"]:
+        rd = km * P["road_detour"]
+        opts.append(dict(вариант="машина/автобус", перевозчик="авто", часы=rd / P["ground_speed_kmh"], пересадок=0,
+                         рейсов_нед=P["car_freq_week"], цена=rd * P["ground_rub_per_km"], asc=P["asc_car"], плечи=[]))
     # доли по логиту
     u = np.array([utility(o["часы"], o["пересадок"], o["рейсов_нед"], o["цена"], o.get("asc", 0)) for o in opts])
     s = np.exp(u - u.max()); s /= s.sum()          # вычитаем max для численной устойчивости
@@ -175,9 +202,10 @@ def run_network(net, airports, fc, dem, scale=1.0):
                              доля_доехать=sh(lambda o: o["вариант"] == "доехать до аэропорта"),
                              доля_хаб=sh(lambda o: o["вариант"] == "через хаб"),
                              доля_Москва=sh(lambda o: o["вариант"] == "через Москву"),
-                             доля_поезд=sh(lambda o: o["вариант"] == "поезд")))
+                             доля_поезд=sh(lambda o: o["вариант"] == "поезд"),
+                             доля_авто=sh(lambda o: o["вариант"] == "машина/автобус")))
     df = pd.DataFrame(rows)
-    for col in ["прямой", "RW_прямой", "доехать", "хаб", "Москва", "поезд"]:
+    for col in ["прямой", "RW_прямой", "доехать", "хаб", "Москва", "поезд", "авто"]:
         df[f"пасс_{col}"] = (df["спрос"] * df[f"доля_{col}"]).round()
     # поток на рейсах, как его видно на табло: из транзитного хаба летят ещё и пересаживающиеся
     lf = pd.DataFrame([dict(i=k[0], j=k[1], модель=v) for k, v in legs.items()])
@@ -208,21 +236,26 @@ def log_error(df):
     return float(np.sqrt((e ** 2).mean()))
 
 
-def calibrate(net, airports, fc, dem):
+def calibrate(net, airports, fc, dem, quick=False):
     """Калибровка шага 2 по факту табло:
-    1) константа поезда asc_train — перебираем значения и берём то, где ошибка на прямых рейсах минимальна
-       (она отражает всё, что не описано временем и ценой: дорогу до вокзала, комфорт, наличие прямого поезда);
-    2) множитель рынка scale — чтобы прямых пассажиров в модели было столько же, сколько на табло."""
+    1) константы поезда и машины (asc) — перебираем сетку и берём ту пару, где ошибка на рейсах минимальна
+       (константа отражает всё, что не описано временем и ценой: дорогу до вокзала, комфорт, багаж);
+    2) множитель рынка scale — чтобы пассажиров на рейсах в модели было столько же, сколько на табло."""
     rows = []
-    for asc in np.arange(-8, 0.01, 0.5):
-        P["asc_train"] = float(asc)
-        scale = calibrate_scale(run_network(net, airports, fc, dem))
-        err = log_error(run_network(net, airports, fc, dem, scale))
-        rows.append(dict(asc_train=asc, scale=scale, ошибка_лог=err))
+    # quick=True — для проверки устойчивости: поезд почти не влияет, перебираем только константу машины
+    grid_t = [P["asc_train"]] if quick else np.arange(-6, 0.01, 1.0)
+    grid_c = np.arange(-12, -3.99, 2.0) if quick else np.arange(-12, -3.99, 1.0)
+    for asc_t in grid_t:
+        for asc_c in grid_c:
+            P["asc_train"], P["asc_car"] = float(asc_t), float(asc_c)
+            scale = calibrate_scale(run_network(net, airports, fc, dem))
+            err = log_error(run_network(net, airports, fc, dem, scale))
+            rows.append(dict(asc_train=asc_t, asc_car=asc_c, scale=scale, ошибка_лог=err))
     grid = pd.DataFrame(rows)
-    grid.to_csv(RESULTS / "choice_calibration.csv", index=False, encoding="utf-8-sig")
+    if not quick:
+        grid.to_csv(RESULTS / "choice_calibration.csv", index=False, encoding="utf-8-sig")
     best = grid.loc[grid["ошибка_лог"].idxmin()]
-    P["asc_train"] = float(best["asc_train"])
+    P["asc_train"], P["asc_car"] = float(best["asc_train"]), float(best["asc_car"])
     return float(best["scale"]), best
 
 
@@ -244,7 +277,7 @@ def main():
     net = network_from_boards(airports)
     scale, best = calibrate(net, airports, fc, dem)
     df = run_network(net, airports, fc, dem, scale)
-    print(f"Калибровка: константа поезда = {best['asc_train']:.1f} (≈ {best['asc_train']/P['b_time']:.1f} ч «неудобства»), "
+    print(f"Калибровка: константа поезда = {best['asc_train']:.1f}, машины/автобуса = {best['asc_car']:.1f}, "
           f"множитель рынка = {scale:.2f}")
     df.round(3).to_csv(RESULTS / "choice_S0.csv", index=False, encoding="utf-8-sig")
 
@@ -254,7 +287,7 @@ def main():
     print(f"  авиапассажиров между регионами: {air/1e6:.2f} млн/год")
     print(f"  из них через Москву: {df['пасс_Москва'].sum()/air:.0%}  ← «москвоцентричность»")
     print(f"  доехали до соседнего аэропорта: {df['пасс_доехать'].sum()/1e6:.2f} млн/год")
-    print(f"  поездом: {df['пасс_поезд'].sum()/1e6:.2f} млн/год")
+    print(f"  поездом: {df['пасс_поезд'].sum()/1e6:.2f} млн/год, машиной/автобусом: {df['пасс_авто'].sum()/1e6:.2f} млн/год")
     print(f"  Red Wings прямыми рейсами: {df['пасс_RW_прямой'].sum()/1e3:.0f} тыс./год")
 
     validate(df)

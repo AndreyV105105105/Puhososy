@@ -39,7 +39,8 @@ def setup():
     ap = load_airports()
     cal = pd.read_csv(RESULTS / "choice_calibration.csv", encoding="utf-8-sig")
     best = cal.loc[cal["ошибка_лог"].idxmin()]
-    P["asc_train"] = float(best["asc_train"])          # константа поезда из калибровки шага 2
+    P["asc_train"] = float(best["asc_train"])          # константы поезда и машины из калибровки шага 2
+    P["asc_car"] = float(best["asc_car"])
     scale = float(best["scale"])
     ln_k, a, theta, _ = ch.demand_model()
     cities = [c for c in ap.index if pd.notna(ap.loc[c, "пасс_2025_млн"])]
