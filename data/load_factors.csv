@@ -1,0 +1,11 @@
+код,авиакомпания,загрузка,год,линии,тип,источник
+SU,Аэрофлот,0.915,2025,ВВЛ,факт,https://ir.aeroflot.ru/ru/novosti/article/58519/
+FV,Россия (в группе Аэрофлот),0.917,2025,ВВЛ группы,факт (по группе),https://ir.aeroflot.ru/ru/novosti/article/58519/
+DP,Победа,0.944,2025,все линии (86% пасс. — ВВЛ),факт,https://www.flypobeda.ru/news/intervyu-generalnogo-direktora-aviakompanii-pobeda-dmitriya-tyshhuka-delovomu-izdaniyu-vedomosti-2026
+A4,Азимут,0.906,2025,все линии,факт,https://www.finmarket.ru/news/6565689
+UT,ЮТэйр,0.850,2024,все линии (самолёты),факт,http://info.utair.ru/tpost/sostoyalos-godovoe-obshchee-sobranie-aktsionerov-pao-aviakompaniya-yuteyr
+U6,Уральские авиалинии,0.960,2024 (1 полугодие),все линии,факт,https://www.interfax.ru/interview/975785
+5N,Smartavia,0.966,2024,все линии,факт,https://www.ato.ru/content/passazhiropotok-aviakompanii-smartavia-sokratilsya-na-67
+N4,Nordwind,0.900,2024,все линии,оценка АТОР,https://www.atorus.ru/article/aviapassazhiram-stalo-tesno-v-rossii-60318
+WZ,Red Wings,0.830,2025,ВВЛ,наш расчёт: 2 млн пасс. / 24 тыс. рейсов × 100 кресел (2023 г. по данным RW — 82%),https://flyredwings.com/press/news/rossijskaya-aviakompaniya-red-wings-stala-diplomantom-naczionalnoj-premii-krylya-rossii/
+—,Средняя по отрасли РФ (для остальных перевозчиков),0.895,2025,все линии,факт (Минтранс),https://www.aviaport.ru/news/rossiyskie-aviakompanii-perevezli-v-2025-godu-pochti-109-mln-passazhirov/
