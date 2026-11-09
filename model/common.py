@@ -7,7 +7,11 @@ from params import PARAMS
 
 ROOT = Path(__file__).resolve().parent.parent   # корень репозитория
 DATA = ROOT / "data"
-RESULTS = ROOT / "results"
+import os
+# Версия расчёта: по умолчанию все города; PUH_CORE=1 — только 16 крупных аэропортов (версия «14 городов»),
+# результаты тогда пишутся в results_14/ (проверка, что вывод держится на обоих списках городов)
+CORE_ONLY = os.environ.get("PUH_CORE") == "1"
+RESULTS = ROOT / ("results_14" if CORE_ONLY else "results")
 RESULTS.mkdir(exist_ok=True)
 
 
@@ -20,6 +24,9 @@ def load_airports() -> pd.DataFrame:
         if k in df.index:
             df.loc[k, "масса"] = v
     df.loc[df["масса"] <= 0, "масса"] = float("nan")
+    if CORE_ONLY:
+        core = set(pd.read_csv(DATA / "boards_week.csv", encoding="utf-8-sig")["откуда"])
+        df.loc[~df.index.isin(core), "масса"] = float("nan")   # остальные города выпадают из расчёта
     return df
 
 

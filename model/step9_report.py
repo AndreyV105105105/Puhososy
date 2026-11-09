@@ -9,10 +9,10 @@ import numpy as np
 import pandas as pd
 
 from params import PARAMS as P
-from common import RESULTS, ROOT, load_airports
+from common import RESULTS, ROOT, load_airports, CORE_ONLY
 import step2_choice as ch
 
-OUT = ROOT / "docs" / "results_for_passport.md"
+OUT = ROOT / "docs" / ("results_for_passport_14.md" if CORE_ONLY else "results_for_passport.md")
 
 
 def md(df):
