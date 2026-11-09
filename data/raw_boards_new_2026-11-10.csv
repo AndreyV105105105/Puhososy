@@ -179,3 +179,7 @@ MCX,Санкт-Петербург,N4 228,N4,2026-11-10,https://rasp.yandex.ru/st
 MCX,Москва,SU 1057,SU,2026-11-10,https://rasp.yandex.ru/station/9623330/?date=2026-11-10&event=departure
 MCX,Москва,DP 6922,DP,2026-11-10,https://rasp.yandex.ru/station/9623330/?date=2026-11-10&event=departure
 MCX,Сургут,DP 501,DP,2026-11-10,https://rasp.yandex.ru/station/9623330/?date=2026-11-10&event=departure
+SLY,Москва (Шереметьево),YC 131,YC,2026-11-10,https://rasp.yandex.ru/station/9623576/?date=2026-11-10&event=departure
+SLY,Омск,YC 417,YC,2026-11-10,https://rasp.yandex.ru/station/9623576/?date=2026-11-10&event=departure
+SLY,Тюмень,YC 9,YC,2026-11-10,https://rasp.yandex.ru/station/9623576/?date=2026-11-10&event=departure
+SLY,Москва (Домодедово),YC 31,YC,2026-11-10,https://rasp.yandex.ru/station/9623576/?date=2026-11-10&event=departure
