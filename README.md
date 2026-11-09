@@ -1,7 +1,9 @@
 # Red Wings: новый хаб или прямые рейсы — куда направить новые SJ-100
 
 Команда **«Пухососы»** · кейс-чемпионат «Моделирование связанности территорий на базе ИИ», трек Red Wings.
-Паспорт проекта — [`docs/passport_final.md`](docs/passport_final.md) · все цифры — [`docs/results_for_passport.md`](docs/results_for_passport.md)
+Паспорт проекта — [`docs/passport_short.md`](docs/passport_short.md) (подробно — [`docs/passport_final.md`](docs/passport_final.md)) · все цифры — [`docs/results_for_passport.md`](docs/results_for_passport.md)
+
+**Интерактивный калькулятор сети:** https://andreyv105105105.github.io/Puhososy/calculator.html — двигайте доходность, стоимость блок-часа и субсидии и смотрите, какую сеть строит модель (файл — [`docs/calculator.html`](docs/calculator.html), открывается и локально в браузере).
 
 ## Главный вывод
 - **При нынешних доходах и затратах** новые SJ-100 на внутренних линиях почти не окупаются: прибыльно размещается лишь пол-борта — больше рейсов Екатеринбург–Казань.
@@ -21,6 +23,7 @@ python model/step7_thresholds.py all    # пороги окупаемости (�
 python model/step7_hub_city.py          # хаб в пяти городах-кандидатах
 python model/step7_target_network.py    # целевая сеть 2028 и пороги без субсидий
 python model/step8_roadmap.py           # картинка дорожной карты по порогам → results/roadmap.png
+python model/step10_calculator_grid.py 2 && python model/step11_build_calculator.py   # калькулятор (≈ 20 мин на 2 ядрах)
 PUH_CORE=1 python model/run_all.py      # версия только на 16 крупных аэропортах → results_14/
 ```
 Python 3.10+, пакеты: pandas, numpy, matplotlib (airportsdata — только для ранних скриптов). Все допущения — в одном файле [`model/params.py`](model/params.py), у каждого указан источник или пометка «допущение».

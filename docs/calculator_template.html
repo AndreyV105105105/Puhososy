@@ -1,0 +1,255 @@
+<title>Калькулятор сети Red Wings</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Unbounded:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: пульт слева (условия), справа — карта сети и цифры; на телефоне всё в одну колонку */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#141a22; --muted:#5d6878; --line:#dde2ea;
+  --accent:#c4122f; --accent-soft:#f6d9de; --cond:#1d5ea8; --existing:#a9b2bf; --good:#1b7f4a; --zero:#8a94a3;
+  --font-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --font-body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-num:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --panel:#171e28; --ink:#e8edf4; --muted:#9aa6b6; --line:#2a3442;
+  --accent:#ff4d63; --accent-soft:#4a1e27; --cond:#6aa8ef; --existing:#55606f; --good:#4fc286; --zero:#6f7a89; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --panel:#171e28; --ink:#e8edf4; --muted:#9aa6b6; --line:#2a3442;
+  --accent:#ff4d63; --accent-soft:#4a1e27; --cond:#6aa8ef; --existing:#55606f; --good:#4fc286; --zero:#6f7a89; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:18px}
+header h1{font-family:var(--font-display);font-weight:700;font-size:clamp(20px,3.2vw,30px);line-height:1.15;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);max-width:70ch}
+.grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.controls{display:grid;gap:18px}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:14px}
+.ctl label output{font-family:var(--font-num);color:var(--cond);font-weight:600}
+.ctl small{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
+input[type=range]{width:100%;accent-color:var(--cond);margin-top:8px}
+.ticks{display:flex;justify-content:space-between;font-family:var(--font-num);font-size:11px;color:var(--muted)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.seg button{font:inherit;font-size:13.5px;padding:8px 6px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.seg button:focus-visible,input:focus-visible{outline:2px solid var(--cond);outline-offset:2px}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button{font:inherit;font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.presets button:hover{color:var(--ink);border-color:var(--muted)}
+.right{display:grid;gap:18px;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:600px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi .k{font-size:12px;color:var(--muted);letter-spacing:.02em}
+.kpi .v{font-family:var(--font-num);font-size:clamp(17px,1.9vw,21px);font-weight:600;font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap}
+.kpi .s{font-size:12.5px;color:var(--muted);margin-top:4px}
+.kpi .v.pos{color:var(--good)} .kpi .v.zero{color:var(--zero)}
+.planes{display:flex;gap:4px;margin-top:8px}
+.planes span{flex:1;height:10px;border-radius:2px;background:var(--existing);position:relative;overflow:hidden}
+.planes span i{position:absolute;inset:0 auto 0 0;background:var(--accent)}
+.verdict{font-size:15.5px}
+.verdict b{color:var(--accent)}
+.mapbox{overflow:hidden}
+#map{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:18px;height:4px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+h2{font-size:14px;margin:0 0 10px;font-weight:600;letter-spacing:.02em}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-weight:500;color:var(--muted);font-size:12px}
+td.n{font-family:var(--font-num);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.best td{font-weight:600}
+tr.cur td:first-child{box-shadow:inset 3px 0 0 var(--cond)}
+.tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent);margin-left:6px}
+.empty{color:var(--muted);font-size:13.5px}
+footer{color:var(--muted);font-size:12.5px;max-width:90ch}
+footer a{color:var(--cond)}
+@media (prefers-reduced-motion:no-preference){.route{transition:stroke-width .25s ease,opacity .25s ease}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Куда поставить новые SJ-100: калькулятор сети Red Wings</h1>
+    <p>Меняйте условия — модель заранее посчитала, какую сеть алгоритм строит на 4 новых бортах при каждом сочетании. Команда «Пухососы», кейс-чемпионат «Моделирование связанности территорий на базе ИИ».</p>
+  </header>
+
+  <div class="grid">
+    <section class="card controls" aria-label="Условия">
+      <div class="ctl">
+        <label for="fare">Доходность <output id="fareOut"></output></label>
+        <input type="range" id="fare" min="0" max="5" step="1">
+        <div class="ticks" id="fareTicks"></div>
+        <small>К минимальным тарифам АТОР. «Азимут» ≈ +15%, средняя выручка Red Wings на пассажира ≈ +70%.</small>
+      </div>
+      <div class="ctl">
+        <label for="cost">Стоимость блок-часа <output id="costOut"></output></label>
+        <input type="range" id="cost" min="0" max="4" step="1">
+        <div class="ticks" id="costTicks"></div>
+        <small>Оценка по РСБУ «Азимута» — 600 тыс. ₽ (диапазон 570–690).</small>
+      </div>
+      <div class="ctl">
+        <label>Субсидии ПП № 1242</label>
+        <div class="seg" role="group" aria-label="Субсидии">
+          <button id="subOn" type="button">есть</button>
+          <button id="subOff" type="button">нет</button>
+        </div>
+        <small>30 недель в году, по ставкам для SSJ-100, рейсы до 1500 км.</small>
+      </div>
+      <div class="ctl">
+        <label>Вариант</label>
+        <div class="seg" role="group" aria-label="Вариант сети" id="modes"></div>
+        <small>Хаб — база с волнами стыковок (118 млн ₽/год). Прямые — без новой базы.</small>
+      </div>
+      <div class="ctl">
+        <label>Быстрые сценарии</label>
+        <div class="presets" id="presets"></div>
+      </div>
+    </section>
+
+    <div class="right">
+      <section class="card">
+        <div class="verdict" id="verdict"></div>
+      </section>
+      <section class="kpis">
+        <div class="card kpi"><div class="k">Прибыль в год, с субсидиями</div><div class="v" id="kProfit"></div></div>
+        <div class="card kpi"><div class="k">Новых бортов занято</div><div class="v" id="kPlanes"></div><div class="planes" id="planes"></div></div>
+        <div class="card kpi"><div class="k">Новых пассажиров в год</div><div class="v" id="kPax"></div></div>
+        <div class="card kpi"><div class="k">Прирост доли рынка</div><div class="v" id="kShare"></div><div class="s" id="kAccess"></div></div>
+      </section>
+      <section class="card mapbox">
+        <h2 id="mapTitle">Сеть</h2>
+        <svg id="map" viewBox="0 0 1000 560" role="img" aria-label="Карта сети Red Wings"></svg>
+        <div class="legend"><span><i style="background:var(--existing)"></i>рейсы Red Wings сейчас</span><span><i style="background:var(--accent)"></i>новые рейсы или больше частот</span><span><i style="background:var(--cond);height:8px;width:8px;border-radius:50%"></i>база (Екатеринбург) / хаб</span></div>
+      </section>
+      <div class="two">
+        <section class="card">
+          <h2>Что добавляется</h2>
+          <div id="legs"></div>
+        </section>
+        <section class="card">
+          <h2>Все варианты при этих условиях</h2>
+          <table id="compare"><thead><tr><th>Вариант</th><th style="text-align:right">Прибыль</th><th style="text-align:right">Бортов</th></tr></thead><tbody></tbody></table>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Расчёт: гравитационная модель спроса по табло 40 аэропортов (все перевозчики) + логит-модель выбора пассажира + жадный алгоритм размещения бортов по прибыли на блок-час; учтены загрузка, перегоны, база хаба, закрытия аэропорта, субсидии. Модель передаёт порядок величины (корреляция с фактом 0,55), поэтому сравнивайте варианты и пороги, а не точное число пассажиров. Код и данные: <a href="https://github.com/AndreyV105105105/Puhososy" target="_blank" rel="noopener">github.com/AndreyV105105105/Puhososy</a>.
+  </footer>
+</div>
+
+<script>
+const DATA = /*DATA*/null;
+const M = DATA.meta, G = DATA.grid;
+const MODE_NAMES = {"прямые|KUF":"Прямые рейсы","хаб|KUF":"Хаб в Самаре","хаб|VOG":"Хаб в Волгограде","хаб|UFA":"Хаб в Уфе"};
+const state = {fare: M.fares.indexOf(M.base_fare), cost: M.costs.indexOf(M.base_cost), sub: 1, mode: "прямые|KUF"};
+const $ = id => document.getElementById(id);
+const nf = (x, d=1) => x.toLocaleString("ru-RU", {minimumFractionDigits:d, maximumFractionDigits:d});
+const pct = f => (f >= 1 ? "+" : "−") + Math.round(Math.abs(f - 1) * 100) + "%";
+const key = (fi, ci, s, m) => `${M.fares[fi]}|${M.costs[ci]}|${s}|${m}`;
+
+// шкалы
+$("fare").value = state.fare; $("cost").value = state.cost;
+$("fareTicks").innerHTML = M.fares.map(f => `<span>${pct(f)}</span>`).join("");
+$("costTicks").innerHTML = M.costs.map(c => `<span>${c/1000}</span>`).join("");
+$("modes").innerHTML = M.modes.map(m => `<button type="button" data-mode="${m}">${MODE_NAMES[m]}</button>`).join("");
+
+const PRESETS = [
+  ["Сегодня", {fare: M.base_fare, cost: 600000, sub: 1}],
+  ["Доходность +30%", {fare: 1.3, cost: 600000, sub: 1}],
+  ["Целевая сеть 2028", {fare: 1.45, cost: 600000, sub: 1}],
+  ["Без субсидий", {fare: M.base_fare, cost: 600000, sub: 0}],
+  ["Дешёвый час", {fare: M.base_fare, cost: 450000, sub: 1}],
+];
+$("presets").innerHTML = PRESETS.map((p, i) => `<button type="button" data-p="${i}">${p[0]}</button>`).join("");
+
+// карта: простая проекция, долгота сжата на cos(55°)
+const A = M.airports, codes = Object.keys(A);
+const k = Math.cos(55 * Math.PI / 180);
+const xs = codes.map(c => A[c].lon * k), ys = codes.map(c => A[c].lat);
+const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+const W = 1000, H = 560, pad = 40, padR = 120, sc = Math.min((W - pad - padR)/(maxX - minX), (H - 2*pad)/(maxY - minY));
+const P = c => [pad + (A[c].lon * k - minX) * sc, H - pad - (A[c].lat - minY) * sc];
+const SHOW = new Set(["SVX","KUF","KZN","UFA","OMS","CEK","PEE","TJM","VOG","OVB","KJA","IKT","AER","MRV","KGD","GOJ","SGC","NUX","MCX","REN","STW","ULV","TOF","BAX","GSV"]);
+
+function drawMap(res, mode){
+  const hub = mode.startsWith("хаб") ? mode.split("|")[1] : null;
+  const added = new Map(res.new_legs.map(l => [l.i + "-" + l.j, l]));
+  let s = "";
+  for (const r of M.rw_current){
+    if (!(r.i in A) || !(r.j in A) || added.has(r.i + "-" + r.j)) continue;
+    const [x1,y1] = P(r.i), [x2,y2] = P(r.j);
+    s += `<line class="route" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--existing)" stroke-width="${1 + r.f/4}" stroke-linecap="round" opacity=".75"/>`;
+  }
+  for (const l of res.new_legs){
+    const [x1,y1] = P(l.i), [x2,y2] = P(l.j);
+    s += `<line class="route" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--accent)" stroke-width="${2 + l.f/2.5}" stroke-linecap="round"/>`;
+  }
+  for (const c of codes){
+    const [x,y] = P(c); const special = c === "SVX" || c === hub;
+    const r = 3 + Math.sqrt(A[c].mass) * 3.2;
+    s += `<circle cx="${x}" cy="${y}" r="${r}" fill="${special ? "var(--cond)" : "var(--ink)"}" opacity="${special ? 1 : .55}"/>`;
+    if (SHOW.has(c) || special || res.new_legs.some(l => l.i === c || l.j === c))
+      s += `<text x="${x + r + 3}" y="${y + 4}" font-size="${special ? 15 : 12}" font-weight="${special ? 600 : 400}" fill="var(--ink)" font-family="Golos Text, system-ui, sans-serif">${A[c].name}</text>`;
+  }
+  $("map").innerHTML = s;
+}
+
+function render(){
+  const k0 = key(state.fare, state.cost, state.sub, state.mode), res = G[k0];
+  $("fareOut").textContent = pct(M.fares[state.fare]);
+  $("costOut").textContent = M.costs[state.cost]/1000 + " тыс. ₽";
+  $("subOn").setAttribute("aria-pressed", state.sub === 1); $("subOff").setAttribute("aria-pressed", state.sub === 0);
+  document.querySelectorAll("#modes button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === state.mode));
+
+  const p = res.profit, plane = Math.min(res.aircraft, M.aircraft);
+  $("kProfit").textContent = (p > 0.0005 ? "+" : "") + nf(p, 2) + " млрд ₽";
+  $("kProfit").className = "v " + (p > 0.0005 ? "pos" : "zero");
+  $("kPlanes").textContent = nf(plane, 1) + " из " + M.aircraft;
+  $("planes").innerHTML = Array.from({length: M.aircraft}, (_, i) => `<span><i style="width:${Math.max(0, Math.min(1, plane - i))*100}%"></i></span>`).join("");
+  $("kPax").textContent = (res.pax > 0 ? "+" : "") + Math.round(res.pax/1000).toLocaleString("ru-RU") + " тыс.";
+  $("kShare").textContent = (res.share_pp > 0 ? "+" : "") + nf(res.share_pp, 2) + " п.п.";
+  $("kAccess").textContent = "доступность городов " + (res.access_pct > 0 ? "+" : "") + nf(res.access_pct, 1) + "%";
+
+  // все варианты при этих условиях
+  const rows = M.modes.map(m => [m, G[key(state.fare, state.cost, state.sub, m)]]);
+  const best = rows.reduce((a, b) => b[1].profit > a[1].profit ? b : a);
+  $("compare").querySelector("tbody").innerHTML = rows.map(([m, r]) =>
+    `<tr class="${m === state.mode ? "cur" : ""} ${m === best[0] && best[1].profit > 0.0005 ? "best" : ""}"><td>${MODE_NAMES[m]}${m === best[0] && best[1].profit > 0.0005 ? '<span class="tag">лучший</span>' : ""}</td><td class="n">${nf(r.profit, 2)}</td><td class="n">${nf(Math.min(r.aircraft, M.aircraft), 1)}</td></tr>`).join("");
+
+  // что добавляется
+  const legs = [...res.new_legs].sort((a, b) => b.pax - a.pax);
+  $("legs").innerHTML = legs.length ? `<table><thead><tr><th>Маршрут</th><th style="text-align:right">Рейсов в неделю</th><th style="text-align:right">Пасс. в год</th></tr></thead><tbody>` +
+    legs.map(l => `<tr><td>${A[l.i].name} – ${A[l.j].name}${l.f0 === 0 ? '<span class="tag">новый</span>' : ""}</td><td class="n">${l.f0 ? nf(l.f0, l.f0 % 1 ? 1 : 0) + " → " : ""}${l.f}</td><td class="n">${Math.round(l.pax/1000)} тыс.</td></tr>`).join("") + "</tbody></table>"
+    : `<p class="empty">Ни один новый рейс не окупается — при этих условиях борта выгоднее оставить на международных линиях.</p>`;
+
+  // вывод одной фразой
+  const name = MODE_NAMES[state.mode];
+  let v;
+  if (best[1].profit <= 0.0005) v = `При этих условиях <b>новые рейсы не окупаются</b> ни в одном варианте: все 4 борта остаются на международных линиях.`;
+  else if (best[0] === state.mode) v = `<b>${name}</b> — лучший вариант при этих условиях: ${nf(plane, 1)} борта на внутренних линиях, прибыль +${nf(p, 2)} млрд ₽ в год.`;
+  else v = `${name}: ${p > 0.0005 ? "+" + nf(p, 2) + " млрд ₽" : "не окупается"}. Лучше при этих условиях — <b>${MODE_NAMES[best[0]]}</b> (+${nf(best[1].profit, 2)} млрд ₽).`;
+  $("verdict").innerHTML = v;
+  $("mapTitle").textContent = name + " · доходность " + pct(M.fares[state.fare]) + " · блок-час " + M.costs[state.cost]/1000 + " тыс. ₽" + (state.sub ? "" : " · без субсидий");
+  drawMap(res, state.mode);
+}
+
+$("fare").addEventListener("input", e => { state.fare = +e.target.value; render(); });
+$("cost").addEventListener("input", e => { state.cost = +e.target.value; render(); });
+$("subOn").addEventListener("click", () => { state.sub = 1; render(); });
+$("subOff").addEventListener("click", () => { state.sub = 0; render(); });
+$("modes").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { state.mode = b.dataset.mode; render(); } });
+$("presets").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const p = PRESETS[+b.dataset.p][1];
+  state.fare = M.fares.indexOf(p.fare); state.cost = M.costs.indexOf(p.cost); state.sub = p.sub;
+  $("fare").value = state.fare; $("cost").value = state.cost; render();
+});
+render();
+</script>
