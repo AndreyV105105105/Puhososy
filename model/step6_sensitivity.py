@@ -35,6 +35,8 @@ def load_network(M, mode):
         net["direct"].setdefault(p, {})["WZ"] = r["рейсов_нед"]
         if net.get("hub") and sc.HUB in p:
             other = r.i if r.j == sc.HUB else r.j
+            if r["рейсов_нед"] > net["hub"]["spokes"].get(other, 0):
+                net["hub"]["active"] = True          # открыта новая спица → база в Самаре работает
             net["hub"]["spokes"][other] = r["рейсов_нед"]
     return net
 
@@ -52,12 +54,15 @@ def profits(M, nets, s0, case):
 
 
 CAL_CACHE = {}
+BASE_VOT, BASE_BFREQ = P["vot_rub_h"], P["b_freq"]
 
 
 def recalibrated(M, vot, b_freq):
     """Стоимость часа и вес частоты участвуют в калибровке шага 2 (константа поезда и множитель рынка).
     Меняя их, надо заново откалибровать модель по табло — иначе сравнение нечестное.
     Калибруем на сетке значений один раз и берём ближайший узел."""
+    if abs(vot - BASE_VOT) < 1e-9 and abs(b_freq - BASE_BFREQ) < 1e-9:
+        return M, (P["asc_train"], P["asc_car"])     # базовые значения — калибровка шага 2 как есть
     gv = min((500, 625, 750, 875, 1000), key=lambda x: abs(x - vot))
     gf = min((1.0, 1.25, 1.35, 1.5), key=lambda x: abs(x - b_freq))
     if (gv, gf) not in CAL_CACHE:
@@ -89,7 +94,8 @@ def one_at_a_time(M, nets, s0):
     tests = [  # (что меняем, изменения параметров, изменения сценария)
         ("база", {}, {}),
         ("спрос −20%", {}, {"demand": 0.8}), ("спрос +20%", {}, {"demand": 1.2}),
-        ("тариф −15%", {}, {"fare": 0.85}), ("тариф +10%", {}, {"fare": 1.10}),
+        ("доходность как мин. тарифы АТОР", {}, {"fare": 1.0}),
+        ("тариф −15%", {}, {"fare": BASE_CASE["fare"] * 0.85}), ("тариф +10%", {}, {"fare": BASE_CASE["fare"] * 1.10}),
         ("блок-час 570 тыс.", {"cost_bh_rub": 570_000}, {}), ("блок-час 690 тыс.", {"cost_bh_rub": 690_000}, {}),
         ("стоимость часа пасс. 500", {"vot_rub_h": 500}, {}), ("стоимость часа пасс. 1000", {"vot_rub_h": 1000}, {}),
         ("вес частоты 1,0", {"b_freq": 1.0}, {}), ("вес частоты 1,5", {"b_freq": 1.5}, {}),
@@ -117,7 +123,7 @@ def monte_carlo(M, nets, s0, n=500, seed=42):
         pch = {"cost_bh_rub": rng.uniform(570_000, 690_000), "vot_rub_h": rng.uniform(500, 1000),
                "b_freq": rng.uniform(1.0, 1.5), "hub_fare_factor": rng.uniform(0.8, 1.0),
                "ferry_share": rng.uniform(0.0, 1.0), "hub_base_fixed_rub_year": rng.uniform(45e6, 231e6)}
-        cch = {"demand": rng.uniform(0.8, 1.2), "fare": rng.uniform(0.85, 1.1),
+        cch = {"demand": rng.uniform(0.8, 1.2), "fare": BASE_CASE["fare"] * rng.uniform(0.85, 1.1),
                "subsidy": rng.uniform(0.9, 1.0), "hub_closed": rng.uniform(0.0, 0.10)}
         saved = with_params(pch)
         r = profits(M, nets, s0, {**BASE_CASE, **cch})
