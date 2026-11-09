@@ -79,6 +79,11 @@ def main():
             s.append(f"**Рычаг: {t['рычаг'].iloc[0]}**\n")
             s.append(md(t[["значение", "гипотеза", "прибыль_млрд", "самолётов", "спиц_Самары", "рейсы"]]) + "\n")
 
+    hc = RESULTS / "hub_city_compare.csv"
+    if hc.exists():
+        s.append("## Выбор города хаба расчётом (тот же флот и алгоритм)\n")
+        s.append(md(pd.read_csv(hc, encoding="utf-8-sig")) + "\n")
+
     rt = RESULTS / "routes_table.csv"
     if rt.exists():
         s.append("## Маршруты выбранного решения (требование ТЗ: источник для каждого А→Б)\n")
