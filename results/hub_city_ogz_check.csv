@@ -1,0 +1,25 @@
+﻿Владикавказ,доходность,город_хаба,прибыль_млрд,самолётов,спицы
+как в данных,1.45,Волгоград,0.918,1.8,STW-VOG×7; STW-VOG×14; ULV-VOG×7; OGZ-VOG×7
+как в данных,1.45,Уфа,0.706,1.6,KUF-UFA×7; KUF-UFA×14; KZN-UFA×7; KZN-UFA×14
+как в данных,1.45,Казань,0.568,3.4,KZN-UFA×7; KZN-SVX×14; KZN-TJM×7; KZN-UFA×14; HMA-KZN×7; KZN-TJM×14
+как в данных,1.45,Самара,0.0,0.0,
+как в данных,1.6,Волгоград,1.252,1.8,STW-VOG×7; STW-VOG×14; ULV-VOG×7; OGZ-VOG×7
+как в данных,1.6,Уфа,1.077,3.0,KUF-UFA×7; KUF-UFA×14; KZN-UFA×7; KZN-UFA×14; OMS-UFA×7; REN-UFA×7; REN-UFA×14
+как в данных,1.6,Казань,1.057,3.4,KZN-UFA×7; KZN-SVX×14; KZN-TJM×7; KZN-UFA×14; HMA-KZN×7; KZN-TJM×14
+как в данных,1.6,Самара,0.374,3.4,KUF-UFA×7; KUF-UFA×14; KUF-MCX×7; KUF-KZN×7; KUF-KZN×14; KUF-MCX×14; KUF-SVX×7; KUF-SVX×14
+"0,5 млн",1.45,Волгоград,0.864,1.8,STW-VOG×7; STW-VOG×14; ULV-VOG×7; GRV-VOG×7
+"0,5 млн",1.45,Уфа,0.706,1.6,KUF-UFA×7; KUF-UFA×14; KZN-UFA×7; KZN-UFA×14
+"0,5 млн",1.45,Казань,0.568,3.4,KZN-UFA×7; KZN-SVX×14; KZN-TJM×7; KZN-UFA×14; HMA-KZN×7; KZN-TJM×14
+"0,5 млн",1.45,Самара,0.007,2.1,KUF-UFA×7; KUF-UFA×14; KUF-MCX×7; KUF-KZN×7; KUF-KZN×14
+"0,5 млн",1.6,Волгоград,1.192,1.8,STW-VOG×7; STW-VOG×14; ULV-VOG×7; GRV-VOG×7
+"0,5 млн",1.6,Уфа,1.077,3.0,KUF-UFA×7; KUF-UFA×14; KZN-UFA×7; KZN-UFA×14; OMS-UFA×7; REN-UFA×7; REN-UFA×14
+"0,5 млн",1.6,Казань,1.057,3.4,KZN-UFA×7; KZN-SVX×14; KZN-TJM×7; KZN-UFA×14; HMA-KZN×7; KZN-TJM×14
+"0,5 млн",1.6,Самара,0.366,3.4,KUF-UFA×7; KUF-UFA×14; KUF-MCX×7; KUF-KZN×7; KUF-KZN×14; KUF-MCX×14; KUF-SVX×7; KUF-SVX×14
+без Владикавказа,1.45,Волгоград,0.764,1.8,STW-VOG×7; STW-VOG×14; ULV-VOG×7; GRV-VOG×7
+без Владикавказа,1.45,Уфа,0.706,1.6,KUF-UFA×7; KUF-UFA×14; KZN-UFA×7; KZN-UFA×14
+без Владикавказа,1.45,Казань,0.568,3.4,KZN-UFA×7; KZN-SVX×14; KZN-TJM×7; KZN-UFA×14; HMA-KZN×7; KZN-TJM×14
+без Владикавказа,1.45,Самара,0.0,0.0,
+без Владикавказа,1.6,Волгоград,1.082,1.8,STW-VOG×7; STW-VOG×14; ULV-VOG×7; GRV-VOG×7
+без Владикавказа,1.6,Уфа,1.077,3.0,KUF-UFA×7; KUF-UFA×14; KZN-UFA×7; KZN-UFA×14; OMS-UFA×7; REN-UFA×7; REN-UFA×14
+без Владикавказа,1.6,Казань,1.057,3.4,KZN-UFA×7; KZN-SVX×14; KZN-TJM×7; KZN-UFA×14; HMA-KZN×7; KZN-TJM×14
+без Владикавказа,1.6,Самара,0.286,3.5,KUF-UFA×7; KUF-UFA×14; KUF-MCX×7; KUF-SVX×7; KUF-SVX×14; KUF-MCX×14; KUF-TJM×7; GOJ-KUF×7
