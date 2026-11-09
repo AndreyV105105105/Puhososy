@@ -43,7 +43,12 @@ def observed_flows(airports: pd.DataFrame) -> pd.DataFrame:
     # убираем дубли кодшеринга
     b = b[~b["перевозчик_IATA"].isin(PARAMS["codeshare_exclude"])]
     seats = b["перевозчик_IATA"].map(PARAMS["seats_by_carrier"]).fillna(PARAMS["seats_default"])
-    b = b.assign(pax_year=b["рейсов_нед"] * seats * PARAMS["load_factor_market"] * PARAMS["weeks_per_year"])
+    lf = pd.Series(PARAMS["load_factor_market"], index=b.index)
+    if PARAMS.get("use_carrier_lf"):
+        t = pd.read_csv(DATA / "load_factors.csv", encoding="utf-8-sig")
+        lf = b["перевозчик_IATA"].map(dict(zip(t["код"], t["загрузка"]))).fillna(PARAMS["load_factor_market"])
+    # пассажиров в год = рейсы в неделю × кресла × загрузка × 52 недели × поправка на сезон (табло — ноябрь)
+    b = b.assign(pax_year=b["рейсов_нед"] * seats * lf * PARAMS["weeks_per_year"] * PARAMS.get("season_factor", 1.0))
     # пара без направления: (KUF, SVX) и (SVX, KUF) — одна и та же пара
     b["i"] = b[["откуда", "куда"]].min(axis=1)
     b["j"] = b[["откуда", "куда"]].max(axis=1)
