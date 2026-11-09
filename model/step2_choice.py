@@ -33,7 +33,7 @@ def demand_model():
     """Коэффициенты итоговой гравитационной модели из шага 1."""
     c = pd.read_csv(RESULTS / "demand_coefs.csv", encoding="utf-8-sig")
     row = c[c["вариант"].str.startswith("ИТОГ")].iloc[0]
-    return row["ln_k"], row["a"], row["theta"], row["хаб_поправка"]
+    return row["ln_k"], row["a"], row["theta"], row["хаб_поправка"], row.get("вахта_поправка", 0.0)
 
 
 def fare_model(airports):
@@ -58,11 +58,24 @@ def network_from_boards(airports):
           & ~b["перевозчик_IATA"].isin(P["codeshare_exclude"])].copy()
     r["i"] = r[["откуда", "куда"]].min(axis=1)
     r["j"] = r[["откуда", "куда"]].max(axis=1)
-    # табло есть с обоих концов → сумма по двум направлениям / 2 = рейсов в одну сторону
-    g = (r.groupby(["i", "j", "перевозчик_IATA"])["рейсов_нед"].sum() / 2).reset_index()
+    # табло с обоих концов → сумма по двум направлениям / 2 = рейсов в одну сторону;
+    # если второй город не из 16 аэропортов с табло — видим одно направление, делить не нужно
+    origins = set(b["откуда"])
+    g = r.groupby(["i", "j", "перевозчик_IATA"])["рейсов_нед"].sum().reset_index()
+    both = g.i.isin(origins) & g.j.isin(origins)
+    g["рейсов_нед"] = g["рейсов_нед"].astype(float)
+    g.loc[both, "рейсов_нед"] /= 2
     direct = {}
     for _, x in g.iterrows():
         direct.setdefault((x.i, x.j), {})[x["перевозчик_IATA"]] = x["рейсов_нед"]
+    # рейсы в Москву для городов без табло: оценка по связи «частота ~ пассажиропоток» у 16 аэропортов
+    m = airports["масса"]
+    known = [c for c in to_mow if c in m.index and pd.notna(m[c]) and to_mow[c] > 0]
+    if known:
+        bx, ax_ = np.polyfit(np.log([m[c] for c in known]), np.log([to_mow[c] for c in known]), 1)
+        for c in airports.index:
+            if c not in origins and pd.notna(m[c]):
+                to_mow[c] = float(np.exp(ax_ + bx * math.log(m[c])))
     return {"direct": direct, "to_moscow": to_mow, "hub": None}
 
 
@@ -132,7 +145,8 @@ def options(i, j, airports, net, fc):
                          цена=P["through_fare_factor"] * (fare(k1, 0, fc) + fare(k2, 0, fc)), плечи=[]))
     # 3) через наш хаб — только в сценариях с хабом и если оба города — его «спицы»
     hub = net.get("hub")
-    if hub and i in hub["spokes"] and j in hub["spokes"] and hub["city"] not in (i, j):
+    # волны стыковок в Самаре появляются только вместе с базой (первая новая спица), до этого сеть = S0
+    if hub and hub.get("active", True) and i in hub["spokes"] and j in hub["spokes"] and hub["city"] not in (i, j):
         h = hub["city"]
         k1, k2 = D(i, h), D(h, j)
         opts.append(dict(вариант="через хаб", перевозчик="WZ",
@@ -180,6 +194,12 @@ def options(i, j, airports, net, fc):
         rd = km * P["road_detour"]
         opts.append(dict(вариант="машина/автобус", перевозчик="авто", часы=rd / P["ground_speed_kmh"], пересадок=0,
                          рейсов_нед=P["car_freq_week"], цена=rd * P["ground_rub_per_km"], asc=P["asc_car"], плечи=[]))
+    # страховка: если вариантов нет вовсе (город без табло и без оценки рейсов в Москву) — считаем «через Москву»
+    # по оценке частоты, рейсы в Москву есть из всех аэропортов списка
+    if not opts:
+        opts.append(dict(вариант="через Москву", перевозчик="разные", часы=block_h(D(i, "MOW")) + P["mct_moscow_h"]
+                         + block_h(D("MOW", j)), пересадок=1, рейсов_нед=7,
+                         цена=P["through_fare_factor"] * (fare(D(i, "MOW"), 0, fc) + fare(D("MOW", j), 0, fc)), плечи=[]))
     # доли по логиту
     u = np.array([utility(o["часы"], o["пересадок"], o["рейсов_нед"], o["цена"], o.get("asc", 0)) for o in opts])
     s = np.exp(u - u.max()); s /= s.sum()          # вычитаем max для численной устойчивости
@@ -194,16 +214,17 @@ def run_network(net, airports, fc, dem, scale=1.0):
     """Для всех пар городов: спрос × доли → пассажиры по вариантам.
     scale — поправочный множитель рынка (см. calibrate_scale).
     Дополнительно считаем поток на каждом рейсе (плече) — его и сверяем с табло."""
-    ln_k, a, theta, hub_coef = dem
-    cities = [c for c in airports.index if pd.notna(airports.loc[c, "пасс_2025_млн"])]
-    m = airports["пасс_2025_млн"]
+    ln_k, a, theta, hub_coef, vakhta_coef = dem
+    cities = [c for c in airports.index if pd.notna(airports.loc[c, "масса"])]
+    m = airports["масса"]
     rows, legs = [], {}
     for x in range(len(cities)):
         for y in range(x + 1, len(cities)):
             i, j = sorted((cities[x], cities[y]))
             km, opts = options(i, j, airports, net, fc)
             # спрос «откуда–куда» (флажок хаба = 0: транзитных пассажиров S7 в нём нет)
-            T = scale * math.exp(ln_k + a * math.log(m[i] * m[j]) - theta * math.log(km))
+            vk = vakhta_coef if (i in P["vakhta_cities"] or j in P["vakhta_cities"]) else 0.0
+            T = scale * math.exp(ln_k + a * math.log(m[i] * m[j]) - theta * math.log(km) + vk)
             for o in opts:
                 if o["вариант"] in ("прямой", "доехать до аэропорта", "через Екатеринбург"):
                     for leg in o["плечи"]:

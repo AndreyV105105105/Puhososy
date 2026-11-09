@@ -20,10 +20,10 @@ FD = {"SVX": "Урал", "CEK": "Урал", "TJM": "Урал", "KUF": "ПФО", 
 def main():
     ap = load_airports()
     fl = observed_flows(ap)
-    m = ap["пасс_2025_млн"]
+    m = ap["масса"]
     fl = fl[m.loc[fl.i].notna().values & m.loc[fl.j].notna().values].reset_index(drop=True)
     y = np.log(fl.T_obs.values)
-    base = design(fl, ap, "пасс_2025_млн", ["OVB"])
+    base = design(fl, ap, "масса", ["OVB"])
     tour = (fl.i.isin(["AER", "MRV"]) | fl.j.isin(["AER", "MRV"])).astype(float).values
     same = np.array([FD[a] == FD[b] for a, b in zip(fl.i, fl.j)], float)
     lnd2 = np.log(fl.km.values) ** 2

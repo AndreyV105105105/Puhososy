@@ -90,6 +90,12 @@ def restore(saved):
     ch.B_FARE = P["b_time"] / P["vot_rub_h"]
 
 
+def best_of(r):
+    """Лучший вариант; при равенстве (например, все по нулям) — «не расширяться»: зачем что-то менять."""
+    top = max(r.values())
+    return "S0 не расширяться" if r["S0 не расширяться"] >= top - 1e-6 else max(r, key=r.get)
+
+
 def one_at_a_time(M, nets, s0):
     tests = [  # (что меняем, изменения параметров, изменения сценария)
         ("база", {}, {}),
@@ -112,7 +118,7 @@ def one_at_a_time(M, nets, s0):
         saved = with_params(pch)
         r = profits(M, nets, s0, {**BASE_CASE, **cch})
         restore(saved)
-        rows.append({"условие": name, **{k: round(v, 3) for k, v in r.items()}, "лучшая": max(r, key=r.get)})
+        rows.append({"условие": name, **{k: round(v, 3) for k, v in r.items()}, "лучшая": best_of(r)})
     return pd.DataFrame(rows)
 
 
@@ -128,7 +134,7 @@ def monte_carlo(M, nets, s0, n=500, seed=42):
         saved = with_params(pch)
         r = profits(M, nets, s0, {**BASE_CASE, **cch})
         restore(saved)
-        rows.append({**pch, **cch, **r, "лучшая": max(r, key=r.get)})
+        rows.append({**pch, **cch, **r, "лучшая": best_of(r)})
     return pd.DataFrame(rows)
 
 

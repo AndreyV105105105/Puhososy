@@ -1,11 +1,16 @@
 ﻿рычаг,значение,гипотеза,прибыль_млрд,самолётов,спиц_Самары,рейсы
-блок_час,450000.0,H1 хаб в Самаре,0.468,2.5,7,KUF-UFA×7; KUF-SVX×7; KUF-KZN×7; KUF-SVX×14; KUF-KZN×14; KUF-TJM×7; KUF-VOG×7
-блок_час,450000.0,H2 прямые рейсы,0.882,3.7,0,KZN-SVX×14; OMS-SVX×3; OMS-SVX×7; KUF-SVX×7; KUF-UFA×3; SVX-UFA×7; CEK-UFA×3; OMS-SVX×14; PEE-UFA×3; KUF-TJM×3; AER-KUF×3; CEK-KUF×3; KZN-MRV×3
-блок_час,500000.0,H1 хаб в Самаре,0.3,1.3,4,KUF-UFA×7; KUF-SVX×7; KUF-KZN×7; KUF-SVX×14
-блок_час,500000.0,H2 прямые рейсы,0.508,2.5,0,KZN-SVX×14; OMS-SVX×3; OMS-SVX×7; KUF-SVX×7; KUF-UFA×3; SVX-UFA×7; CEK-UFA×3; OMS-SVX×14; PEE-UFA×3; KUF-TJM×3
-блок_час,550000.0,H1 хаб в Самаре,0.156,1.3,4,KUF-UFA×7; KUF-SVX×7; KUF-KZN×7; KUF-SVX×14
-блок_час,550000.0,H2 прямые рейсы,0.3,1.4,0,KZN-SVX×14; OMS-SVX×3; OMS-SVX×7; KUF-SVX×7; KUF-UFA×3; SVX-UFA×7
-блок_час,600000.0,H1 хаб в Самаре,0.049,0.4,2,KUF-UFA×7; KUF-SVX×7
-блок_час,600000.0,H2 прямые рейсы,0.155,1.2,0,KZN-SVX×14; OMS-SVX×3; OMS-SVX×7; KUF-SVX×7; KUF-UFA×3
-блок_час,650000.0,H1 хаб в Самаре,0.01,0.3,1,KUF-UFA×7
-блок_час,650000.0,H2 прямые рейсы,0.047,0.9,0,KZN-SVX×14; OMS-SVX×3; OMS-SVX×7
+блок_час,400000.0,H1 хаб в Самаре,0.497,4.0,8,KUF-MRV×7; KUF-UFA×7; KUF-UFA×14; KUF-MCX×7; KUF-MRV×14; KUF-SVX×7; KUF-SVX×14; KUF-MCX×14
+блок_час,400000.0,H2 прямые рейсы,0.89,3.9,0,KUF-UFA×3; KZN-SVX×14; KUF-UFA×7; CEK-SGC×3; CEK-SGC×7; OMS-SVX×3; OMS-SVX×7; KUF-UFA×14; KZN-MRV×3; KZN-MRV×7; KUF-SVX×7
+блок_час,400000.0,H3 гибрид,0.704,3.9,0,KZN-SVX×14; CEK-SGC×3; CEK-SGC×7; OMS-SVX×3; OMS-SVX×7; SVX-UFA×7; KZN-MRV×3; KZN-MRV×7; KZN-UFA×3; KZN-UFA×7; KJA-SGC×3
+блок_час,450000.0,H1 хаб в Самаре,0.066,2.7,5,KUF-MRV×7; KUF-UFA×7; KUF-UFA×14; KUF-MCX×7; KUF-MRV×14
+блок_час,450000.0,H2 прямые рейсы,0.449,2.9,0,KUF-UFA×3; KZN-SVX×14; KUF-UFA×7; CEK-SGC×3; CEK-SGC×7; OMS-SVX×3; OMS-SVX×7; KUF-UFA×14
+блок_час,450000.0,H3 гибрид,0.273,1.9,0,KZN-SVX×14; CEK-SGC×3; CEK-SGC×7; OMS-SVX×3; OMS-SVX×7; SVX-UFA×7
+блок_час,500000.0,H1 хаб в Самаре,0.0,0.0,0,
+блок_час,500000.0,H2 прямые рейсы,0.119,2.9,0,KUF-UFA×3; KZN-SVX×14; KUF-UFA×7; CEK-SGC×3; CEK-SGC×7; OMS-SVX×3; OMS-SVX×7; KUF-UFA×14
+блок_час,500000.0,H3 гибрид,0.068,1.7,0,KZN-SVX×14; CEK-SGC×3; CEK-SGC×7; OMS-SVX×3; OMS-SVX×7
+блок_час,550000.0,H1 хаб в Самаре,0.0,0.0,0,
+блок_час,550000.0,H2 прямые рейсы,0.0,0.0,0,
+блок_час,550000.0,H3 гибрид,0.0,0.0,0,
+блок_час,600000.0,H1 хаб в Самаре,0.0,0.0,0,
+блок_час,600000.0,H2 прямые рейсы,0.0,0.0,0,
+блок_час,600000.0,H3 гибрид,0.0,0.0,0,

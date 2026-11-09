@@ -31,7 +31,7 @@ from common import load_airports, dist_km, RESULTS, DATA
 
 MASSES = {  # название варианта -> колонка в airports.csv
     "население": "население_города_млн",
-    "пассажиропоток": "пасс_2025_млн",
+    "пассажиропоток": "масса",
 }
 
 
@@ -56,18 +56,25 @@ def observed_flows(airports: pd.DataFrame) -> pd.DataFrame:
                                       рейсов_нед_обе_стороны=("рейсов_нед", "sum"),
                                       перевозчики=("перевозчик_IATA", lambda s: ",".join(sorted(set(s)))))
     flows = flows.reset_index()
+    # табло есть только у 16 аэропортов: если второй город пары — не из них, видим лишь одно направление → ×2
+    origins = set(pd.read_csv(DATA / "boards_week.csv", encoding="utf-8-sig")["откуда"])
+    one_side = ~(flows.i.isin(origins) & flows.j.isin(origins))
+    flows.loc[one_side, "T_obs"] *= 2
+    flows["табло_с_обеих_сторон"] = ~one_side
     flows["km"] = [dist_km(*airports.loc[i, ["lat", "lon"]], *airports.loc[j, ["lat", "lon"]])
                    for i, j in zip(flows.i, flows.j)]
     return flows
 
 
-def design(flows, airports, mass_col, hubs=()):
+def design(flows, airports, mass_col, hubs=(), vakhta=()):
     """Матрица признаков для регрессии: [1, ln(Mi*Mj), ln d, флажок «пара с транзитным хабом»]."""
     m = airports[mass_col]
     ln_mm = np.log(m.loc[flows.i].values * m.loc[flows.j].values)
     cols = [np.ones(len(flows)), ln_mm, np.log(flows.km.values)]
     if hubs:
         cols.append((flows.i.isin(hubs) | flows.j.isin(hubs)).astype(float).values)
+    if vakhta:
+        cols.append((flows.i.isin(vakhta) | flows.j.isin(vakhta)).astype(float).values)
     return np.column_stack(cols)
 
 
@@ -94,14 +101,15 @@ def cross_validate(X, y, k, seed):
     return y_hat
 
 
-def evaluate(name, flows, airports, mass_col, hubs=()):
+def evaluate(name, flows, airports, mass_col, hubs=(), vakhta=()):
     """Обучить вариант модели и проверить его на отложенных парах."""
-    X = design(flows, airports, mass_col, hubs)
+    X = design(flows, airports, mass_col, hubs, vakhta)
     y = np.log(flows.T_obs.values)
     coef = fit_ols(X, y)
     y_cv = cross_validate(X, y, PARAMS["holdout_folds"], PARAMS["random_seed"])
     row = {"вариант": name, "пар": len(y), "ln_k": coef[0], "a": coef[1], "theta": -coef[2],
            "хаб_поправка": coef[3] if hubs else 0.0,
+           "вахта_поправка": coef[-1] if vakhta else 0.0,
            "R2_обучение": r2(y, X @ coef), "R2_отложенные": r2(y, y_cv),
            "медианная_ошибка_отложенные": np.median(np.abs(np.exp(y_cv - y) - 1))}
     return row, np.exp(X @ coef), np.exp(y_cv)
@@ -126,7 +134,9 @@ def main():
     # 2) Итоговая модель: пассажиропоток + поправка на транзитный хаб, на всех парах, где он известен.
     flows = flows_all[has(airports, pax, flows_all)].reset_index(drop=True)
     table.append(evaluate("пассажиропоток (все пары)", flows, airports, pax)[0])
-    final, t_fit, t_cv = evaluate(f"ИТОГ: пассажиропоток + хаб {','.join(hubs)}", flows, airports, pax, hubs)
+    table.append(evaluate(f"пассажиропоток + хаб {','.join(hubs)}", flows, airports, pax, hubs)[0])
+    final, t_fit, t_cv = evaluate(f"ИТОГ: пассажиропоток + хаб {','.join(hubs)} + вахта", flows, airports, pax, hubs,
+                                  PARAMS["vakhta_cities"])
     table.append(final)
     coefs = pd.DataFrame(table)
 

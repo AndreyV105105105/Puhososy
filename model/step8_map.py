@@ -44,7 +44,7 @@ def draw(mode, airports, s0):
             ax.plot([x1, x2], [y1, y2], color="#999999", lw=1 + r["рейсов_нед"] / 4, alpha=0.6, zorder=1)
 
     for c in airports.index:
-        pax = airports.at[c, "пасс_2025_млн"]
+        pax = airports.at[c, "масса"]
         x, y = pt(c)
         base = c in P["rw_bases"]
         hub = c == P["hub_city"]

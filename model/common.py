@@ -13,8 +13,14 @@ RESULTS.mkdir(exist_ok=True)
 
 def load_airports() -> pd.DataFrame:
     """16 аэропортов: iata как индекс, координаты, население, пассажиропоток."""
-    df = pd.read_csv(DATA / "airports.csv", encoding="utf-8-sig")
-    return df.set_index("iata")
+    df = pd.read_csv(DATA / "airports.csv", encoding="utf-8-sig").set_index("iata")
+    # «масса» для модели: пассажиропоток 2025, если нет — 2024; ручные поправки — в PARAMS["mass_override"]
+    df["масса"] = df["пасс_2025_млн"].fillna(df["пасс_2024_млн"])
+    for k, v in PARAMS.get("mass_override", {}).items():
+        if k in df.index:
+            df.loc[k, "масса"] = v
+    df.loc[df["масса"] <= 0, "масса"] = float("nan")
+    return df
 
 
 def dist_km(lat1, lon1, lat2, lon2) -> float:
