@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 
 from params import PARAMS
-from common import load_airports, dist_km, block_h, RESULTS, DATA
+from common import load_airports, dist_km, block_h, RESULTS, DATA, load_boards
 
 P = PARAMS
 B_FARE = P["b_time"] / P["vot_rub_h"]       # полезность за 1 ₽
@@ -50,7 +50,7 @@ def fare_model(airports):
 
 def network_from_boards(airports):
     """Текущая сеть (S0): прямые рейсы между нашими городами и рейсы в Москву, рейсов в неделю в одну сторону."""
-    b = pd.read_csv(DATA / "boards_week.csv", encoding="utf-8-sig")
+    b = load_boards()
     # в Москву: все перевозчики (тут Аэрофлот — настоящий, не кодшеринг)
     to_mow = b[b["куда"].isin(P["moscow_airports"])].groupby("откуда")["рейсов_нед"].sum().to_dict()
     # между нашими городами: без дублей кодшеринга

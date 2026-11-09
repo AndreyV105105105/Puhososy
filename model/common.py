@@ -33,3 +33,13 @@ def dist_km(lat1, lon1, lat2, lon2) -> float:
 def block_h(km: float) -> float:
     """Блок-время рейса, ч: постоянная часть + полёт на крейсерской скорости."""
     return PARAMS["block_a_h"] + km / PARAMS["speed_kmh"]
+
+
+def load_boards() -> pd.DataFrame:
+    """Табло вылета: 16 исходных аэропортов (неделя 10–16.11.2026) + 23 новых города
+    (data/boards_new_cities.csv, Семёныч: рейсы во вторник 10.11 × 7 — оценка недели)."""
+    parts = [pd.read_csv(DATA / "boards_week.csv", encoding="utf-8-sig")]
+    extra = DATA / "boards_new_cities.csv"
+    if extra.exists():
+        parts.append(pd.read_csv(extra, encoding="utf-8-sig"))
+    return pd.concat(parts, ignore_index=True)

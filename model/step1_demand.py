@@ -27,7 +27,7 @@ import numpy as np
 import pandas as pd
 
 from params import PARAMS
-from common import load_airports, dist_km, RESULTS, DATA
+from common import load_airports, dist_km, RESULTS, DATA, load_boards
 
 MASSES = {  # название варианта -> колонка в airports.csv
     "население": "население_города_млн",
@@ -37,7 +37,7 @@ MASSES = {  # название варианта -> колонка в airports.cs
 
 def observed_flows(airports: pd.DataFrame) -> pd.DataFrame:
     """Фактический поток по парам городов (обе стороны вместе), пассажиров в год."""
-    b = pd.read_csv(DATA / "boards_week.csv", encoding="utf-8-sig")
+    b = load_boards()
     # оставляем только пары внутри наших 16 аэропортов: для них знаем население и координаты
     b = b[b["откуда"].isin(airports.index) & b["куда"].isin(airports.index)]
     # убираем дубли кодшеринга
@@ -57,7 +57,7 @@ def observed_flows(airports: pd.DataFrame) -> pd.DataFrame:
                                       перевозчики=("перевозчик_IATA", lambda s: ",".join(sorted(set(s)))))
     flows = flows.reset_index()
     # табло есть только у 16 аэропортов: если второй город пары — не из них, видим лишь одно направление → ×2
-    origins = set(pd.read_csv(DATA / "boards_week.csv", encoding="utf-8-sig")["откуда"])
+    origins = set(load_boards()["откуда"])
     one_side = ~(flows.i.isin(origins) & flows.j.isin(origins))
     flows.loc[one_side, "T_obs"] *= 2
     flows["табло_с_обеих_сторон"] = ~one_side
