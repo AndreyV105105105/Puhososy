@@ -81,7 +81,10 @@ def network_from_boards(airports):
 
 # ---------------- модель выбора ----------------
 def fare(km, bypass, fc):
-    return fc[0] + fc[1] * km + fc[2] * bypass
+    f = fc[0] + fc[1] * km + fc[2] * bypass
+    if km < P["short_fare_km"]:
+        f *= P["short_fare_factor"]                   # проверка устойчивости: короткие пары дешевле (в базе ×1)
+    return f
 
 
 def utility(hours, transfers, freq, price, asc=0.0):

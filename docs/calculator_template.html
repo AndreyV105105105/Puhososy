@@ -36,6 +36,7 @@ input[type=range]{width:100%;accent-color:var(--cond);margin-top:8px}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .seg button{font:inherit;font-size:13.5px;padding:8px 6px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.seg button:last-child:nth-child(odd){grid-column:1/-1}
 .seg button:focus-visible,input:focus-visible{outline:2px solid var(--cond);outline-offset:2px}
 .presets{display:flex;flex-wrap:wrap;gap:6px}
 .presets button{font:inherit;font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
@@ -81,7 +82,7 @@ footer a{color:var(--cond)}
   <div class="grid">
     <section class="card controls" aria-label="Условия">
       <div class="ctl">
-        <label for="fare">Доходность <output id="fareOut"></output></label>
+        <label for="fare">Выручка Red Wings на пассажира <output id="fareOut"></output></label>
         <input type="range" id="fare" min="0" max="5" step="1">
         <div class="ticks" id="fareTicks"></div>
         <small>К минимальным тарифам АТОР. «Азимут» ≈ +15%, средняя выручка Red Wings на пассажира ≈ +70%.</small>
@@ -103,7 +104,7 @@ footer a{color:var(--cond)}
       <div class="ctl">
         <label>Вариант</label>
         <div class="seg" role="group" aria-label="Вариант сети" id="modes"></div>
-        <small>Хаб — база с волнами стыковок (118 млн ₽/год). Прямые — без новой базы.</small>
+        <small>Хаб — база с волнами стыковок (118 млн ₽/год), закрытия аэропорта — по факту (Самара 9,5%, Казань 8,0%, Уфа 5,7% времени). Прямые — без новой базы. Плюс хаба в Уфе — на маршрутах Utair (Казань, Тюмень, Екатеринбург); без них хаб не открывается.</small>
       </div>
       <div class="ctl">
         <label>Быстрые сценарии</label>
@@ -140,14 +141,14 @@ footer a{color:var(--cond)}
   </div>
 
   <footer>
-    Расчёт: гравитационная модель спроса по табло 40 аэропортов (все перевозчики) + логит-модель выбора пассажира + жадный алгоритм размещения бортов по прибыли на блок-час; учтены загрузка, перегоны, база хаба, закрытия аэропорта, субсидии. Модель передаёт порядок величины (корреляция с фактом 0,55), поэтому сравнивайте варианты и пороги, а не точное число пассажиров. Код и данные: <a href="https://github.com/AndreyV105105105/Puhososy" target="_blank" rel="noopener">github.com/AndreyV105105105/Puhososy</a>.
+    Расчёт: гравитационная модель спроса по табло 40 аэропортов (все перевозчики) + логит-модель выбора пассажира + жадный алгоритм размещения бортов по прибыли на блок-час; учтены загрузка, перегоны, база хаба (118 млн ₽/год), фактические закрытия аэропорта хаба, субсидии; спрос на парах без рейсов ×0,3 (по трём неудачным запускам 2021–2023). Гибрид — хаб в Уфе плюс прямые рейсы из Екатеринбурга и других городов. Модель передаёт порядок величины (корреляция с фактом 0,52), поэтому сравнивайте варианты и пороги, а не точное число пассажиров. Код и данные: <a href="https://github.com/AndreyV105105105/Puhososy" target="_blank" rel="noopener">github.com/AndreyV105105105/Puhososy</a>.
   </footer>
 </div>
 
 <script>
 const DATA = /*DATA*/null;
 const M = DATA.meta, G = DATA.grid;
-const MODE_NAMES = {"прямые|KUF":"Прямые рейсы","хаб|KUF":"Хаб в Самаре","хаб|VOG":"Хаб в Волгограде","хаб|UFA":"Хаб в Уфе"};
+const MODE_NAMES = {"прямые|KUF":"Прямые рейсы","хаб|KUF":"Хаб в Самаре","хаб|VOG":"Хаб в Волгограде","хаб|UFA":"Хаб в Уфе","хаб|KZN":"Хаб в Казани","гибрид|UFA":"Гибрид: хаб в Уфе + прямые"};
 const state = {fare: M.fares.indexOf(M.base_fare), cost: M.costs.indexOf(M.base_cost), sub: 1, mode: "прямые|KUF"};
 const $ = id => document.getElementById(id);
 const nf = (x, d=1) => x.toLocaleString("ru-RU", {minimumFractionDigits:d, maximumFractionDigits:d});
@@ -162,8 +163,8 @@ $("modes").innerHTML = M.modes.map(m => `<button type="button" data-mode="${m}">
 
 const PRESETS = [
   ["Сегодня", {fare: M.base_fare, cost: 600000, sub: 1}],
-  ["Доходность +30%", {fare: 1.3, cost: 600000, sub: 1}],
-  ["Целевая сеть 2028", {fare: 1.45, cost: 600000, sub: 1}],
+  ["Выручка +30%", {fare: 1.3, cost: 600000, sub: 1}],
+  ["Целевая сеть 2028", {fare: 1.6, cost: 600000, sub: 1}],
   ["Без субсидий", {fare: M.base_fare, cost: 600000, sub: 0}],
   ["Дешёвый час", {fare: M.base_fare, cost: 450000, sub: 1}],
 ];
@@ -179,7 +180,7 @@ const P = c => [pad + (A[c].lon * k - minX) * sc, H - pad - (A[c].lat - minY) * 
 const SHOW = new Set(["SVX","KUF","KZN","UFA","OMS","CEK","PEE","TJM","VOG","OVB","KJA","IKT","AER","MRV","KGD","GOJ","SGC","NUX","MCX","REN","STW","ULV","TOF","BAX","GSV"]);
 
 function drawMap(res, mode){
-  const hub = mode.startsWith("хаб") ? mode.split("|")[1] : null;
+  const hub = mode.startsWith("прямые") ? null : mode.split("|")[1];
   const added = new Map(res.new_legs.map(l => [l.i + "-" + l.j, l]));
   let s = "";
   for (const r of M.rw_current){
@@ -236,7 +237,7 @@ function render(){
   else if (best[0] === state.mode) v = `<b>${name}</b> — лучший вариант при этих условиях: ${nf(plane, 1)} борта на внутренних линиях, прибыль +${nf(p, 2)} млрд ₽ в год.`;
   else v = `${name}: ${p > 0.0005 ? "+" + nf(p, 2) + " млрд ₽" : "не окупается"}. Лучше при этих условиях — <b>${MODE_NAMES[best[0]]}</b> (+${nf(best[1].profit, 2)} млрд ₽).`;
   $("verdict").innerHTML = v;
-  $("mapTitle").textContent = name + " · доходность " + pct(M.fares[state.fare]) + " · блок-час " + M.costs[state.cost]/1000 + " тыс. ₽" + (state.sub ? "" : " · без субсидий");
+  $("mapTitle").textContent = name + " · выручка " + pct(M.fares[state.fare]) + " · блок-час " + M.costs[state.cost]/1000 + " тыс. ₽" + (state.sub ? "" : " · без субсидий");
   drawMap(res, state.mode);
 }
 
