@@ -6,7 +6,7 @@
 M — «масса» города (население или пассажиропоток аэропорта), d — расстояние, км.
 
 Как подбираем k, a, theta:
-  1) Факт: на табло 16 аэропортов (data/boards_week.csv) видно, сколько рейсов в неделю летает
+  1) Факт: на табло 40 аэропортов (data/boards_week.csv) видно, сколько рейсов в неделю летает
      между каждой парой городов у ВСЕХ перевозчиков. Пассажиров в год = рейсы × кресла × загрузка × 52.
   2) Логарифмируем формулу — получается обычная линейная регрессия:
          ln T = ln k + a * ln(M_i * M_j) − theta * ln d
@@ -38,7 +38,7 @@ MASSES = {  # название варианта -> колонка в airports.cs
 def observed_flows(airports: pd.DataFrame) -> pd.DataFrame:
     """Фактический поток по парам городов (обе стороны вместе), пассажиров в год."""
     b = load_boards()
-    # оставляем только пары внутри наших 16 аэропортов: для них знаем население и координаты
+    # оставляем только пары внутри наших 40 аэропортов: для них знаем население и координаты
     b = b[b["откуда"].isin(airports.index) & b["куда"].isin(airports.index)]
     # убираем дубли кодшеринга
     b = b[~b["перевозчик_IATA"].isin(PARAMS["codeshare_exclude"])]
@@ -56,7 +56,7 @@ def observed_flows(airports: pd.DataFrame) -> pd.DataFrame:
                                       рейсов_нед_обе_стороны=("рейсов_нед", "sum"),
                                       перевозчики=("перевозчик_IATA", lambda s: ",".join(sorted(set(s)))))
     flows = flows.reset_index()
-    # табло есть только у 16 аэропортов: если второй город пары — не из них, видим лишь одно направление → ×2
+    # табло есть только у 40 аэропортов: если второй город пары — не из них, видим лишь одно направление → ×2
     origins = set(load_boards()["откуда"])
     one_side = ~(flows.i.isin(origins) & flows.j.isin(origins))
     flows.loc[one_side, "T_obs"] *= 2
@@ -146,7 +146,7 @@ def main():
     flows.to_csv(RESULTS / "demand_calibration.csv", index=False, encoding="utf-8-sig")
     coefs.to_csv(RESULTS / "demand_coefs.csv", index=False, encoding="utf-8-sig")
 
-    print(f"Пар с прямыми рейсами внутри 16 аэропортов: {len(flows_all)}, "
+    print(f"Пар с прямыми рейсами внутри 40 аэропортов: {len(flows_all)}, "
           f"с известным пассажиропотоком: {len(flows)}, с известными обеими массами: {len(common)}")
     print(f"Фактический поток на парах: {flows.T_obs.sum()/1e6:.2f} млн пасс./год\n")
     pd.set_option("display.width", 220)

@@ -3,7 +3,7 @@
 Модель не запускается в браузере: заранее перебираем условия и сохраняем, какую сеть строит алгоритм.
 
 Условия: доходность к минимальным тарифам АТОР × стоимость блок-часа × субсидии да/нет.
-Варианты: прямые рейсы; хаб в Самаре, Волгограде, Уфе (тот же флот — 4 новых борта).
+Варианты: прямые рейсы; хаб в Самаре, Казани, Уфе; гибрид (хаб в Уфе + прямые) — тот же флот, 4 новых борта.
 
 Запуск: python model/step10_calculator_grid.py   (≈ 40–60 минут; можно параллельно на нескольких ядрах)
 Выход:  results/calculator_grid.json
@@ -16,12 +16,14 @@ from multiprocessing import Pool
 from params import PARAMS as P
 from common import RESULTS
 import step3_scenarios as sc
+
+DEFAULT_HUB = P["hub_city"]
 import step2_choice as ch
 
 FARES = [1.0, 1.15, 1.3, 1.45, 1.6, 1.75]
 COSTS = [450_000, 500_000, 550_000, 600_000, 650_000]
 SUBSIDY = [True, False]
-MODES = [("прямые", "KUF"), ("хаб", "KUF"), ("хаб", "VOG"), ("хаб", "UFA")]
+MODES = [("прямые", "KUF"), ("хаб", "KUF"), ("хаб", "KZN"), ("хаб", "UFA"), ("гибрид", "UFA")]
 N = P["new_aircraft"]["базовый"]
 M = None
 S0NET = None
@@ -57,8 +59,12 @@ def one(task):
 
 def main():
     tasks = list(product(FARES, COSTS, SUBSIDY, MODES))
-    procs = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+    procs = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 1
     out = {}
+    old = RESULTS / "calculator_grid.json"
+    if "--reuse" in sys.argv and old.exists():      # досчитать только новые варианты
+        out = json.loads(old.read_text(encoding="utf-8"))["grid"]
+        tasks = [t for t in tasks if f"{t[0]}|{t[1]}|{int(t[2])}|{t[3][0]}|{t[3][1]}" not in out]
     with Pool(procs, initializer=init) as pool:
         for k, (key, res) in enumerate(pool.imap_unordered(one, tasks), 1):
             out[key] = res

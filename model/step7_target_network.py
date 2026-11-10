@@ -1,8 +1,8 @@
 """
 Целевая сеть 2028 (требование ТЗ: сеть 8–12 маршрутов и число самолётов).
-Базовое решение даёт один шаг (Екатеринбург–Казань ×14). Целевая сеть — та, которую модель строит
-при пороге доходности +45% к минимальным тарифам (≈ 2,8 борта), вместе с действующими рейсами Red Wings,
-которые она использует. Плюс проверка: тот же порог БЕЗ субсидий (замечание Семёныча — пороги держатся на них).
+Целевая сеть — та, которую модель строит на прямых рейсах (основа вывода) при выручке +60% к минимальным
+тарифам АТОР — последний шаг дорожной карты, когда заняты почти все 4 борта, — вместе с действующими рейсами
+Red Wings, которые она использует. Плюс проверка: тот же порог БЕЗ субсидий (замечание Семёныча — пороги держатся на них).
 
 Запуск: python model/step7_target_network.py
 Выход:  results/target_network_2028.csv, results/map_цель2028.png, results/thresholds_без_субсидий.csv
@@ -15,7 +15,8 @@ import step3_scenarios as sc
 import step2_choice as ch
 import step8_map as mp
 
-FARE = 1.45
+FARE = 1.6
+MODE = "прямые"
 N = P["new_aircraft"]["базовый"]
 
 
@@ -23,7 +24,7 @@ def main():
     M = sc.setup()
     case = {**P["cases"]["базовый"], "fare": FARE}
     s0 = sc.evaluate(sc.base_network(M, "прямые"), M, case)
-    net, log = sc.greedy(sc.base_network(M, "прямые"), M, "прямые", N, case)
+    net, log = sc.greedy(sc.base_network(M, MODE), M, MODE, N, case)
     r = sc.evaluate(net, M, case, detail=True)
     s0net = ch.network_from_boards(M["ap"])["direct"]
     names = M["ap"]["город"].to_dict()
@@ -41,19 +42,19 @@ def main():
     print(df[["маршрут", "статус", "рейсов_нед_сейчас", "рейсов_нед_2028", "пассажиров_в_год"]].to_string(index=False))
     # карта целевой сети
     pd.DataFrame(r["legs"]).to_csv(RESULTS / "network_цель2028_базовый.csv", index=False, encoding="utf-8-sig")
-    mp.TITLES["цель2028"] = "Целевая сеть 2028 (доходность +45%)"
+    mp.TITLES["цель2028"] = "Целевая сеть 2028: прямые рейсы (выручка +60% к мин. тарифам)"
     mp.draw("цель2028", M["ap"], s0net)
 
     # те же пороги без субсидий
     out = []
     saved = P["subsidy_on"]
     P["subsidy_on"] = False
-    for fare in (1.3, 1.45, 1.6, 1.75):
+    for fare, mode in [(f, m) for m in ("прямые", "гибрид") for f in (1.15, 1.3, 1.45, 1.6)]:
         case = {**P["cases"]["базовый"], "fare": fare}
         s0 = sc.evaluate(sc.base_network(M, "прямые"), M, case)
-        net, log = sc.greedy(sc.base_network(M, "прямые"), M, "прямые", N, case)
+        net, log = sc.greedy(sc.base_network(M, mode), M, mode, N, case)
         r = sc.evaluate(net, M, case)
-        out.append({"доходность": fare, "гипотеза": "H2 прямые рейсы, без субсидий",
+        out.append({"доходность": fare, "гипотеза": {"прямые": "H2 прямые рейсы", "гибрид": "H3 гибрид"}[mode] + ", без субсидий",
                     "прибыль_млрд": round((r["прибыль"] - s0["прибыль"]) / 1e9, 3),
                     "самолётов": round((r["блок_часы"] - s0["блок_часы"]) / sc.BH_PER_AIRCRAFT, 1),
                     "рейсы": "; ".join(f"{x['пара']}×{x['рейсов_нед']}" for x in log if x.get("принят"))})

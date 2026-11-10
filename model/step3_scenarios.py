@@ -59,7 +59,8 @@ def setup():
         by_city.setdefault(p[0], []).append(p)
         by_city.setdefault(p[1], []).append(p)
     return dict(ap=ap, fc=ch.fare_model(ap), cities=cities, coords=coords, km=km, demand=demand,
-                direct_candidates=cand, pairs_by_city=by_city, s0_wz=s0_wz)
+                direct_candidates=cand, pairs_by_city=by_city, s0_wz=s0_wz,
+                served={p for p in s0 if p in km})
 
 
 def key(i, j):
@@ -113,6 +114,8 @@ def block_hours(net, M, split=False):
 def pair_eval(i, j, net, M, case):
     """Одна пара городов: где летит Red Wings, сколько пассажиров, время в пути."""
     T = M["demand"][(i, j)] * case["demand"]
+    if (i, j) not in M["served"]:
+        T *= P["unserved_demand_factor"]           # пары без рейсов сейчас: спрос не проверен фактом
     _, opts = ch.options(i, j, M["ap"], net, M["fc"])
     k = M["km"][(i, j)]
     rw = []
@@ -165,7 +168,8 @@ def evaluate(net, M, case, detail=False, cache=None, changed=None):
     for p, f in legs.items():
         cap = 2 * f * 52 * P["seats_rw"] * P["lf_max"]
         if HUB in p and hub and hub.get("active", True):
-            cap *= 1 - case["hub_closed"]           # закрытия аэропорта хаба съедают часть рейсов
+            closed = case["hub_closed"] if case["hub_closed"] is not None else P["hub_closed_fact"].get(HUB, 0.05)
+            cap *= 1 - closed                         # закрытия аэропорта хаба съедают часть рейсов
         fit[p] = min(1.0, cap / load[p]) if load.get(p) else 1.0
 
     rev = trips = segs = 0.0
@@ -214,6 +218,11 @@ def next_level(cur, levels=None):
     return None
 
 
+def capped(p, M, f):
+    """Короткая пара без рейсов сейчас: частота не выше short_unserved_max_freq (история Челябинск–Уфа)."""
+    return p not in M["served"] and M["km"][p] < P["short_unserved_km"] and f > P["short_unserved_max_freq"]
+
+
 def candidate_moves(net, M, mode):
     moves = []
     if mode in ("хаб", "гибрид"):
@@ -221,14 +230,14 @@ def candidate_moves(net, M, mode):
             if x == HUB:
                 continue
             nxt = next_level(net["hub"]["spokes"].get(x, 0), P["spoke_levels"])
-            if nxt:
+            if nxt and not capped(key(HUB, x), M, nxt) and x not in P["hub_spoke_exclude"].get(HUB, []):
                 moves.append(("спица", key(HUB, x), nxt))
     if mode in ("прямые", "гибрид"):
         for p in M["direct_candidates"]:
             if mode == "гибрид" and HUB in p:
                 continue                              # рейсы из Самары в гибриде — это спицы
             nxt = next_level(net["direct"].get(p, {}).get("WZ", 0))
-            if nxt:
+            if nxt and not capped(p, M, nxt):
                 moves.append(("прямой", p, nxt))
     return moves
 
@@ -305,7 +314,7 @@ def main():
             r = evaluate(net, M, case, detail=True)
             d = lambda k: r[k] - s0[k]
             rows.append({
-                "гипотеза": {"хаб": "H1 хаб в Самаре", "прямые": "H2 прямые рейсы", "гибрид": "H3 гибрид"}[mode],
+                "гипотеза": {"хаб": f"H1 хаб в {P['hub_names'][P['hub_city']]}", "прямые": "H2 прямые рейсы", "гибрид": "H3 гибрид"}[mode],
                 "сценарий": case_name, "новых_самолётов_дано": n,
                 "самолётов_занято": round((r["блок_часы"] - s0["блок_часы"]) / BH_PER_AIRCRAFT, 1),
                 "новых_пассажиров_в_год": round(d("пассажиров")),

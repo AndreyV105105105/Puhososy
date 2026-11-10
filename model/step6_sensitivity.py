@@ -7,8 +7,9 @@
   B) Монте-Карло: 500 раз случайно выбираем ВСЕ допущения сразу в их диапазонах
      и считаем, в какой доле случаев каждая гипотеза лучшая. Это «вероятность», что вывод верен.
 
-Сети маршрутов берём из шага 3 (базовый сценарий) и не перестраиваем: проверяем,
-выдержит ли уже выбранное решение другие условия.
+Сети маршрутов строим при доходности +45% (SENS_FARE — целевая сеть дорожной карты; при сегодняшней
+доходности новых рейсов нет, проверять нечего) и потом не перестраиваем: проверяем, выдержит ли уже
+выбранное решение другие условия.
 
 Запуск: python model/step6_sensitivity.py   (после step3_scenarios.py)
 Выход:  results/sensitivity.csv, results/monte_carlo.csv, results/routes_table.csv
@@ -23,13 +24,14 @@ import step2_choice as ch
 import step3_scenarios as sc
 
 MODES = {"хаб": "H1 хаб", "прямые": "H2 прямые", "гибрид": "H3 гибрид"}
-BASE_CASE = dict(P["cases"]["базовый"])
+SENS_FARE = 1.45
+BASE_CASE = {**P["cases"]["базовый"], "fare": SENS_FARE}
 
 
 def load_network(M, mode):
     """Сеть гипотезы из шага 3: текущая сеть + новые рейсы Red Wings."""
     net = sc.base_network(M, mode)
-    legs = pd.read_csv(RESULTS / f"network_{mode}_базовый.csv", encoding="utf-8-sig")
+    legs = pd.read_csv(RESULTS / f"network_{mode}_доходность{round(SENS_FARE * 100)}.csv", encoding="utf-8-sig")
     for _, r in legs.iterrows():
         p = (r.i, r.j)
         net["direct"].setdefault(p, {})["WZ"] = r["рейсов_нед"]
@@ -100,7 +102,7 @@ def one_at_a_time(M, nets, s0):
     tests = [  # (что меняем, изменения параметров, изменения сценария)
         ("база", {}, {}),
         ("спрос −20%", {}, {"demand": 0.8}), ("спрос +20%", {}, {"demand": 1.2}),
-        ("доходность как мин. тарифы АТОР", {}, {"fare": 1.0}),
+        ("доходность «Азимута» (+15%)", {}, {"fare": P["cases"]["базовый"]["fare"]}),
         ("тариф −15%", {}, {"fare": BASE_CASE["fare"] * 0.85}), ("тариф +10%", {}, {"fare": BASE_CASE["fare"] * 1.10}),
         ("блок-час 570 тыс.", {"cost_bh_rub": 570_000}, {}), ("блок-час 690 тыс.", {"cost_bh_rub": 690_000}, {}),
         ("стоимость часа пасс. 500", {"vot_rub_h": 500}, {}), ("стоимость часа пасс. 1000", {"vot_rub_h": 1000}, {}),
@@ -110,8 +112,12 @@ def one_at_a_time(M, nets, s0):
         ("перегонов нет", {"ferry_share": 0.0}, {}), ("перегон на каждый оборот", {"ferry_share": 1.0}, {}),
         ("база хаба 45 млн/год", {"hub_base_fixed_rub_year": 45e6}, {}), ("база хаба 231 млн/год", {"hub_base_fixed_rub_year": 231e6}, {}),
         ("базы ещё Пермь и Омск", {"rw_bases": ["SVX", "MOW", "PEE", "OMS"]}, {}),
-        ("Самара закрыта 2%", {}, {"hub_closed": 0.02}), ("Самара закрыта 5%", {}, {"hub_closed": 0.05}),
-        ("Самара закрыта 10%", {}, {"hub_closed": 0.10}),
+        ("спрос на парах без рейсов ×0,5", {"unserved_demand_factor": 0.5}, {}),
+        ("спрос на парах без рейсов ×1 (без поправки)", {"unserved_demand_factor": 1.0}, {}),
+        ("до чужого аэропорта до 400 км", {"ground_max_km": 400}, {}),
+        ("до чужого аэропорта не ездят", {"ground_max_km": 0}, {}),
+        ("хаб закрыт 2%", {}, {"hub_closed": 0.02}), ("хаб закрыт 5%", {}, {"hub_closed": 0.05}),
+        ("хаб закрыт 10%", {}, {"hub_closed": 0.10}),
     ]
     rows = []
     for name, pch, cch in tests:
@@ -140,7 +146,7 @@ def monte_carlo(M, nets, s0, n=500, seed=42):
 
 def routes_table(M, mode="гибрид"):
     """Таблица «маршрут · рейсов в неделю · пассажиров в год · источник» — требование ТЗ для каждого А→Б."""
-    legs = pd.read_csv(RESULTS / f"network_{mode}_базовый.csv", encoding="utf-8-sig")
+    legs = pd.read_csv(RESULTS / f"network_{mode}_доходность{round(SENS_FARE * 100)}.csv", encoding="utf-8-sig")
     s0 = ch.network_from_boards(M["ap"])["direct"]
     routes = pd.read_csv(DATA / "routes.csv", encoding="utf-8-sig")
     url = {}
@@ -154,7 +160,7 @@ def routes_table(M, mode="гибрид"):
                     "статус": "действующий" if old >= r["рейсов_нед"] else ("новый" if old == 0 else "больше рейсов"),
                     "пассажиров_в_год": r["пасс_в_год"], "загрузка": r["загрузка"],
                     "источник_частоты": url.get(p, "Яндекс Расписания, табло 10–16.11.2026") if old else "решение модели (step3_scenarios.py)",
-                    "источник_пассажиропотока": "оценка модели: гравитация по табло 16 аэропортов (step1) × логит выбора (step2)"})
+                    "источник_пассажиропотока": "оценка модели: гравитация по табло 40 аэропортов (step1) × логит выбора (step2)"})
     pd.DataFrame(out).to_csv(RESULTS / "routes_table.csv", index=False, encoding="utf-8-sig")
     return pd.DataFrame(out)
 
@@ -163,6 +169,11 @@ def main():
     M = sc.setup()
     cal = pd.read_csv(RESULTS / "choice_calibration.csv", encoding="utf-8-sig")
     M["scale"] = float(cal.loc[cal["ошибка_лог"].idxmin(), "scale"])
+    for m in MODES:                                  # сети при доходности SENS_FARE
+        net, _ = sc.greedy(sc.base_network(M, m), M, m, P["new_aircraft"]["базовый"], BASE_CASE)
+        r = sc.evaluate(net, M, BASE_CASE, detail=True)
+        pd.DataFrame(r["legs"]).to_csv(RESULTS / f"network_{m}_доходность{round(SENS_FARE * 100)}.csv",
+                                       index=False, encoding="utf-8-sig")
     nets = {m: load_network(M, m) for m in MODES}
     s0 = sc.base_network(M, "прямые")
     pd.set_option("display.width", 220)
@@ -182,18 +193,18 @@ def main():
         print(f"  {h}: лучшая в {win.get(h, 0):.0%} случаев; прибыль 5% / медиана / 95%: {q} млрд; "
               f"в плюсе в {(mc[h] > 0).mean():.0%}")
 
-    # порог надёжности Самары: при какой доле закрытий гибрид перестаёт быть лучше прямых
+    # порог надёжности хаба: при какой доле закрытий гибрид перестаёт быть лучше прямых
     rows = []
     for c in np.arange(0, 0.101, 0.005):
         r = profits(M, nets, s0, {**BASE_CASE, "hub_closed": c})
         rows.append((c, r["H3 гибрид"] - r["H2 прямые"]))
     th = next((c for c, d in rows if d < 0), None)
     if th is None:
-        print("\nПорог надёжности: гибрид лучше прямых при любой доле закрытий Самары от 0 до 10%")
+        print("\nПорог надёжности: гибрид лучше прямых при любой доле закрытий хаба от 0 до 10%")
     elif th == 0:
-        print("\nПорог надёжности: гибрид не лучше прямых даже при 0% закрытий Самары")
+        print("\nПорог надёжности: гибрид не лучше прямых даже при 0% закрытий хаба")
     else:
-        print(f"\nПорог надёжности: гибрид лучше прямых, пока Самара закрыта меньше ~{th:.1%} времени (сейчас 10%)")
+        print(f"\nПорог надёжности: гибрид лучше прямых, пока хаб закрыт меньше ~{th:.1%} времени (сейчас 10%)")
 
     winner = {v: k for k, v in MODES.items()}[oat.iloc[0]["лучшая"]] if oat.iloc[0]["лучшая"] in MODES.values() else "прямые"
     rt = routes_table(M, winner)

@@ -76,8 +76,12 @@ def main():
         s.append("## Пороги: при каких условиях окупается хаб и прямые рейсы\n")
         for f in th:
             t = pd.read_csv(f, encoding="utf-8-sig")
+            if "рычаг" not in t.columns:              # без субсидий — своя таблица
+                s.append(f"**{f.stem}**\n")
+                s.append(md(t) + "\n")
+                continue
             s.append(f"**Рычаг: {t['рычаг'].iloc[0]}**\n")
-            s.append(md(t[["значение", "гипотеза", "прибыль_млрд", "самолётов", "спиц_Самары", "рейсы"]]) + "\n")
+            s.append(md(t[["значение", "гипотеза", "прибыль_млрд", "самолётов", "спиц_хаба", "рейсы"]]) + "\n")
 
     hc = RESULTS / "hub_city_compare.csv"
     if hc.exists():

@@ -16,7 +16,7 @@ RESULTS.mkdir(exist_ok=True)
 
 
 def load_airports() -> pd.DataFrame:
-    """16 аэропортов: iata как индекс, координаты, население, пассажиропоток."""
+    """40 аэропортов (16 — в версии CORE_ONLY): iata как индекс, координаты, население, пассажиропоток."""
     df = pd.read_csv(DATA / "airports.csv", encoding="utf-8-sig").set_index("iata")
     # «масса» для модели: пассажиропоток 2025, если нет — 2024; ручные поправки — в PARAMS["mass_override"]
     df["масса"] = df["пасс_2025_млн"].fillna(df["пасс_2024_млн"])

@@ -13,6 +13,8 @@ from common import RESULTS
 import common
 import step3_scenarios as sc
 
+DEFAULT_HUB = P["hub_city"]
+
 CITIES = ["VOG", "UFA", "KZN", "KUF"]
 N = P["new_aircraft"]["базовый"]
 _orig_load = common.load_airports
@@ -43,7 +45,7 @@ def run(variant):
                          "самолётов": round((r["блок_часы"] - s0["блок_часы"]) / sc.BH_PER_AIRCRAFT, 1),
                          "спицы": "; ".join(f"{x['пара']}×{x['рейсов_нед']}" for x in log if x.get("принят"))})
             print(rows[-1], flush=True)
-    sc.HUB = P["hub_city"] = "KUF"
+    sc.HUB = P["hub_city"] = DEFAULT_HUB
     return rows
 
 

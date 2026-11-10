@@ -59,7 +59,7 @@ def network_from_boards(airports):
     r["i"] = r[["откуда", "куда"]].min(axis=1)
     r["j"] = r[["откуда", "куда"]].max(axis=1)
     # табло с обоих концов → сумма по двум направлениям / 2 = рейсов в одну сторону;
-    # если второй город не из 16 аэропортов с табло — видим одно направление, делить не нужно
+    # если второй город не из 40 аэропортов с табло — видим одно направление, делить не нужно
     origins = set(b["откуда"])
     g = r.groupby(["i", "j", "перевозчик_IATA"])["рейсов_нед"].sum().reset_index()
     both = g.i.isin(origins) & g.j.isin(origins)
@@ -68,7 +68,7 @@ def network_from_boards(airports):
     direct = {}
     for _, x in g.iterrows():
         direct.setdefault((x.i, x.j), {})[x["перевозчик_IATA"]] = x["рейсов_нед"]
-    # рейсы в Москву для городов без табло: оценка по связи «частота ~ пассажиропоток» у 16 аэропортов
+    # рейсы в Москву для городов без табло: оценка по связи «частота ~ пассажиропоток» у 40 аэропортов
     m = airports["масса"]
     known = [c for c in to_mow if c in m.index and pd.notna(m[c]) and to_mow[c] > 0]
     if known:
@@ -169,7 +169,8 @@ def options(i, j, airports, net, fc):
         for a in airports.index:
             if a in (i, j):
                 continue
-            kg = D(src, a)
+            kg = D(src, a) * max(P["road_detour"], P["road_detour_city"].get(src, 0), P["road_detour_city"].get(a, 0))
+            # ↑ по дороге, а не по прямой — как у варианта «машина/автобус»; Сочи отрезан горами — крюк больше
             if kg > P["ground_max_km"]:
                 continue
             ka = D(a, dst)
@@ -191,7 +192,7 @@ def options(i, j, airports, net, fc):
                              рейсов_нед=freq, цена=price, asc=P["asc_train"], плечи=[]))
     # 6) машина или междугородний автобус
     if km <= P["road_max_km"]:
-        rd = km * P["road_detour"]
+        rd = km * max(P["road_detour"], P["road_detour_city"].get(i, 0), P["road_detour_city"].get(j, 0))
         opts.append(dict(вариант="машина/автобус", перевозчик="авто", часы=rd / P["ground_speed_kmh"], пересадок=0,
                          рейсов_нед=P["car_freq_week"], цена=rd * P["ground_rub_per_km"], asc=P["asc_car"], плечи=[]))
     # страховка: если вариантов нет вовсе (город без табло и без оценки рейсов в Москву) — считаем «через Москву»
@@ -300,7 +301,8 @@ def validate(df):
     v["модель/факт"] = (v["модель_табло"] / v["T_obs"]).round(2)
     print(f"\nПроверка на {len(v)} рейсах (парах с прямыми рейсами): всего модель/факт = "
           f"{v['модель_табло'].sum()/v['T_obs'].sum():.2f}, корреляция (лог) = {corr:.2f}, "
-          f"медианная ошибка = {np.median(np.abs(v['модель/факт'] - 1)):.0%}")
+          f"медианная ошибка = {np.median(np.abs(v['модель/факт'] - 1)):.0%}, "
+          f"в пределах ±2 раз: {((v['модель/факт'] >= 0.5) & (v['модель/факт'] <= 2)).mean():.0%}")
     sel = v[(v.i == "KUF") | (v.j == "KUF")]
     print("Пары с Самарой (модель/факт):", ", ".join(f"{a}-{b} {r}" for a, b, r in zip(sel.i, sel.j, sel["модель/факт"])))
 
@@ -318,7 +320,7 @@ def main():
 
     print(f"Тариф ≈ {fc[0]:.0f} ₽ + {fc[1]:.2f} ₽/км + {fc[2]:.0f} ₽ если в обход Москвы")
     air = df[["пасс_прямой", "пасс_доехать", "пасс_хаб", "пасс_через_SVX", "пасс_Москва"]].sum().sum()
-    print(f"\nS0 — текущая сеть, {len(df)} пар городов (14 аэропортов):")
+    print(f"\nS0 — текущая сеть, {len(df)} пар городов ({len(airports.dropna(subset=["масса"]))} аэропортов):")
     print(f"  авиапассажиров между регионами: {air/1e6:.2f} млн/год")
     print(f"  из них через Москву: {df['пасс_Москва'].sum()/air:.0%}  ← «москвоцентричность»")
     print(f"  доехали до соседнего аэропорта: {df['пасс_доехать'].sum()/1e6:.2f} млн/год")

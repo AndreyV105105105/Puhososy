@@ -17,7 +17,7 @@ from params import PARAMS as P
 from common import load_airports, RESULTS
 import step2_choice as ch
 
-TITLES = {"прямые": "H2 прямые рейсы", "хаб": "H1 хаб в Самаре", "гибрид": "H3 гибрид"}
+TITLES = {"прямые": "H2 прямые рейсы", "хаб": f"H1 хаб в {P['hub_names'][P['hub_city']]}", "гибрид": "H3 гибрид"}
 
 
 def xy(lat, lon):
@@ -58,7 +58,7 @@ def draw(mode, airports, s0):
     ax.plot([], [], color="#999999", lw=2, label="рейсы Red Wings сейчас")
     ax.plot([], [], color="#d62728", lw=3, label="новые рейсы / больше частот")
     ax.scatter([], [], color="#1f77b4", label="база Red Wings (Кольцово)")
-    ax.scatter([], [], color="#ff7f0e", label="Самара — кандидат в хаб")
+    ax.scatter([], [], color="#ff7f0e", label=f"{airports.at[P['hub_city'], 'город']} — кандидат в хаб (опция)")
     ax.legend(loc="lower left", fontsize=8, frameon=False)
     ax.set_title(f"{TITLES[mode]}, базовый сценарий: сеть Red Wings между городами модели", fontsize=11)
     ax.set_aspect("equal"); ax.axis("off")
