@@ -10,7 +10,7 @@ Red Wings, которые она использует. Плюс проверка
 import pandas as pd
 
 from params import PARAMS as P
-from common import RESULTS
+from common import DATA, RESULTS
 import step3_scenarios as sc
 import step2_choice as ch
 import step8_map as mp
@@ -36,6 +36,11 @@ def main():
                      "рейсов_нед_2028": x["рейсов_нед"], "пассажиров_в_год": x["пасс_в_год"], "загрузка": x["загрузка"],
                      "км": x["км"], "i": x["i"], "j": x["j"]})
     df = pd.DataFrame(rows).sort_values(["статус", "пассажиров_в_год"], ascending=[True, False])
+    # есть ли маршрут у Red Wings в перечне субсидируемых на 2026 год (data/subsidized_rw_2026.csv, Семёныч):
+    # субсидию модель даёт всем рейсам до 1500 км, колонка показывает, где она уже есть, а где её нужно получить
+    sub = pd.read_csv(DATA / "subsidized_rw_2026.csv", encoding="utf-8-sig").dropna(subset=["iata_1", "iata_2"])
+    listed = {tuple(sorted(x)) for x in zip(sub["iata_1"], sub["iata_2"])}
+    df["в_перечне_субсидий_2026"] = ["да" if tuple(sorted(x)) in listed else "нет" for x in zip(df["i"], df["j"])]
     df.to_csv(RESULTS / "target_network_2028.csv", index=False, encoding="utf-8-sig")
     print(f"Доходность {FARE}: прибыль +{(r['прибыль'] - s0['прибыль'])/1e9:.2f} млрд, бортов "
           f"{(r['блок_часы'] - s0['блок_часы'])/sc.BH_PER_AIRCRAFT:.1f}, новых пассажиров {r['пассажиров'] - s0['пассажиров']:.0f}")
