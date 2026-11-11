@@ -128,6 +128,31 @@ def _dist(airports, a, b):
     return cache[(a, b)]
 
 
+_NEIGH = {}
+
+
+def _neighbours(airports):
+    """Для каждого города — соседние аэропорты, до которых можно доехать (≤ ground_max_km по дороге), и путь до них.
+    Список зависит только от координат и допущений о дороге, поэтому считаем его один раз, а не при каждом вызове
+    options(): раньше на этот перебор уходило около 3/4 времени расчёта. Порядок аэропортов — как в airports.index."""
+    k = (id(airports), P["ground_max_km"], P["road_detour"], tuple(sorted(P["road_detour_city"].items())))
+    if k not in _NEIGH:
+        idx = list(airports.index)
+        res = {}
+        for src in idx:
+            lst = []
+            for a in idx:
+                if a == src:
+                    continue
+                kg = _dist(airports, src, a) * max(P["road_detour"], P["road_detour_city"].get(src, 0),
+                                                   P["road_detour_city"].get(a, 0))
+                if kg <= P["ground_max_km"]:
+                    lst.append((a, kg))
+            res[src] = lst
+        _NEIGH[k] = res
+    return _NEIGH[k]
+
+
 def options(i, j, airports, net, fc):
     """Все варианты добраться из i в j и их характеристики.
     У авиавариантов есть поле «плечи» — какие рейсы реально летят (нужно для загрузки и сверки с табло)."""
@@ -168,13 +193,10 @@ def options(i, j, airports, net, fc):
                              рейсов_нед=min(f1, f2), цена=P["hub_fare_factor"] * fare(km, 1, fc),
                              плечи=[key(i, e), key(e, j)]))
     # 4) доехать на машине до соседнего аэропорта A (≤ 400 км) и улететь оттуда прямым рейсом
+    neigh = _neighbours(airports)   # по дороге, а не по прямой — как у варианта «машина/автобус»; Сочи отрезан горами
     for src, dst in ((i, j), (j, i)):
-        for a in airports.index:
+        for a, kg in neigh.get(src, ()):
             if a in (i, j):
-                continue
-            kg = D(src, a) * max(P["road_detour"], P["road_detour_city"].get(src, 0), P["road_detour_city"].get(a, 0))
-            # ↑ по дороге, а не по прямой — как у варианта «машина/автобус»; Сочи отрезан горами — крюк больше
-            if kg > P["ground_max_km"]:
                 continue
             ka = D(a, dst)
             for carrier, f in net["direct"].get(key(a, dst), {}).items():
