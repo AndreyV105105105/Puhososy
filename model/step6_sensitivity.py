@@ -114,6 +114,8 @@ def one_at_a_time(M, nets, s0):
         ("базы ещё Пермь и Омск", {"rw_bases": ["SVX", "MOW", "PEE", "OMS"]}, {}),
         ("спрос на парах без рейсов ×0,5", {"unserved_demand_factor": 0.5}, {}),
         ("спрос на парах без рейсов ×1 (без поправки)", {"unserved_demand_factor": 1.0}, {}),
+        ("тариф коротких пар ×0,5", {"short_fare_factor": 0.5}, {}), ("тариф коротких пар ×0,7", {"short_fare_factor": 0.7}, {}),
+        ("тариф коротких пар ×1 (как в первой версии)", {"short_fare_factor": 1.0}, {}),
         ("до чужого аэропорта до 400 км", {"ground_max_km": 400}, {}),
         ("до чужого аэропорта не ездят", {"ground_max_km": 0}, {}),
         ("хаб закрыт 2%", {}, {"hub_closed": 0.02}), ("хаб закрыт 5%", {}, {"hub_closed": 0.05}),
@@ -130,11 +132,13 @@ def one_at_a_time(M, nets, s0):
 
 def monte_carlo(M, nets, s0, n=500, seed=42):
     rng = np.random.default_rng(seed)
+    rng_short = np.random.default_rng(seed + 1)   # отдельный генератор: остальные случайные допущения те же, что раньше
     rows = []
     for _ in range(n):
         pch = {"cost_bh_rub": rng.uniform(570_000, 690_000), "vot_rub_h": rng.uniform(500, 1000),
                "b_freq": rng.uniform(1.0, 1.5), "hub_fare_factor": rng.uniform(0.8, 1.0),
                "ferry_share": rng.uniform(0.0, 1.0), "hub_base_fixed_rub_year": rng.uniform(45e6, 231e6)}
+        pch["short_fare_factor"] = rng_short.uniform(0.5, 0.7)   # тариф пар короче 550 км (research/fares_real_2026-11.md)
         cch = {"demand": rng.uniform(0.8, 1.2), "fare": BASE_CASE["fare"] * rng.uniform(0.85, 1.1),
                "subsidy": rng.uniform(0.9, 1.0), "hub_closed": rng.uniform(0.0, 0.10)}
         saved = with_params(pch)
