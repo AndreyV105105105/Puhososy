@@ -18,7 +18,7 @@ ENV = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"}
 
 FIRST = [["step1_demand.py"], ["step2_choice.py"], ["step3_scenarios.py"]]
 PARALLEL = [["step7_thresholds.py", "all"], ["step6_sensitivity.py"], ["step7_target_network.py"],
-            ["check_short_fare.py"], ["step7_hub_city.py"], ["step7_hub_city.py", "utair"]]
+            ["check_short_fare.py"], ["step7_hub_city.py"], ["step7_hub_city.py", "utair"], ["check_competitor.py"]]
 LAST = [["segment_share.py"], ["step8_map.py"], ["step8_roadmap.py"], ["step9_report.py"]]
 
 
