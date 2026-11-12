@@ -60,7 +60,27 @@ def setup():
         by_city.setdefault(p[1], []).append(p)
     return dict(ap=ap, fc=ch.fare_model(ap), cities=cities, coords=coords, km=km, demand=demand,
                 direct_candidates=cand, pairs_by_city=by_city, s0_wz=s0_wz,
-                served={p for p in s0 if p in km})
+                served={p for p in s0 if p in km}, ml_p=ml_viability_p())
+
+
+def ml_viability_p():
+    """p жизнеспособности прямого рейса по парам из ML-блока (results/ml_viability.csv), если файл есть."""
+    path = RESULTS / "ml_viability.csv"
+    if not path.exists():
+        return {}
+    d = pd.read_csv(path, encoding="utf-8-sig")
+    return {key(i, j): float(p) for i, j, p in zip(d["i"], d["j"], d["p"])}
+
+
+def unserved_factor(p, M):
+    """Поправка спроса для пары без рейсов сейчас: ×0,3 (по трём снятым рейсам) или p из ML-блока."""
+    if p in M["served"]:
+        return 1.0
+    if P.get("unserved_mode") == "ml":
+        if not M.get("ml_p"):
+            raise RuntimeError("unserved_mode='ml': нет results/ml_viability.csv — запустите ml_dataset.py и ml_viability.py")
+        return M["ml_p"][p]
+    return P["unserved_demand_factor"]
 
 
 def key(i, j):
@@ -114,8 +134,7 @@ def block_hours(net, M, split=False):
 def pair_eval(i, j, net, M, case):
     """Одна пара городов: где летит Red Wings, сколько пассажиров, время в пути."""
     T = M["demand"][(i, j)] * case["demand"]
-    if (i, j) not in M["served"]:
-        T *= P["unserved_demand_factor"]           # пары без рейсов сейчас: спрос не проверен фактом
+    T *= unserved_factor((i, j), M)                # пары без рейсов сейчас: спрос не проверен фактом (×0,3 или ML)
     _, opts = ch.options(i, j, M["ap"], net, M["fc"])
     k = M["km"][(i, j)]
     rw = []

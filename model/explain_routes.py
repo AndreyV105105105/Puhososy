@@ -46,6 +46,24 @@ def pct(x):
     return f"{round(x * 100)}%"
 
 
+_ML = None
+
+
+def ml_reason(p, M):
+    """Строка карточки из ML-блока: вероятность, что прямой рейс на такой паре держится, и главные факторы."""
+    global _ML
+    if _ML is None:
+        path = RESULTS / "ml_viability.csv"
+        _ML = {} if not path.exists() else {sc.key(r.i, r.j): r for r in
+                                            pd.read_csv(path, encoding="utf-8-sig").itertuples()}
+    r = _ML.get(p)
+    if r is None:
+        return "ML-оценка: нет (запустите model/ml_dataset.py и model/ml_viability.py)"
+    f = f" (главное: {r.факторы_ML})" if isinstance(r.факторы_ML, str) and r.факторы_ML else ""
+    return (f"ML-оценка жизнеспособности: на парах с такой географией и рынком прямой рейс держится "
+            f"с вероятностью {r.p:.2f}{f}")
+
+
 def main():
     M = sc.setup()
     names = M["ap"]["город"].to_dict()
@@ -74,7 +92,7 @@ def main():
                 continue
             seen.add(p)
             i, j = p
-            T = M["demand"][p] * case["demand"] * (1 if p in M["served"] else P["unserved_demand_factor"])
+            T = M["demand"][p] * case["demand"] * sc.unserved_factor(p, M)
             _, o0 = ch.options(i, j, M["ap"], s0net, M["fc"])
             _, o1 = ch.options(i, j, M["ap"], net, M["fc"])
             g0, g1 = groups(o0), groups(o1)
@@ -98,6 +116,7 @@ def main():
                        "сейчас: " + ", ".join(f"{k} {pct(v)}" for k, v in sorted(g0.items(), key=lambda z: -z[1]) if v >= 0.03),
                        "после: " + ", ".join(f"{k} {pct(v)}" for k, v in sorted(g1.items(), key=lambda z: -z[1]) if v >= 0.03),
                        f"на этом маршруте самолёт приносит {x['прибыль_на_блок_час'] / 1000:.0f} тыс. ₽ прибыли на час полёта — больше, чем другие варианты в этот момент",
+                       ml_reason(p, M),
                        f"{pct(tr)} пассажиров рейса летят с пересадкой в Екатеринбурге дальше по сети Red Wings" if tr >= 0.05 else "почти все пассажиры летят именно между этими двумя городами"]
             cards.append({"шаг": step, "условие": cond, "маршрут": f"{names[i]} – {names[j]}", "i": i, "j": j,
                           "км": round(M["km"][p]), "рейсов_нед_сейчас": f0, "рейсов_нед_после": f1,
