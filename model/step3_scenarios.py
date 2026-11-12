@@ -242,6 +242,15 @@ def capped(p, M, f):
     return p not in M["served"] and M["km"][p] < P["short_unserved_km"] and f > P["short_unserved_max_freq"]
 
 
+def ml_blocked(p, M, spoke=False):
+    """ML-фильтр: пару без рейсов сейчас не открываем, если p жизнеспособности ниже порога (params: ml_gate*)."""
+    if not P.get("ml_gate") or p in M["served"] or (spoke and not P.get("ml_gate_hub", True)):
+        return False
+    if not M.get("ml_p"):
+        raise RuntimeError("ml_gate включён, но нет results/ml_viability.csv — запустите ml_dataset.py и ml_viability.py")
+    return M["ml_p"][p] < P["ml_gate_p"]
+
+
 def candidate_moves(net, M, mode):
     moves = []
     if mode in ("хаб", "гибрид"):
@@ -249,14 +258,15 @@ def candidate_moves(net, M, mode):
             if x == HUB:
                 continue
             nxt = next_level(net["hub"]["spokes"].get(x, 0), P["spoke_levels"])
-            if nxt and not capped(key(HUB, x), M, nxt) and x not in P["hub_spoke_exclude"].get(HUB, []):
+            if (nxt and not capped(key(HUB, x), M, nxt) and x not in P["hub_spoke_exclude"].get(HUB, [])
+                    and not ml_blocked(key(HUB, x), M, spoke=True)):
                 moves.append(("спица", key(HUB, x), nxt))
     if mode in ("прямые", "гибрид"):
         for p in M["direct_candidates"]:
             if mode == "гибрид" and HUB in p:
                 continue                              # рейсы из Самары в гибриде — это спицы
             nxt = next_level(net["direct"].get(p, {}).get("WZ", 0))
-            if nxt and not capped(p, M, nxt):
+            if nxt and not capped(p, M, nxt) and not ml_blocked(p, M):
                 moves.append(("прямой", p, nxt))
     return moves
 
