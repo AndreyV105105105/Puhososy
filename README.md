@@ -1,6 +1,6 @@
 # Red Wings: новый хаб или прямые рейсы — куда направить новые SJ-100
 
-Команда **«Пухососы»** · кейс-чемпионат «Моделирование связанности территорий на базе ИИ», трек Red Wings.
+Команда **«fluffuums»** · кейс-чемпионат «Моделирование связанности территорий на базе ИИ», трек Red Wings.
 Паспорт проекта — [`docs/passport_short.md`](docs/passport_short.md) (подробно — [`docs/passport_final.md`](docs/passport_final.md)) · все цифры — [`docs/results_for_passport.md`](docs/results_for_passport.md)
 
 **Интерактивный калькулятор сети:** https://andreyv105105105.github.io/Puhososy/calculator.html — двигайте выручку Red Wings на пассажира, стоимость блок-часа и субсидии и смотрите, какую сеть строит модель (файл — [`docs/calculator.html`](docs/calculator.html), открывается и локально в браузере).

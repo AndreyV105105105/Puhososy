@@ -186,7 +186,7 @@ pan.text(X + 0.08, y, "Действующие рейсы Red Wings", fontsize=10
 y -= 0.045
 pan.scatter([X + 0.027], [y - 0.008], s=110, color=RED[0], edgecolor=C["panel"], linewidth=1.5)
 pan.text(X + 0.08, y, "Кольцово уже работает как хаб: там\nпересаживаются 55% пассажиров\nрейса из Омска, 38% — из Самары", fontsize=10.5, color=C["muted"], va="top", linespacing=1.3)
-ax.text(0.012, 0.014, "Модель «Пухососы», версия 2 · выручка +60% к мин. тарифам АТОР · прибыль с субсидиями ПП № 1242",
+ax.text(0.012, 0.014, "Модель «fluffuums», версия 2 · выручка +60% к мин. тарифам АТОР · прибыль с субсидиями ПП № 1242",
         transform=ax.transAxes, fontsize=9, color=C["muted"], va="bottom", ha="left",
         path_effects=[pe.withStroke(linewidth=3, foreground=C["halo"])], zorder=11)
 
