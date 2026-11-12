@@ -1,0 +1,15 @@
+i,j,аэропорт_источник,направление,год,пассажиров_туда_обратно,проверка,источник
+AER,SVX,Екатеринбург (Кольцово),Сочи,2025,785000,сверено 13.11.2026,https://ar-svx.ru/about/news/razvitie-infrastruktury-novye-servisy-i-rost-passazhiropotok/
+MRV,SVX,Екатеринбург (Кольцово),Минеральные Воды,2025,211000,сверено 13.11.2026,https://ar-svx.ru/about/news/razvitie-infrastruktury-novye-servisy-i-rost-passazhiropotok/
+OVB,SVX,Екатеринбург (Кольцово),Новосибирск,2025,170000,"сверено 13.11.2026 («более 170 тысяч»)",https://ar-svx.ru/about/news/razvitie-infrastruktury-novye-servisy-i-rost-passazhiropotok/
+AER,OMS,Омск,Сочи,2024,194500,сверено 13.11.2026,https://bk55.ru/news/article/241126/
+OMS,OVB,Омск,Новосибирск,2024,126700,сверено 13.11.2026,https://bk55.ru/news/article/241126/
+OMS,SGC,Омск,Сургут,2024,37400,сверено 13.11.2026,https://bk55.ru/news/article/241126/
+NUX,OMS,Омск,Новый Уренгой,2024,29900,сверено 13.11.2026,https://bk55.ru/news/article/241126/
+KZN,OMS,Омск,Казань,2024,25900,сверено 13.11.2026,https://bk55.ru/news/article/241126/
+OMS,SVX,Омск,Екатеринбург,2024,23600,сверено 13.11.2026,https://bk55.ru/news/article/241126/
+AER,KUF,Самара (Курумоч),Сочи,2024,304000,не сверено (ресерч Gemini),https://ar-kuf.ru/about/news/passazhiropotok-aeroporta-kurumoch-prevysil-3-5-milliona-che/
+KGD,KUF,Самара (Курумоч),Калининград,2025,47800,не сверено (ресерч Gemini),см. Материалы ИИ/9
+AER,PEE,Пермь (Большое Савино),Сочи,2024,303700,не сверено (ресерч Gemini),см. Материалы ИИ/9
+OVB,PEE,Пермь (Большое Савино),Новосибирск,2024,49100,не сверено (ресерч Gemini),см. Материалы ИИ/9
+MCX,PEE,Пермь (Большое Савино),Махачкала,2024,34800,не сверено (ресерч Gemini),см. Материалы ИИ/9
