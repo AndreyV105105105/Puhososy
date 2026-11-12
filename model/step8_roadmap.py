@@ -3,7 +3,8 @@
 Вариант — прямые рейсы (основа вывода: устойчивее хаба; в версии 2 хаб не открывается до выручки +60%).
 Цифры берутся из расчёта порогов (results/thresholds_доходность.csv), поэтому после пересчёта
 картинка обновляется сама. Шаг 4 — сценарий большого флота (results/fleet_scenarios.csv, step7_fleet.py):
-если новых бортов 8 и больше, к сети из Екатеринбурга добавляется хаб в Уфе (гибрид).
+если выручка от +80% и бортов 8 и больше, к сети из Екатеринбурга добавляется хаб в Уфе (гибрид) — без спицы
+Минводы–Уфа, которая не выдерживает ответа «Азимута» (results/check_competitor.csv).
 
 Запуск: python model/step8_roadmap.py   (после step7_thresholds.py доходность и step7_fleet.py)
 Выход:  results/roadmap.png
@@ -56,19 +57,21 @@ def ru(x, nd=1):
     return f"{round(x + 1e-9, nd):.{nd}f}".replace(".", ",")
 
 
-BIG_FLEET, BIG_FARE = 8, 1.6
+BIG_FLEET, BIG_FARE = 8, 1.8
+BIG_VARIANT = "гибрид в Уфе без Минвод"
+RISKY = {("MRV", "UFA"), ("UFA", "MRV")}   # не выдерживает ответа «Азимута»
 
 
 def big_fleet_step():
-    """Шаг 4: гибрид с хабом в Уфе на 8 бортах при выручке +60% против прямых на тех же 8 бортах."""
+    """Шаг 4: гибрид с хабом в Уфе (без Минвод) на 8 бортах при выручке +80% против прямых на тех же 8 бортах."""
     path = RESULTS / "fleet_scenarios.csv"
     if not path.exists():
         return None
     f = pd.read_csv(path, encoding="utf-8-sig")
     f = f[(f["бортов_дано"] == BIG_FLEET) & (f["выручка_к_АТОР"] == BIG_FARE)].set_index("вариант")
-    if "гибрид в Уфе" not in f.index or "прямые" not in f.index:
+    if BIG_VARIANT not in f.index or "прямые" not in f.index:
         return None
-    return f.loc["гибрид в Уфе"], f.loc["прямые"]
+    return f.loc[BIG_VARIANT], f.loc["прямые"]
 
 
 def main():
@@ -82,7 +85,7 @@ def main():
         ("Шаг 3 · 2028", "если выручка ≥ +60%\nи субсидии сохранены", 1.6),
     ]
     if big is not None:
-        steps.append(("Шаг 4 · 2029+", f"если новых бортов ≥ {BIG_FLEET}\nи выручка ≥ +60%", "big"))
+        steps.append(("Шаг 4 · 2029+", f"если выручка ≥ +80%\nи новых бортов ≥ {BIG_FLEET}", "big"))
     fig, ax = plt.subplots(figsize=(18.8, 6.2), dpi=160)
     ax.set_xlim(0, 18.8); ax.set_ylim(0, 7.2); ax.axis("off")
     ax.text(0.3, 6.85, f"Дорожная карта: куда идут новые SJ-100 Red Wings ({N} борта; шаг 4 — если их {BIG_FLEET} и больше)",
@@ -121,7 +124,8 @@ def main():
                 + ([f"+ прямые: {', '.join(dict.fromkeys(other))}"] if other else [])
             lines = [ln for s in lines for ln in wrap(s)]
         else:
-            lines = [f"{NAMES.get(a, a)} – {NAMES.get(b, b)}: {f}/нед" for (a, b), f in add.items()] or ["—"]
+            lines = [f"{NAMES.get(a, a)} – {NAMES.get(b, b)}: {f}/нед" + (" *" if (a, b) in RISKY else "")
+                     for (a, b), f in add.items()] or ["—"]
         ax.text(x + 0.2, 3.05, "Новые рейсы и частоты:" if k == 0 else "Добавляется к прошлому шагу:",
                 fontsize=9.5, color=MUTED)
         for j, ln in enumerate(lines[:5]):
@@ -134,12 +138,12 @@ def main():
                                          mutation_scale=18, color=BLUE, lw=1.6))
         prev = cur
     ax.text(0.3, 0.6, "Сейчас (выручка на уровне «Азимута», +15%) новые внутренние рейсы не окупаются — борта на международных линиях. "
-            "Хаб не открывается ни в одном проверенном городе до +60%; при 8+ бортах — только как надстройка к прямым.",
+            "Хаб (без рискованной спицы Минводы–Уфа) не лучше прямых ни в одном городе до +80%, дальше — только как надстройка к прямым.",
             fontsize=9.5, color=MUTED)
     ax.text(0.3, 0.25, "Выручка Red Wings на пассажира к мин. тарифам АТОР («Азимут» ≈ +15%, средняя по Red Wings с международными ≈ +70%). "
             "Прибыль — с субсидиями ПП № 1242.", fontsize=9.5, color=MUTED)
     ax.text(0.3, -0.1, "Казань и Самара из Екатеринбурга не в перечне субсидий 2026 — шаг 0: заявка на 2027; без субсидии пороги шагов 1–2 выше на 15 п.п. "
-            "Минводы–Уфа не выдерживает ответа «Азимута» (results/check_competitor.csv).", fontsize=9.5, color=MUTED)
+            "* Минводы–Уфа не выдерживает ответа «Азимута» (results/check_competitor.csv); без него прибыль шага 3 та же.", fontsize=9.5, color=MUTED)
     out = RESULTS / "roadmap.png"
     fig.savefig(out, bbox_inches="tight", facecolor="white"); plt.close(fig)
     print(f"Дорожная карта: {out.relative_to(RESULTS.parent)}")

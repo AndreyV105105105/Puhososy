@@ -24,13 +24,19 @@ from step7_hub_city import hub_mix
 FLEETS = [2, 4, 8, 14, 21]
 FARES = [1.3, 1.45, 1.6, 1.8, 2.0]
 DEFAULT_HUB = P["hub_city"]
-VARIANTS = [("прямые", DEFAULT_HUB), ("хаб", "UFA"), ("хаб", "KZN"), ("гибрид", "UFA")]
+# (вариант, город хаба, спицы, которые запрещены). Минводы–Уфа не выдерживает ответа «Азимута»
+# (results/check_competitor.csv), поэтому гибрид считаем и без этой спицы.
+VARIANTS = [("прямые", DEFAULT_HUB, []), ("хаб", "UFA", []), ("хаб", "KZN", []), ("гибрид", "UFA", []),
+            ("гибрид", "UFA", ["MRV"])]
 
 
 def run(n, M):
     rows = []
-    for mode, hub in VARIANTS:
+    saved_ex = P["hub_spoke_exclude"]
+    for mode, hub, excl in VARIANTS:
         sc.HUB = P["hub_city"] = hub
+        P["hub_spoke_exclude"] = {**saved_ex, hub: list(saved_ex.get(hub, [])) + excl}
+        name = mode if mode == "прямые" else f"{mode} в {P['hub_names'][hub]}" + (" без Минвод" if excl else "")
         for fare in FARES:
             t = time.time()
             case = {**P["cases"]["базовый"], "fare": fare}
@@ -39,7 +45,7 @@ def run(n, M):
             r = sc.evaluate(net, M, case)
             mix = hub_mix(r, hub) if net.get("hub") and net["hub"].get("active") else {}
             rows.append({"бортов_дано": n, "выручка_к_АТОР": fare,
-                         "вариант": mode if mode == "прямые" else f"{mode} в {P['hub_names'][hub]}",
+                         "вариант": name,
                          "прибыль_млрд": round((r["прибыль"] - s0["прибыль"]) / 1e9, 3),
                          "бортов_занято": round((r["блок_часы"] - s0["блок_часы"]) / sc.BH_PER_AIRCRAFT, 1),
                          "новых_пассажиров_тыс": round((r["пассажиров"] - s0["пассажиров"]) / 1e3),
@@ -48,6 +54,7 @@ def run(n, M):
                          "рейсы": "; ".join(f"{x['пара']}×{x['рейсов_нед']}" for x in log if x.get("принят"))})
             print(f"[{time.time() - t:.0f} с] {rows[-1]}", flush=True)
     sc.HUB = P["hub_city"] = DEFAULT_HUB
+    P["hub_spoke_exclude"] = saved_ex
     return rows
 
 
