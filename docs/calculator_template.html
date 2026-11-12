@@ -94,10 +94,10 @@ svg text{font-family:var(--font)}
   <header>
     <div>
       <h1>Куда поставить новые SJ-100 — <span>калькулятор сети Red Wings</span></h1>
-      <p>Меняйте условия — модель заранее посчитала, какую сеть алгоритм строит на 4 новых бортах при каждом сочетании. Команда «Пухососы», кейс-чемпионат «Моделирование связанности территорий на базе ИИ».</p>
+      <p>Меняйте условия — модель заранее посчитала, какую сеть алгоритм строит при каждом сочетании условий и числа новых бортов (от 2 до 14). Команда «Пухососы», кейс-чемпионат «Моделирование связанности территорий на базе ИИ».</p>
     </div>
   </header>
-  <p class="upd"><b>Обновлено 12.11.2026.</b> После сдачи паспорта сверили тариф рейсов короче 550 км с 55 реальными ценами и снизили его до 0,6 от формулы; добавили проверку ответа конкурентов. Цифры здесь осторожнее, чем в сданном паспорте: при выручке +60% — +0,32 млрд ₽ на 1,5 борта (было +0,59 на 3,5), хаб не открывается до +60%. Сданная версия — метка <a href="https://github.com/AndreyV105105105/Puhososy/tree/v1-submitted" target="_blank" rel="noopener">v1-submitted</a> в репозитории.</p>
+  <p class="upd"><b>Обновлено 12.11.2026.</b> После сдачи паспорта сверили тариф рейсов короче 550 км с 55 реальными ценами и снизили его до 0,6 от формулы; добавили проверку ответа конкурентов. Цифры здесь осторожнее, чем в сданном паспорте: при выручке +60% — +0,32 млрд ₽ на 1,5 борта (было +0,59 на 3,5), хаб не открывается до +60%. По замечанию экспертов на чекпоинте добавлен выбор числа новых бортов (2, 4, 8, 14): до +45% флот ничего не решает, при большом флоте и выручке от +60% к прямым рейсам добавляется хаб в Уфе (гибрид). Сданная версия — метка <a href="https://github.com/AndreyV105105105/Puhososy/tree/v1-submitted" target="_blank" rel="noopener">v1-submitted</a> в репозитории.</p>
 
   <div class="main">
     <section class="card mapcard" aria-label="Карта сети">
@@ -141,6 +141,11 @@ svg text{font-family:var(--font)}
           </div>
         </div>
         <div class="ctl">
+          <label>Новых SJ-100 у Red Wings</label>
+          <div class="seg" role="group" aria-label="Новых бортов" id="fleets"></div>
+          <small>2 — осторожный сценарий, 4 — база, 8 и 14 — максимум: в планах около 42 SJ-100 до 2029 года на три авиакомпании. До выручки +75% при часе 600 тыс. ₽ сеть занимает не больше 7 бортов, так что 14 и 21 дают то же, что 8; больше бортов нужно только при дешёвом часе и высокой выручке.</small>
+        </div>
+        <div class="ctl">
           <label>Вариант сети</label>
           <div class="seg" role="group" aria-label="Вариант сети" id="modes"></div>
           <small>Хаб — база с волнами стыковок (118 млн ₽/год), закрытия аэропорта — по факту (Самара 9,5%, Казань 8,0%, Уфа 5,7% времени). Прямые — без новой базы.</small>
@@ -174,11 +179,13 @@ const DATA = /*DATA*/null;
 const GEO = /*GEO*/null;
 const M = DATA.meta, G = DATA.grid;
 const MODE_NAMES = {"прямые|KUF":"Прямые рейсы","хаб|KUF":"Хаб в Самаре","хаб|VOG":"Хаб в Волгограде","хаб|UFA":"Хаб в Уфе","хаб|KZN":"Хаб в Казани","гибрид|UFA":"Гибрид: хаб в Уфе + прямые"};
-const state = {fare: M.fares.indexOf(M.base_fare), cost: M.costs.indexOf(M.base_cost), sub: 1, mode: "прямые|KUF"};
+const FLEETS = M.fleets || [M.aircraft];
+const state = {fare: M.fares.indexOf(M.base_fare), cost: M.costs.indexOf(M.base_cost), sub: 1, mode: "прямые|KUF", fleet: M.aircraft};
+const bort = n => n % 10 === 1 && n % 100 !== 11 ? "борт" : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? "борта" : "бортов");
 const $ = id => document.getElementById(id);
 const nf = (x, d=1) => x.toLocaleString("ru-RU", {minimumFractionDigits:d, maximumFractionDigits:d});
 const pct = f => (f >= 1 ? "+" : "−") + Math.round(Math.abs(f - 1) * 100) + "%";
-const key = (fi, ci, s, m) => `${M.fares[fi]}|${M.costs[ci]}|${s}|${m}`;
+const key = (fi, ci, s, m) => `${M.fares[fi]}|${M.costs[ci]}|${s}|${m}` + (M.fleets ? `|${state.fleet}` : "");
 const REDS = ["var(--r1)", "var(--r2)", "var(--r3)"];
 const red = i => REDS[Math.min(i, 2)];
 
@@ -186,6 +193,7 @@ const red = i => REDS[Math.min(i, 2)];
 $("fare").value = state.fare; $("cost").value = state.cost;
 $("fareTicks").innerHTML = M.fares.map(f => `<span>${pct(f)}</span>`).join("");
 $("costTicks").innerHTML = M.costs.map(c => `<span>${c/1000}</span>`).join("");
+$("fleets").innerHTML = FLEETS.map(n => `<button type="button" data-n="${n}">${n}</button>`).join("");
 $("modes").innerHTML = M.modes.map(m => `<button type="button" data-mode="${m}">${MODE_NAMES[m]}</button>`).join("");
 const PRESETS = [
   ["Сегодня", {fare: M.base_fare, cost: 600000, sub: 1}],
@@ -193,6 +201,7 @@ const PRESETS = [
   ["Целевая сеть 2028", {fare: 1.6, cost: 600000, sub: 1}],
   ["Без субсидий", {fare: M.base_fare, cost: 600000, sub: 0}],
   ["Дешёвый час", {fare: M.base_fare, cost: 450000, sub: 1}],
+  ["Максимум бортов", {fare: 1.6, cost: 600000, sub: 1, fleet: FLEETS[FLEETS.length - 1]}],
 ];
 $("presets").innerHTML = PRESETS.map((p, i) => `<button type="button" data-p="${i}">${p[0]}</button>`).join("");
 
@@ -328,12 +337,13 @@ function render(){
   $("fareOut").textContent = pct(M.fares[state.fare]);
   $("costOut").textContent = M.costs[state.cost]/1000 + " тыс. ₽";
   $("subOn").setAttribute("aria-pressed", state.sub === 1); $("subOff").setAttribute("aria-pressed", state.sub === 0);
+  document.querySelectorAll("#fleets button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.n === state.fleet));
   document.querySelectorAll("#modes button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === state.mode));
 
-  const p = res.profit, plane = Math.min(res.aircraft, M.aircraft), on = p > 0.0005;
+  const p = res.profit, plane = Math.min(res.aircraft, state.fleet), on = p > 0.0005;
   $("kProfit").textContent = (on ? "+" : "") + nf(p, 2) + " млрд ₽";
-  $("kPlanes").textContent = nf(plane, 1) + " из " + M.aircraft;
-  $("planes").innerHTML = Array.from({length: M.aircraft}, (_, i) => `<span><i style="width:${Math.max(0, Math.min(1, plane - i))*100}%"></i></span>`).join("");
+  $("kPlanes").textContent = nf(plane, 1) + " из " + state.fleet;
+  $("planes").innerHTML = Array.from({length: state.fleet}, (_, i) => `<span><i style="width:${Math.max(0, Math.min(1, plane - i))*100}%"></i></span>`).join("");
   $("kPax").textContent = (res.pax > 0 ? "+" : "") + Math.round(res.pax/1000).toLocaleString("ru-RU") + " тыс.";
   $("kShare").textContent = (res.share_pp > 0 ? "+" : "") + nf(res.share_pp, 2) + " п.п.";
   $("kAccess").textContent = "доля рынка · доступность городов " + (res.access_pct > 0 ? "+" : "") + nf(res.access_pct, 1) + "%";
@@ -343,7 +353,7 @@ function render(){
   const best = rows.reduce((a, b) => b[1].profit > a[1].profit ? b : a);
   $("compare").querySelector("tbody").innerHTML = rows.map(([m, r]) => {
     const isBest = m === best[0] && best[1].profit > 0.0005;
-    return `<tr class="${m === state.mode ? "cur" : ""} ${isBest ? "best" : ""}"><td>${MODE_NAMES[m]}${isBest ? '<span class="tag">лучший</span>' : ""}</td><td class="n">${nf(r.profit, 2)}</td><td class="n">${nf(Math.min(r.aircraft, M.aircraft), 1)}</td></tr>`;
+    return `<tr class="${m === state.mode ? "cur" : ""} ${isBest ? "best" : ""}"><td>${MODE_NAMES[m]}${isBest ? '<span class="tag">лучший</span>' : ""}</td><td class="n">${nf(r.profit, 2)}</td><td class="n">${nf(Math.min(r.aircraft, state.fleet), 1)}</td></tr>`;
   }).join("");
 
   const legs = [...res.new_legs].sort((a, b) => b.pax - a.pax);
@@ -353,10 +363,10 @@ function render(){
 
   const name = MODE_NAMES[state.mode];
   let v;
-  if (best[1].profit <= 0.0005) v = `При этих условиях <b>новые рейсы не окупаются</b> ни в одном варианте — все 4 борта остаются на международных линиях.`;
+  if (best[1].profit <= 0.0005) v = `При этих условиях <b>новые рейсы не окупаются</b> ни в одном варианте — все ${state.fleet} ${bort(state.fleet)} остаются на международных линиях.`;
   else if (best[0] === state.mode) v = `<b>${name}</b> — лучший вариант: ${nf(plane, 1)} борта на внутренних линиях, +${nf(p, 2)} млрд ₽ в год.`;
   else v = `${name}: ${on ? "+" + nf(p, 2) + " млрд ₽" : "не окупается"}. Лучше при этих условиях — <b>${MODE_NAMES[best[0]]}</b> (+${nf(best[1].profit, 2)} млрд ₽).`;
-  $("verdict").innerHTML = v + `<div class="vsub">${name} · выручка ${pct(M.fares[state.fare])} · блок-час ${M.costs[state.cost]/1000} тыс. ₽${state.sub ? "" : " · без субсидий"}</div>`;
+  $("verdict").innerHTML = v + `<div class="vsub">${name} · выручка ${pct(M.fares[state.fare])} · блок-час ${M.costs[state.cost]/1000} тыс. ₽${state.sub ? "" : " · без субсидий"} · ${state.fleet} ${bort(state.fleet)} дано</div>`;
   drawMap(res, state.mode, legs);
 }
 
@@ -364,11 +374,12 @@ $("fare").addEventListener("input", e => { state.fare = +e.target.value; render(
 $("cost").addEventListener("input", e => { state.cost = +e.target.value; render(); });
 $("subOn").addEventListener("click", () => { state.sub = 1; render(); });
 $("subOff").addEventListener("click", () => { state.sub = 0; render(); });
+$("fleets").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { state.fleet = +b.dataset.n; render(); } });
 $("modes").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { state.mode = b.dataset.mode; render(); } });
 $("presets").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   const p = PRESETS[+b.dataset.p][1];
-  state.fare = M.fares.indexOf(p.fare); state.cost = M.costs.indexOf(p.cost); state.sub = p.sub;
+  state.fare = M.fares.indexOf(p.fare); state.cost = M.costs.indexOf(p.cost); state.sub = p.sub; state.fleet = p.fleet || M.aircraft;
   $("fare").value = state.fare; $("cost").value = state.cost; render();
 });
 render();

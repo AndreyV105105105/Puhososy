@@ -2,8 +2,9 @@
 Сетка расчётов для интерактивного калькулятора (docs/calculator.html).
 Модель не запускается в браузере: заранее перебираем условия и сохраняем, какую сеть строит алгоритм.
 
-Условия: доходность к минимальным тарифам АТОР × стоимость блок-часа × субсидии да/нет.
-Варианты: прямые рейсы; хаб в Самаре, Казани, Уфе; гибрид (хаб в Уфе + прямые) — тот же флот, 4 новых борта.
+Условия: доходность к минимальным тарифам АТОР × стоимость блок-часа × субсидии да/нет × новых бортов.
+Варианты: прямые рейсы; хаб в Самаре, Казани, Уфе; гибрид (хаб в Уфе + прямые) — у всех одинаковый флот.
+Флот: 2 (осторожный), 4 (база), 8, 14 новых SJ-100 (максимум — research/fleet_scenarios.md; 21 даёт то же, что 14).
 
 Запуск: python model/step10_calculator_grid.py   (≈ 40–60 минут; можно параллельно на нескольких ядрах)
 Выход:  results/calculator_grid.json
@@ -25,6 +26,7 @@ COSTS = [450_000, 500_000, 550_000, 600_000, 650_000]
 SUBSIDY = [True, False]
 MODES = [("прямые", "KUF"), ("хаб", "KUF"), ("хаб", "KZN"), ("хаб", "UFA"), ("гибрид", "UFA")]
 N = P["new_aircraft"]["базовый"]
+FLEETS = [2, 4, 8, 14]
 M = None
 S0NET = None
 
@@ -36,19 +38,19 @@ def init():
 
 
 def one(task):
-    fare, cost, sub, (mode, hub) = task
+    fare, cost, sub, (mode, hub), n = task
     P["cost_bh_rub"], P["subsidy_on"] = cost, sub
     sc.HUB = P["hub_city"] = hub
     case = {**P["cases"]["базовый"], "fare": fare}
     s0 = sc.evaluate(sc.base_network(M, "прямые"), M, case)
-    net, log = sc.greedy(sc.base_network(M, mode), M, mode, N, case)
+    net, log = sc.greedy(sc.base_network(M, mode), M, mode, n, case)
     r = sc.evaluate(net, M, case, detail=True)
     legs = []
     for x in r["legs"]:
         old = S0NET.get((x["i"], x["j"]), {}).get("WZ", 0)
         if x["рейсов_нед"] > old:
             legs.append({"i": x["i"], "j": x["j"], "f0": old, "f": x["рейсов_нед"], "pax": x["пасс_в_год"]})
-    key = f"{fare}|{cost}|{int(sub)}|{mode}|{hub}"
+    key = f"{fare}|{cost}|{int(sub)}|{mode}|{hub}|{n}"
     return key, {"profit": round((r["прибыль"] - s0["прибыль"]) / 1e9, 3),
                  "aircraft": round((r["блок_часы"] - s0["блок_часы"]) / sc.BH_PER_AIRCRAFT, 2),
                  "pax": round(r["пассажиров"] - s0["пассажиров"]),
@@ -58,20 +60,21 @@ def one(task):
 
 
 def main():
-    tasks = list(product(FARES, COSTS, SUBSIDY, MODES))
+    tasks = list(product(FARES, COSTS, SUBSIDY, MODES, FLEETS))
     procs = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 1
     out = {}
     old = RESULTS / "calculator_grid.json"
     if "--reuse" in sys.argv and old.exists():      # досчитать только новые варианты
         out = json.loads(old.read_text(encoding="utf-8"))["grid"]
-        tasks = [t for t in tasks if f"{t[0]}|{t[1]}|{int(t[2])}|{t[3][0]}|{t[3][1]}" not in out]
+        out = {(k if k.count("|") == 5 else f"{k}|{N}"): v for k, v in out.items()}   # старая сетка — 4 борта
+        tasks = [t for t in tasks if f"{t[0]}|{t[1]}|{int(t[2])}|{t[3][0]}|{t[3][1]}|{t[4]}" not in out]
     with Pool(procs, initializer=init) as pool:
         for k, (key, res) in enumerate(pool.imap_unordered(one, tasks), 1):
             out[key] = res
             print(f"[{k}/{len(tasks)}] {key}: {res['profit']:+.3f} млрд, {res['aircraft']} борта", flush=True)
     init()
     ap = M["ap"]
-    meta = {"fares": FARES, "costs": COSTS, "modes": [f"{m}|{h}" for m, h in MODES], "aircraft": N,
+    meta = {"fares": FARES, "costs": COSTS, "modes": [f"{m}|{h}" for m, h in MODES], "aircraft": N, "fleets": FLEETS,
             "base_fare": P["cases"]["базовый"]["fare"], "base_cost": 600_000,
             "airports": {c: {"name": ap.at[c, "город"], "lat": float(ap.at[c, "lat"]), "lon": float(ap.at[c, "lon"]),
                              "mass": float(ap.at[c, "масса"])} for c in M["cities"]},
