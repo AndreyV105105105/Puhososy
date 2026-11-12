@@ -61,10 +61,13 @@ def main():
     s.append(md(sc[[c for c in keep if c in sc.columns]]) + "\n")
 
     sens = pd.read_csv(RESULTS / "sensitivity.csv", encoding="utf-8-sig")
-    wins = sens["лучшая"].value_counts()
+    ml = sens["условие"].str.contains("ML-фильтр")       # варианты ML-фильтра — не самостоятельные проверки вывода
+    wins = sens.loc[~ml, "лучшая"].value_counts()
     s.append("## Устойчивость вывода\n")
-    s.append(f"По одному допущению ({len(sens)} проверок), сколько раз вариант лучший: "
-             + ", ".join(f"{k} — {v}" for k, v in wins.items()) + ".\n")
+    s.append(f"По одному допущению ({int((~ml).sum())} проверок), сколько раз вариант лучший: "
+             + ", ".join(f"{k} — {v}" for k, v in wins.items()) + "."
+             + (f" Плюс {int(ml.sum())} варианта ML-фильтра новых пар (порог, только прямые, без фильтра): "
+                f"лучший вариант — {', '.join(sens.loc[ml, 'лучшая'].unique())}." if ml.any() else "") + "\n")
     s.append(md(sens) + "\n")
     mc = pd.read_csv(RESULTS / "monte_carlo.csv", encoding="utf-8-sig")
     mw = mc["лучшая"].value_counts(normalize=True)
