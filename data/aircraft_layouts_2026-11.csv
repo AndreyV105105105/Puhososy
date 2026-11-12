@@ -1,0 +1,36 @@
+код_IATA,авиакомпания,тип_ВС,кресел,компоновка,ссылка
+4G,Газпром авиа,SSJ-100,90,90 эконом,https://seatmaps.com/ru/airlines/4g-gazpromavia/sukhoi-ssj-100-95/ ; https://avia.gazprom.ru/about/air-fleet/airplanes/ssj/
+4G,Газпром авиа,B737-700,122,20 бизнес + 102 эконом,https://avia.gazprom.ru/about/air-fleet/airplanes/boeing737/
+5N,Smartavia,B737-800,189,189 эконом,https://seatmaps.com/ru/airlines/5n-smartavia/boeing-737-800/
+7R,РусЛайн,CRJ-100/200,50,50 эконом,https://seatmaps.com/ru/airlines/7r-rusline/bombardier-crj-200/
+A4,Азимут,SSJ-100,100,100 эконом (есть борта на 103 и 87),https://seatmaps.com/ru/airlines/a4-azimuth/sukhoi-ssj-100-95/
+DP,Победа,B737-800,189,189 эконом,https://seatmaps.com/ru/airlines/dp-pobeda/boeing-737-800/
+EO,Икар,E190,110,110 эконом,https://seatmaps.com/ru/airlines/eo-ikar/embraer-e190/
+FV,Россия,SSJ-100,87 / 100,12 бизнес + 75 эконом или 100 эконом,https://seatmaps.com/ru/airlines/fv-rossiya/sukhoi-ssj-100-95/
+FV,Россия,B737-800,189,189 эконом (есть 168),https://seatmaps.com/ru/airlines/fv-rossiya/boeing-737-800/
+FV,Россия,A319,128,8 бизнес + 120 эконом,https://seatmaps.com/ru/airlines/fv-rossiya/airbus-a319/
+I8,Ижавиа,B737-800,182,2 бизнес + 180 эконом (есть 185),https://seatmaps.com/ru/airlines/i8-izhavia/boeing-737-800/
+IO,ИрАэро,SSJ-100,100,100 эконом (есть 93),https://seatmaps.com/ru/airlines/io-iraero/sukhoi-ssj-100-95/
+KV,КрасАвиа,ATR 42-500,48,48 эконом,https://www.krasavia.ru/o-kompanii/aviapark/atr42-500
+KV,КрасАвиа,ATR 72-500,72,72 эконом,https://www.krasavia.ru/o-kompanii/aviapark/atr72-212
+KV,КрасАвиа,Як-42,120,120 эконом,https://www.krasavia.ru/o-kompanii/aviapark/yak-42
+N4,Nordwind,B737-800,189,189 эконом,https://seatmaps.com/ru/airlines/n4-nordwind/boeing-737-800/
+N4,Nordwind,B737-900ER,215,215 эконом,https://seatmaps.com/ru/airlines/eo-ikar/boeing-737-900/
+N4,Nordwind,A321,220,220 эконом,https://seatmaps.com/ru/airlines/n4-nordwind/airbus-a321/
+RT,ЮВТ Аэро,CRJ-200,50,50 эконом,https://seatmaps.com/ru/airlines/rt-uvt-aero/bombardier-crj-200/
+S7,S7 Airlines,E170,78,78 эконом,https://seatmaps.com/ru/airlines/s7-s7-airlines/embraer-e170/
+S7,S7 Airlines,B737-800,176,8 бизнес + 168 эконом,https://seatmaps.com/ru/airlines/s7-s7-airlines/boeing-737-800/
+S7,S7 Airlines,A320,164,8 бизнес + 156 эконом (есть 174),https://seatmaps.com/ru/airlines/s7-s7-airlines/airbus-a320neo/
+S7,S7 Airlines,A321,198,8 бизнес + 190 эконом,https://seatmaps.com/ru/airlines/s7-s7-airlines/airbus-a321/
+SU,Аэрофлот,A320,158,8 бизнес + 150 эконом,https://seatmaps.com/ru/airlines/su-aeroflot/airbus-a320/
+SU,Аэрофлот,B737-800,158,20 бизнес + 138 эконом,https://seatmaps.com/ru/airlines/su-aeroflot/boeing-737-800/
+U6,Уральские авиалинии,A320,162,12 бизнес + 150 эконом,https://seatmaps.com/ru/airlines/u6-ural-airlines/airbus-a320/
+U6,Уральские авиалинии,A321,220,220 эконом,https://seatmaps.com/ru/airlines/u6-ural-airlines/airbus-a321/
+UT,Utair,ATR 72-500,70,70 эконом,https://seatmaps.com/ru/airlines/ut-utair/atr-42-72/
+UT,Utair,B737-500,126,126 эконом,https://seatmaps.com/ru/airlines/ut-utair/boeing-737-classic/
+UT,Utair,B737-400,159,159 эконом,https://seatmaps.com/ru/airlines/ut-utair/boeing-737-classic/
+UT,Utair,B737-800,186,186 эконом (есть 176 и 189),https://seatmaps.com/ru/airlines/ut-utair/boeing-737-800/
+WZ,Red Wings,SSJ-100,100,100 эконом,https://seatmaps.com/ru/airlines/wz-red-wings/sukhoi-ssj-100-95/
+Y7,NordStar,B737-800,180,6 бизнес + 174 эконом (есть 189),https://seatmaps.com/ru/airlines/y7-nordstar/boeing-737-800/
+YC,Ямал,SSJ-100,100,100 эконом (есть 93),https://seatmaps.com/ru/airlines/yc-yamal-airlines/sukhoi-ssj-100-95/
+YC,Ямал,A320,164,8 бизнес + 156 эконом,https://seatmaps.com/ru/airlines/yc-yamal-airlines/airbus-a320/
