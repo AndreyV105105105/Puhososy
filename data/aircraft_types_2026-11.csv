@@ -1,0 +1,236 @@
+город_1,iata_1,город_2,iata_2,перевозчик_IATA,рейсов_нед_оба_направления,тип_ВС,кресел,ссылка
+Сочи,AER,Астрахань,ASF,A4,3,SSJ-100,100,https://rasp.yandex.ru/plane/sochi--astrahan
+Сочи,AER,Челябинск,CEK,DP,8,B737-800,189,https://rasp.yandex.ru/plane/sochi--chelyabinsk
+Сочи,AER,Нижний Новгород,GOJ,FV,4,B737-800,189,https://rasp.yandex.ru/plane/sochi--nizhny-novgorod
+Сочи,AER,Нижний Новгород,GOJ,N4,1,B737-800,189,https://travel.yandex.ru/avia/flights/N4-437/?when=2026-11-10&from=AER
+Сочи,AER,Нижний Новгород,GOJ,WZ,1,SSJ-100,100,https://travel.yandex.ru/avia/flights/WZ-4519/?lang=ru&when=2026-11-11&from=AER
+Сочи,AER,Нижний Новгород,GOJ,XX,2,B737-800,189,https://travel.yandex.ru/avia/flights/N4-437/?when=2026-11-10&from=AER
+Сочи,AER,Саратов,GSV,DP,4,B737-800,189,https://rasp.yandex.ru/plane/sochi--saratov
+Сочи,AER,Ижевск,IJK,I8,2,B737-800,182,https://rasp.yandex.ru/plane/sochi--izhevsk
+Сочи,AER,Красноярск,KJA,FV,12,B737-800 (A319),189 (128),https://rasp.yandex.ru/plane/sochi--krasnoyarsk
+Сочи,AER,Самара,KUF,DP,6,B737-800,189,https://rasp.yandex.ru/plane/sochi--samara
+Сочи,AER,Самара,KUF,FV,6,B737-800,189,https://rasp.yandex.ru/plane/sochi--samara
+Сочи,AER,Киров,KVX,DP,2,B737-800,189,https://rasp.yandex.ru/plane/sochi--kirov
+Сочи,AER,Казань,KZN,DP,10,B737-800,189,https://rasp.yandex.ru/plane/sochi--kazan
+Сочи,AER,Казань,KZN,FV,8,B737-800,189,https://rasp.yandex.ru/plane/sochi--kazan
+Сочи,AER,Казань,KZN,N4,6,B737-900ER (A321),215 (220),https://rasp.yandex.ru/plane/sochi--kazan
+Сочи,AER,Махачкала,MCX,A4,4,SSJ-100,100,https://rasp.yandex.ru/plane/sochi--makhachkala
+Сочи,AER,Минеральные Воды,MRV,A4,18,SSJ-100,100,https://rasp.yandex.ru/plane/sochi--mineralniye-vodi
+Сочи,AER,Новый Уренгой,NUX,YC,1,A320,164,https://rasp.yandex.ru/plane/sochi--noviy-urengoy
+Сочи,AER,Омск,OMS,XX,1,B737-800,189,https://travel.yandex.ru/avia/flights/N4-479/?when=2026-11-12&from=AER
+Сочи,AER,Новосибирск,OVB,FV,10,B737-800,189,https://rasp.yandex.ru/plane/sochi--novosibirsk
+Сочи,AER,Новосибирск,OVB,S7,14,A321,198,https://rasp.yandex.ru/plane/sochi--novosibirsk
+Сочи,AER,Пермь,PEE,DP,10,B737-800,189,https://rasp.yandex.ru/plane/sochi--perm
+Сочи,AER,Пермь,PEE,FV,6,B737-800,189,https://rasp.yandex.ru/plane/sochi--perm
+Сочи,AER,Пенза,PEZ,A4,3,SSJ-100,100,https://rasp.yandex.ru/plane/sochi--penza
+Сочи,AER,Оренбург,REN,XX,1,B737-800,189,https://travel.yandex.ru/avia/flights/N4-431/?when=2026-11-11&from=AER
+Сочи,AER,Сургут,SGC,IO,1,SSJ-100,100,https://rasp.yandex.ru/plane/sochi--surgut-khanty-mansi-autonomous-okrug
+Сочи,AER,Сургут,SGC,UT,4,B737-800,186,https://rasp.yandex.ru/plane/sochi--surgut-khanty-mansi-autonomous-okrug
+Сочи,AER,Салехард,SLY,YC,1,A320,164,https://rasp.yandex.ru/plane/sochi--salekhard
+Сочи,AER,Екатеринбург,SVX,DP,8,B737-800,189,https://rasp.yandex.ru/plane/sochi--yekaterinburg
+Сочи,AER,Екатеринбург,SVX,FV,14,B737-800,189,https://rasp.yandex.ru/plane/sochi--yekaterinburg
+Сочи,AER,Екатеринбург,SVX,U6,20,A320,162,https://rasp.yandex.ru/plane/sochi--yekaterinburg
+Сочи,AER,Тюмень,TJM,UT,4,B737-800,186,https://rasp.yandex.ru/plane/sochi--tyumen
+Сочи,AER,Тюмень,TJM,YC,8,A320 (SSJ-100),164 (100),https://rasp.yandex.ru/plane/sochi--tyumen
+Сочи,AER,Уфа,UFA,DP,6,B737-800,189,https://rasp.yandex.ru/plane/sochi--ufa
+Сочи,AER,Уфа,UFA,FV,8,B737-800,189,https://rasp.yandex.ru/plane/sochi--ufa
+Сочи,AER,Уфа,UFA,XX,2,B737-800,189,https://travel.yandex.ru/avia/flights/N4-415/?when=2026-11-11&from=AER
+Сочи,AER,Ульяновск,ULV,DP,3,B737-800,189,https://rasp.yandex.ru/plane/sochi--ulyanovsk
+Архангельск,ARH,Калининград,KGD,5N,1,B737-800,189,https://rasp.yandex.ru/plane/arhangelsk--kaliningrad
+Астрахань,ASF,Казань,KZN,EO,9,E190,110,https://rasp.yandex.ru/plane/astrahan--kazan
+Астрахань,ASF,Минеральные Воды,MRV,A4,1,SSJ-100,100,https://rasp.yandex.ru/plane/astrahan--mineralniye-vodi
+Астрахань,ASF,Уфа,UFA,A4,1,SSJ-100,100,https://rasp.yandex.ru/plane/astrahan--ufa
+Барнаул,BAX,Красноярск,KJA,KV,1,ATR 42-500,48,https://rasp.yandex.ru/plane/barnaul--krasnoyarsk
+Барнаул,BAX,Казань,KZN,N4,2,A321,220,https://rasp.yandex.ru/plane/barnaul--kazan
+Барнаул,BAX,Новосибирск,OVB,S7,14,E170,78,https://rasp.yandex.ru/plane/barnaul--novosibirsk
+Барнаул,BAX,Екатеринбург,SVX,WZ,3,SSJ-100,100,https://rasp.yandex.ru/plane/barnaul--yekaterinburg
+Челябинск,CEK,Нижний Новгород,GOJ,RT,2,CRJ-200,50,https://rasp.yandex.ru/plane/chelyabinsk--nizhny-novgorod
+Челябинск,CEK,Калининград,KGD,5N,2,B737-800,189,https://rasp.yandex.ru/plane/chelyabinsk--kaliningrad
+Челябинск,CEK,Красноярск,KJA,FV,6,SSJ-100,87 / 100,https://rasp.yandex.ru/plane/chelyabinsk--krasnoyarsk
+Челябинск,CEK,Краснодар,KRR,Y7,2,B737-800,180,https://rasp.yandex.ru/plane/chelyabinsk--krasnodar
+Челябинск,CEK,Казань,KZN,RT,4,CRJ-200,50,https://rasp.yandex.ru/plane/chelyabinsk--kazan
+Челябинск,CEK,Минеральные Воды,MRV,A4,6,SSJ-100,100,https://rasp.yandex.ru/plane/chelyabinsk--mineralniye-vodi
+Челябинск,CEK,Новосибирск,OVB,S7,28,E170,78,https://rasp.yandex.ru/plane/chelyabinsk--novosibirsk
+Челябинск,CEK,Сургут,SGC,UT,2,ATR 72-500,70,https://rasp.yandex.ru/plane/chelyabinsk--surgut-khanty-mansi-autonomous-okrug
+Чебоксары,CSY,Новосибирск,OVB,S7,8,E170,78,https://rasp.yandex.ru/plane/cheboksary--novosibirsk
+Нижний Новгород,GOJ,Калининград,KGD,N4,4,B737-800,189,https://rasp.yandex.ru/plane/nizhny-novgorod--kaliningrad
+Нижний Новгород,GOJ,Самара,KUF,WZ,4,SSJ-100,100,https://rasp.yandex.ru/plane/nizhny-novgorod--samara
+Нижний Новгород,GOJ,Казань,KZN,RT,2,CRJ-200,50,https://rasp.yandex.ru/plane/nizhny-novgorod--kazan
+Нижний Новгород,GOJ,Минеральные Воды,MRV,N4,4,B737-800,189,https://rasp.yandex.ru/plane/nizhny-novgorod--mineralniye-vodi
+Нижний Новгород,GOJ,Новосибирск,OVB,S7,8,E170,78,https://rasp.yandex.ru/plane/nizhny-novgorod--novosibirsk
+Нижний Новгород,GOJ,Екатеринбург,SVX,WZ,9,SSJ-100,100,https://rasp.yandex.ru/plane/nizhny-novgorod--yekaterinburg
+Нижний Новгород,GOJ,Уфа,UFA,N4,4,B737-800,189,https://rasp.yandex.ru/plane/nizhny-novgorod--ufa
+Грозный,GRV,Казань,KZN,RT,2,CRJ-200,50,https://rasp.yandex.ru/plane/grozniy--kazan
+Саратов,GSV,Новосибирск,OVB,S7,10,E170,78,https://rasp.yandex.ru/plane/saratov--novosibirsk
+Саратов,GSV,Екатеринбург,SVX,WZ,2,SSJ-100,100,https://rasp.yandex.ru/plane/saratov--yekaterinburg
+Ханты-Мансийск,HMA,Казань,KZN,7R,2,CRJ-100/200,50,https://rasp.yandex.ru/plane/khanty-mansiysk--kazan
+Ханты-Мансийск,HMA,Минеральные Воды,MRV,A4,2,SSJ-100,100,https://rasp.yandex.ru/plane/khanty-mansiysk--mineralniye-vodi
+Ханты-Мансийск,HMA,Нижневартовск,NJC,UT,14,ATR 72-500,70,https://rasp.yandex.ru/plane/khanty-mansiysk--nizhnevartovsk
+Ханты-Мансийск,HMA,Омск,OMS,UT,4,ATR 72-500,70,https://rasp.yandex.ru/plane/khanty-mansiysk--omsk
+Ханты-Мансийск,HMA,Новосибирск,OVB,S7,3,E170,78,https://rasp.yandex.ru/plane/khanty-mansiysk--novosibirsk
+Ханты-Мансийск,HMA,Сургут,SGC,UT,14,ATR 72-500,70,https://rasp.yandex.ru/plane/khanty-mansiysk--surgut-khanty-mansi-autonomous-okrug
+Ханты-Мансийск,HMA,Екатеринбург,SVX,UT,6,ATR 72-500,70,https://rasp.yandex.ru/plane/khanty-mansiysk--yekaterinburg
+Ханты-Мансийск,HMA,Тюмень,TJM,UT,28,ATR 72-500,70,https://rasp.yandex.ru/plane/khanty-mansiysk--tyumen
+Ханты-Мансийск,HMA,Уфа,UFA,KV,1,Як-42,120,https://rasp.yandex.ru/plane/khanty-mansiysk--ufa
+Ханты-Мансийск,HMA,Уфа,UFA,U6,2,A321,220,https://rasp.yandex.ru/plane/khanty-mansiysk--ufa
+Ханты-Мансийск,HMA,Уфа,UFA,UT,11,ATR 72-500,70,https://rasp.yandex.ru/plane/khanty-mansiysk--ufa
+Ижевск,IJK,Минеральные Воды,MRV,A4,2,SSJ-100,100,https://rasp.yandex.ru/plane/izhevsk--mineralniye-vodi
+Ижевск,IJK,Новосибирск,OVB,S7,3,E170,78,https://rasp.yandex.ru/plane/izhevsk--novosibirsk
+Иркутск,IKT,Красноярск,KJA,FV,28,SSJ-100,87 / 100,https://rasp.yandex.ru/plane/irkutsk--krasnoyarsk
+Иркутск,IKT,Красноярск,KJA,S7,14,E170,78,https://rasp.yandex.ru/plane/irkutsk--krasnoyarsk
+Иркутск,IKT,Казань,KZN,N4,4,B737-800,189,https://rasp.yandex.ru/plane/irkutsk--kazan
+Иркутск,IKT,Новый Уренгой,NUX,IO,1,SSJ-100,100,https://rasp.yandex.ru/plane/irkutsk--noviy-urengoy
+Иркутск,IKT,Омск,OMS,S7,4,E170,78,https://rasp.yandex.ru/plane/irkutsk--omsk
+Иркутск,IKT,Новосибирск,OVB,S7,86,E170 (B737-800),78 (176),https://rasp.yandex.ru/plane/irkutsk--novosibirsk
+Иркутск,IKT,Екатеринбург,SVX,S7,6,A320,164,https://rasp.yandex.ru/plane/irkutsk--yekaterinburg
+Иркутск,IKT,Тюмень,TJM,S7,4,B737-800 (E170),176 (78),https://rasp.yandex.ru/plane/irkutsk--tyumen
+Иркутск,IKT,Томск,TOF,UT,2,ATR 72-500,70,https://rasp.yandex.ru/plane/irkutsk--tomsk
+Иркутск,IKT,Уфа,UFA,S7,8,A320 (B737-800),164 (176),https://rasp.yandex.ru/plane/irkutsk--ufa
+Калининград,KGD,Самара,KUF,N4,4,B737-800,189,https://rasp.yandex.ru/plane/kaliningrad--samara
+Калининград,KGD,Казань,KZN,N4,4,B737-800 (A321),189 (220),https://rasp.yandex.ru/plane/kaliningrad--kazan
+Калининград,KGD,Пермь,PEE,N4,2,B737-800,189,https://rasp.yandex.ru/plane/kaliningrad--perm
+Калининград,KGD,Екатеринбург,SVX,U6,8,A320,162,https://rasp.yandex.ru/plane/kaliningrad--yekaterinburg
+Калининград,KGD,Тюмень,TJM,N4,4,B737-800,189,https://rasp.yandex.ru/plane/kaliningrad--tyumen
+Красноярск,KJA,Казань,KZN,N4,4,B737-800 (A321),189 (220),https://rasp.yandex.ru/plane/krasnoyarsk--kazan
+Красноярск,KJA,Минеральные Воды,MRV,FV,4,B737-800,189,https://rasp.yandex.ru/plane/krasnoyarsk--mineralniye-vodi
+Красноярск,KJA,Новый Уренгой,NUX,FV,2,SSJ-100,87 / 100,https://rasp.yandex.ru/plane/krasnoyarsk--noviy-urengoy
+Красноярск,KJA,Омск,OMS,FV,4,SSJ-100,87 / 100,https://rasp.yandex.ru/plane/krasnoyarsk--omsk
+Красноярск,KJA,Новосибирск,OVB,S7,70,E170,78,https://rasp.yandex.ru/plane/krasnoyarsk--novosibirsk
+Красноярск,KJA,Сургут,SGC,FV,9,SSJ-100,87 / 100,https://rasp.yandex.ru/plane/krasnoyarsk--surgut-khanty-mansi-autonomous-okrug
+Красноярск,KJA,Екатеринбург,SVX,FV,8,B737-800 (SSJ-100),189 (87 / 100),https://rasp.yandex.ru/plane/krasnoyarsk--yekaterinburg
+Красноярск,KJA,Тюмень,TJM,FV,6,SSJ-100,87 / 100,https://rasp.yandex.ru/plane/krasnoyarsk--tyumen
+Красноярск,KJA,Томск,TOF,KV,10,ATR 42-500 (ATR 72-500),48 (72),https://rasp.yandex.ru/plane/krasnoyarsk--tomsk
+Красноярск,KJA,Уфа,UFA,A4,4,SSJ-100,100,https://rasp.yandex.ru/plane/krasnoyarsk--ufa
+Краснодар,KRR,Казань,KZN,N4,10,A321 (B737-900ER),220 (215),https://rasp.yandex.ru/plane/krasnodar--kazan
+Краснодар,KRR,Казань,KZN,SU,4,A320,158,https://rasp.yandex.ru/plane/krasnodar--kazan
+Краснодар,KRR,Новосибирск,OVB,S7,23,A320,164,https://rasp.yandex.ru/plane/krasnodar--novosibirsk
+Краснодар,KRR,Новосибирск,OVB,SU,3,B737-800,158,https://rasp.yandex.ru/plane/krasnodar--novosibirsk
+Краснодар,KRR,Сургут,SGC,UT,14,B737-800,186,https://rasp.yandex.ru/plane/krasnodar--surgut-khanty-mansi-autonomous-okrug
+Краснодар,KRR,Екатеринбург,SVX,DP,11,B737-800,189,https://rasp.yandex.ru/plane/krasnodar--yekaterinburg
+Краснодар,KRR,Екатеринбург,SVX,U6,14,A320,162,https://rasp.yandex.ru/plane/krasnodar--yekaterinburg
+Краснодар,KRR,Тюмень,TJM,UT,1,B737-800,186,https://rasp.yandex.ru/plane/krasnodar--tyumen
+Самара,KUF,Казань,KZN,RT,4,CRJ-200,50,https://rasp.yandex.ru/plane/samara--kazan
+Самара,KUF,Казань,KZN,UT,1,B737-500,126,https://rasp.yandex.ru/plane/samara--kazan
+Самара,KUF,Махачкала,MCX,WZ,2,SSJ-100,100,https://rasp.yandex.ru/plane/samara--makhachkala
+Самара,KUF,Минеральные Воды,MRV,A4,7,SSJ-100,100,https://rasp.yandex.ru/plane/samara--mineralniye-vodi
+Самара,KUF,Нижневартовск,NJC,A4,3,SSJ-100,100,https://rasp.yandex.ru/plane/samara--nizhnevartovsk
+Самара,KUF,Ноябрьск,NOJ,U6,1,A321,220,https://rasp.yandex.ru/plane/samara--noyabrsk
+Самара,KUF,Новый Уренгой,NUX,IO,1,SSJ-100,100,https://rasp.yandex.ru/plane/samara--noviy-urengoy
+Самара,KUF,Новый Уренгой,NUX,RT,2,CRJ-200,50,https://rasp.yandex.ru/plane/samara--noviy-urengoy
+Самара,KUF,Новый Уренгой,NUX,WZ,2,SSJ-100,100,https://rasp.yandex.ru/plane/samara--noviy-urengoy
+Самара,KUF,Новосибирск,OVB,S7,28,E170,78,https://rasp.yandex.ru/plane/samara--novosibirsk
+Самара,KUF,Пермь,PEE,RT,4,CRJ-200,50,https://rasp.yandex.ru/plane/samara--perm
+Самара,KUF,Сургут,SGC,UT,18,B737-800 (B737-500),186 (126),https://rasp.yandex.ru/plane/samara--surgut-khanty-mansi-autonomous-okrug
+Самара,KUF,Екатеринбург,SVX,UT,12,ATR 72-500,70,https://rasp.yandex.ru/plane/samara--yekaterinburg
+Самара,KUF,Екатеринбург,SVX,WZ,13,SSJ-100,100,https://rasp.yandex.ru/plane/samara--yekaterinburg
+Самара,KUF,Тюмень,TJM,WZ,4,SSJ-100,100,https://rasp.yandex.ru/plane/samara--tyumen
+Киров,KVX,Казань,KZN,RT,2,CRJ-200,50,https://rasp.yandex.ru/plane/kirov--kazan
+Киров,KVX,Минеральные Воды,MRV,A4,2,SSJ-100,100,https://rasp.yandex.ru/plane/kirov--mineralniye-vodi
+Казань,KZN,Махачкала,MCX,N4,2,B737-800 (B737-900ER),189 (215),https://rasp.yandex.ru/plane/kazan--makhachkala
+Казань,KZN,Магнитогорск,MQF,RT,2,CRJ-200,50,https://rasp.yandex.ru/plane/kazan--magnitogorsk
+Казань,KZN,Минеральные Воды,MRV,N4,6,A321 (B737-900ER),220 (215),https://rasp.yandex.ru/plane/kazan--mineralniye-vodi
+Казань,KZN,Нижневартовск,NJC,RT,9,CRJ-200,50,https://rasp.yandex.ru/plane/kazan--nizhnevartovsk
+Казань,KZN,Новый Уренгой,NUX,RT,2,CRJ-200,50,https://rasp.yandex.ru/plane/kazan--noviy-urengoy
+Казань,KZN,Новый Уренгой,NUX,WZ,1,SSJ-100,100,https://rasp.yandex.ru/plane/kazan--noviy-urengoy
+Казань,KZN,Омск,OMS,EO,4,E190,110,https://rasp.yandex.ru/plane/kazan--omsk
+Казань,KZN,Омск,OMS,RT,3,CRJ-200,50,https://rasp.yandex.ru/plane/kazan--omsk
+Казань,KZN,Новосибирск,OVB,RT,1,CRJ-200,50,https://rasp.yandex.ru/plane/kazan--novosibirsk
+Казань,KZN,Новосибирск,OVB,S7,20,E170,78,https://rasp.yandex.ru/plane/kazan--novosibirsk
+Казань,KZN,Пермь,PEE,RT,6,CRJ-200,50,https://rasp.yandex.ru/plane/kazan--perm
+Казань,KZN,Оренбург,REN,RT,9,CRJ-200,50,https://rasp.yandex.ru/plane/kazan--orenburg
+Казань,KZN,Сургут,SGC,EO,9,E190,110,https://rasp.yandex.ru/plane/kazan--surgut-khanty-mansi-autonomous-okrug
+Казань,KZN,Сургут,SGC,UT,7,B737-500,126,https://rasp.yandex.ru/plane/kazan--surgut-khanty-mansi-autonomous-okrug
+Казань,KZN,Салехард,SLY,YC,1,SSJ-100,100,https://rasp.yandex.ru/plane/kazan--salekhard
+Казань,KZN,Екатеринбург,SVX,WZ,14,SSJ-100,100,https://rasp.yandex.ru/plane/kazan--yekaterinburg
+Казань,KZN,Тюмень,TJM,UT,6,ATR 72-500,70,https://rasp.yandex.ru/plane/kazan--tyumen
+Казань,KZN,Томск,TOF,RT,9,CRJ-200,50,https://rasp.yandex.ru/plane/kazan--tomsk
+Казань,KZN,Уфа,UFA,EO,10,E190,110,https://rasp.yandex.ru/plane/kazan--ufa
+Казань,KZN,Уфа,UFA,UT,14,ATR 72-500,70,https://rasp.yandex.ru/plane/kazan--ufa
+Махачкала,MCX,Минеральные Воды,MRV,A4,12,SSJ-100,100,https://rasp.yandex.ru/plane/makhachkala--mineralniye-vodi
+Махачкала,MCX,Новосибирск,OVB,S7,9,A320,164,https://rasp.yandex.ru/plane/makhachkala--novosibirsk
+Махачкала,MCX,Пермь,PEE,A4,9,SSJ-100,100,https://rasp.yandex.ru/plane/makhachkala--perm
+Махачкала,MCX,Сургут,SGC,DP,14,B737-800,189,https://rasp.yandex.ru/plane/makhachkala--surgut-khanty-mansi-autonomous-okrug
+Махачкала,MCX,Екатеринбург,SVX,WZ,2,SSJ-100,100,https://rasp.yandex.ru/plane/makhachkala--yekaterinburg
+Махачкала,MCX,Тюмень,TJM,WZ,1,SSJ-100,100,https://rasp.yandex.ru/plane/makhachkala--tyumen
+Магнитогорск,MQF,Минеральные Воды,MRV,A4,9,SSJ-100,100,https://rasp.yandex.ru/plane/magnitogorsk--mineralniye-vodi
+Минеральные Воды,MRV,Нижневартовск,NJC,A4,2,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--nizhnevartovsk
+Минеральные Воды,MRV,Новый Уренгой,NUX,YC,2,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--noviy-urengoy
+Минеральные Воды,MRV,Омск,OMS,A4,6,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--omsk
+Минеральные Воды,MRV,Новосибирск,OVB,S7,14,A321,198,https://rasp.yandex.ru/plane/mineralniye-vodi--novosibirsk
+Минеральные Воды,MRV,Пермь,PEE,A4,4,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--perm
+Минеральные Воды,MRV,Пенза,PEZ,A4,10,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--penza
+Минеральные Воды,MRV,Оренбург,REN,A4,2,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--orenburg
+Минеральные Воды,MRV,Сургут,SGC,A4,2,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--surgut-khanty-mansi-autonomous-okrug
+Минеральные Воды,MRV,Сургут,SGC,UT,2,B737-800,186,https://rasp.yandex.ru/plane/mineralniye-vodi--surgut-khanty-mansi-autonomous-okrug
+Минеральные Воды,MRV,Салехард,SLY,YC,1,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--salekhard
+Минеральные Воды,MRV,Екатеринбург,SVX,SU,14,A320,158,https://rasp.yandex.ru/plane/mineralniye-vodi--yekaterinburg
+Минеральные Воды,MRV,Екатеринбург,SVX,U6,14,A320,162,https://rasp.yandex.ru/plane/mineralniye-vodi--yekaterinburg
+Минеральные Воды,MRV,Тюмень,TJM,A4,4,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--tyumen
+Минеральные Воды,MRV,Тюмень,TJM,UT,2,B737-800,186,https://rasp.yandex.ru/plane/mineralniye-vodi--tyumen
+Минеральные Воды,MRV,Тюмень,TJM,YC,2,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--tyumen
+Минеральные Воды,MRV,Уфа,UFA,A4,8,SSJ-100,100,https://rasp.yandex.ru/plane/mineralniye-vodi--ufa
+Нижневартовск,NJC,Омск,OMS,UT,3,ATR 72-500,70,https://rasp.yandex.ru/plane/nizhnevartovsk--omsk
+Нижневартовск,NJC,Новосибирск,OVB,S7,24,E170,78,https://rasp.yandex.ru/plane/nizhnevartovsk--novosibirsk
+Нижневартовск,NJC,Екатеринбург,SVX,UT,2,ATR 72-500,70,https://rasp.yandex.ru/plane/nizhnevartovsk--yekaterinburg
+Нижневартовск,NJC,Екатеринбург,SVX,WZ,1,SSJ-100,100,https://rasp.yandex.ru/plane/nizhnevartovsk--yekaterinburg
+Нижневартовск,NJC,Тюмень,TJM,UT,15,ATR 72-500 (B737-500),70 (126),https://rasp.yandex.ru/plane/nizhnevartovsk--tyumen
+Нижневартовск,NJC,Уфа,UFA,IO,1,SSJ-100,100,https://rasp.yandex.ru/plane/nizhnevartovsk--ufa
+Нижневартовск,NJC,Уфа,UFA,U6,1,A321,220,https://rasp.yandex.ru/plane/nizhnevartovsk--ufa
+Нижневартовск,NJC,Уфа,UFA,UT,4,B737-400,159,https://rasp.yandex.ru/plane/nizhnevartovsk--ufa
+Ноябрьск,NOJ,Омск,OMS,YC,1,SSJ-100,100,https://rasp.yandex.ru/plane/noyabrsk--omsk
+Ноябрьск,NOJ,Новосибирск,OVB,S7,11,E170,78,https://rasp.yandex.ru/plane/noyabrsk--novosibirsk
+Ноябрьск,NOJ,Екатеринбург,SVX,YC,2,SSJ-100,100,https://rasp.yandex.ru/plane/noyabrsk--yekaterinburg
+Ноябрьск,NOJ,Тюмень,TJM,YC,3,SSJ-100,100,https://rasp.yandex.ru/plane/noyabrsk--tyumen
+Ноябрьск,NOJ,Уфа,UFA,U6,1,A321,220,https://rasp.yandex.ru/plane/noyabrsk--ufa
+Ноябрьск,NOJ,Уфа,UFA,YC,2,SSJ-100,100,https://rasp.yandex.ru/plane/noyabrsk--ufa
+Новый Уренгой,NUX,Омск,OMS,YC,10,SSJ-100,100,https://rasp.yandex.ru/plane/noviy-urengoy--omsk
+Новый Уренгой,NUX,Новосибирск,OVB,S7,14,B737-800 (E170),176 (78),https://rasp.yandex.ru/plane/noviy-urengoy--novosibirsk
+Новый Уренгой,NUX,Екатеринбург,SVX,4G,1,SSJ-100,90,https://rasp.yandex.ru/plane/noviy-urengoy--yekaterinburg
+Новый Уренгой,NUX,Екатеринбург,SVX,YC,4,SSJ-100,100,https://rasp.yandex.ru/plane/noviy-urengoy--yekaterinburg
+Новый Уренгой,NUX,Тюмень,TJM,IO,1,SSJ-100,100,https://rasp.yandex.ru/plane/noviy-urengoy--tyumen
+Новый Уренгой,NUX,Тюмень,TJM,UT,14,B737-500,126,https://rasp.yandex.ru/plane/noviy-urengoy--tyumen
+Новый Уренгой,NUX,Тюмень,TJM,YC,14,SSJ-100,100,https://rasp.yandex.ru/plane/noviy-urengoy--tyumen
+Новый Уренгой,NUX,Уфа,UFA,4G,1,SSJ-100,90,https://rasp.yandex.ru/plane/noviy-urengoy--ufa
+Новый Уренгой,NUX,Уфа,UFA,IO,2,SSJ-100,100,https://rasp.yandex.ru/plane/noviy-urengoy--ufa
+Новый Уренгой,NUX,Уфа,UFA,KV,8,Як-42,120,https://rasp.yandex.ru/plane/noviy-urengoy--ufa
+Новый Уренгой,NUX,Уфа,UFA,U6,1,A321,220,https://travel.yandex.ru/avia/flights/U6-9261/?when=2026-11-11&to=NUX
+Новый Уренгой,NUX,Уфа,UFA,UT,14,B737-400 (B737-500),159 (126),https://rasp.yandex.ru/plane/noviy-urengoy--ufa
+Новый Уренгой,NUX,Уфа,UFA,WZ,2,SSJ-100,100,https://rasp.yandex.ru/plane/noviy-urengoy--ufa
+Новый Уренгой,NUX,Уфа,UFA,YC,3,SSJ-100,100,https://rasp.yandex.ru/plane/noviy-urengoy--ufa
+Омск,OMS,Новосибирск,OVB,RT,1,CRJ-200,50,https://rasp.yandex.ru/plane/omsk--novosibirsk
+Омск,OMS,Новосибирск,OVB,S7,38,E170,78,https://rasp.yandex.ru/plane/omsk--novosibirsk
+Омск,OMS,Сургут,SGC,UT,16,ATR 72-500 (B737-500),70 (126),https://rasp.yandex.ru/plane/omsk--surgut-khanty-mansi-autonomous-okrug
+Омск,OMS,Салехард,SLY,YC,9,SSJ-100,100,https://rasp.yandex.ru/plane/omsk--salekhard
+Омск,OMS,Екатеринбург,SVX,WZ,4,SSJ-100,100,https://rasp.yandex.ru/plane/omsk--yekaterinburg
+Омск,OMS,Уфа,UFA,Y7,1,B737-800,180,https://rasp.yandex.ru/plane/omsk--ufa
+Новосибирск,OVB,Пермь,PEE,S7,14,E170,78,https://rasp.yandex.ru/plane/novosibirsk--perm
+Новосибирск,OVB,Оренбург,REN,S7,4,E170,78,https://rasp.yandex.ru/plane/novosibirsk--orenburg
+Новосибирск,OVB,Сургут,SGC,S7,18,E170,78,https://rasp.yandex.ru/plane/novosibirsk--surgut-khanty-mansi-autonomous-okrug
+Новосибирск,OVB,Сургут,SGC,UT,14,ATR 72-500 (B737-500),70 (126),https://rasp.yandex.ru/plane/novosibirsk--surgut-khanty-mansi-autonomous-okrug
+Новосибирск,OVB,Салехард,SLY,S7,1,E170,78,https://rasp.yandex.ru/plane/novosibirsk--salekhard
+Новосибирск,OVB,Салехард,SLY,YC,1,SSJ-100,100,https://rasp.yandex.ru/plane/novosibirsk--salekhard
+Новосибирск,OVB,Екатеринбург,SVX,S7,50,E170,78,https://rasp.yandex.ru/plane/novosibirsk--yekaterinburg
+Новосибирск,OVB,Тюмень,TJM,S7,34,E170,78,https://rasp.yandex.ru/plane/novosibirsk--tyumen
+Новосибирск,OVB,Томск,TOF,S7,14,E170,78,https://rasp.yandex.ru/plane/novosibirsk--tomsk
+Новосибирск,OVB,Уфа,UFA,4G,1,B737-700,122,https://rasp.yandex.ru/plane/novosibirsk--ufa
+Новосибирск,OVB,Уфа,UFA,S7,24,E170 (A320),78 (164),https://rasp.yandex.ru/plane/novosibirsk--ufa
+Новосибирск,OVB,Волгоград,VOG,S7,6,A320 (E170),164 (78),https://rasp.yandex.ru/plane/novosibirsk--volgograd
+Пермь,PEE,Сургут,SGC,UT,2,ATR 72-500,70,https://rasp.yandex.ru/plane/perm--surgut-khanty-mansi-autonomous-okrug
+Оренбург,REN,Екатеринбург,SVX,WZ,4,SSJ-100,100,https://rasp.yandex.ru/plane/orenburg--yekaterinburg
+Сургут,SGC,Екатеринбург,SVX,UT,14,ATR 72-500,70,https://rasp.yandex.ru/plane/surgut-khanty-mansi-autonomous-okrug--yekaterinburg
+Сургут,SGC,Екатеринбург,SVX,WZ,2,SSJ-100,100,https://rasp.yandex.ru/plane/surgut-khanty-mansi-autonomous-okrug--yekaterinburg
+Сургут,SGC,Тюмень,TJM,UT,29,ATR 72-500 (B737-500),70 (126),https://rasp.yandex.ru/plane/surgut-khanty-mansi-autonomous-okrug--tyumen
+Сургут,SGC,Уфа,UFA,IO,2,SSJ-100,100,https://rasp.yandex.ru/plane/surgut-khanty-mansi-autonomous-okrug--ufa
+Сургут,SGC,Уфа,UFA,KV,1,Як-42,120,https://rasp.yandex.ru/plane/surgut-khanty-mansi-autonomous-okrug--ufa
+Сургут,SGC,Уфа,UFA,U6,2,A321,220,https://rasp.yandex.ru/plane/surgut-khanty-mansi-autonomous-okrug--ufa
+Сургут,SGC,Уфа,UFA,UT,25,B737-500 (B737-400),126 (159),https://rasp.yandex.ru/plane/surgut-khanty-mansi-autonomous-okrug--ufa
+Салехард,SLY,Екатеринбург,SVX,YC,3,SSJ-100,100,https://rasp.yandex.ru/plane/salekhard--yekaterinburg
+Салехард,SLY,Тюмень,TJM,YC,19,SSJ-100 (A320),100 (164),https://rasp.yandex.ru/plane/salekhard--tyumen
+Салехард,SLY,Уфа,UFA,YC,1,SSJ-100,100,https://rasp.yandex.ru/plane/salekhard--ufa
+Екатеринбург,SVX,Томск,TOF,7R,3,CRJ-100/200,50,https://rasp.yandex.ru/plane/yekaterinburg--tomsk
+Екатеринбург,SVX,Томск,TOF,WZ,10,SSJ-100,100,https://rasp.yandex.ru/plane/yekaterinburg--tomsk
+Екатеринбург,SVX,Уфа,UFA,UT,28,ATR 72-500,70,https://rasp.yandex.ru/plane/yekaterinburg--ufa
+Екатеринбург,SVX,Уфа,UFA,WZ,8,SSJ-100,100,https://rasp.yandex.ru/plane/yekaterinburg--ufa
+Екатеринбург,SVX,Волгоград,VOG,Y7,4,B737-800,180,https://rasp.yandex.ru/plane/yekaterinburg--volgograd
+Тюмень,TJM,Томск,TOF,UT,1,ATR 72-500,70,https://rasp.yandex.ru/plane/tyumen--tomsk
+Тюмень,TJM,Уфа,UFA,UT,10,ATR 72-500,70,https://rasp.yandex.ru/plane/tyumen--ufa
