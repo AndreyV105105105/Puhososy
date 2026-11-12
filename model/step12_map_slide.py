@@ -156,15 +156,15 @@ pan.add_patch(FancyBboxPatch((0.04, 0.03), 0.92, 0.94, boxstyle="round,pad=0,rou
                              fc=C["panel"], ec=C["panel_ec"], lw=1.2))
 X = 0.11
 pan.text(X, 0.895, "Целевая сеть Red Wings 2028", fontsize=19, fontweight="bold", color=C["ink"], va="top")
-pan.text(X, 0.835, "Новые SJ-100 — на прямые рейсы\nиз Екатеринбурга. Новый хаб не нужен.",
+pan.text(X, 0.835, "Новые SJ-100 — на прямые рейсы\nиз Екатеринбурга. Хаб в Уфе — только\nнадстройка с выручки +80% (шаг 4).",
          fontsize=12.5, color=C["muted"], va="top", linespacing=1.35)
 # KPI
-k_y = 0.70
+k_y = 0.685
 for i, (v, l) in enumerate([("1,5", "борта"), ("+0,32", "млрд ₽/год"), ("+118", "тыс. пасс./год")]):
     xx = X + i * 0.285
     pan.text(xx, k_y, v, fontsize=22, fontweight="bold", color=RED[0], va="bottom")
     pan.text(xx, k_y - 0.012, l, fontsize=10.5, color=C["muted"], va="top")
-pan.plot([X, 0.89], [0.625, 0.625], color=C["panel_ec"], lw=1)
+pan.plot([X, 0.89], [0.615, 0.615], color=C["panel_ec"], lw=1)
 
 rows = [(1, "Шаг 1 · выручка ≥ +30%", "Казань – Екатеринбург", "7 → 14 рейсов/нед"),
         (2, "Шаг 2 · ≥ +45%, загрузка ≥ 70%", "Самара – Екатеринбург", "6,5 → 7 рейсов/нед"),
