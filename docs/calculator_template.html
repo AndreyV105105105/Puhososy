@@ -24,6 +24,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-siz
 .wrap{max-width:1180px;margin:0 auto;display:grid;gap:18px}
 header h1{font-family:var(--font-display);font-weight:700;font-size:clamp(20px,3.2vw,30px);line-height:1.15;margin:0;text-wrap:balance}
 header p{margin:6px 0 0;color:var(--muted);max-width:70ch}
+header p.upd{color:var(--ink,inherit);font-size:.92em}
 .grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:860px){.grid{grid-template-columns:1fr}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
@@ -77,6 +78,7 @@ footer a{color:var(--cond)}
   <header>
     <h1>Куда поставить новые SJ-100: калькулятор сети Red Wings</h1>
     <p>Меняйте условия — модель заранее посчитала, какую сеть алгоритм строит на 4 новых бортах при каждом сочетании. Команда «Пухососы», кейс-чемпионат «Моделирование связанности территорий на базе ИИ».</p>
+    <p class="upd"><b>Обновлено 12.11.2026.</b> После сдачи паспорта сверили тариф рейсов короче 550 км с 55 реальными ценами и снизили его до 0,6 от формулы; добавили проверку ответа конкурентов. Цифры здесь осторожнее, чем в сданном паспорте: при выручке +60% — +0,32 млрд ₽ на 1,5 борта (было +0,59 на 3,5), хаб не открывается до +60%. Сданная версия — метка <a href="https://github.com/AndreyV105105105/Puhososy/tree/v1-submitted" target="_blank" rel="noopener">v1-submitted</a> в репозитории.</p>
   </header>
 
   <div class="grid">
