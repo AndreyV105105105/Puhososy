@@ -4,7 +4,7 @@
 Цифры берутся из расчёта порогов (results/thresholds_доходность.csv), поэтому после пересчёта
 картинка обновляется сама. Шаг 4 — сценарий большого флота (results/fleet_scenarios.csv, step7_fleet.py):
 если выручка от +80% и бортов 8 и больше, к сети из Екатеринбурга добавляется хаб в Уфе (гибрид) — без спицы
-Минводы–Уфа, которая не выдерживает ответа «Азимута» (results/check_competitor.csv).
+Минводы–Уфа, уязвимой к ответу «Азимута» (results/check_competitor.csv).
 
 Запуск: python model/step8_roadmap.py   (после step7_thresholds.py доходность и step7_fleet.py)
 Выход:  results/roadmap.png
@@ -59,7 +59,7 @@ def ru(x, nd=1):
 
 BIG_FLEET, BIG_FARE = 8, 1.8
 BIG_VARIANT = "гибрид в Уфе без Минвод"
-RISKY = {("MRV", "UFA"), ("UFA", "MRV")}   # не выдерживает ответа «Азимута»
+RISKY = {("MRV", "UFA"), ("UFA", "MRV")}   # уязвим к ответу «Азимута», базового перевозчика Минвод
 
 
 def big_fleet_step():
@@ -143,7 +143,7 @@ def main():
     ax.text(0.3, 0.25, "Выручка Red Wings на пассажира к мин. тарифам АТОР («Азимут» ≈ +15%, средняя по Red Wings с международными ≈ +70%). "
             "Прибыль — с субсидиями ПП № 1242.", fontsize=9.5, color=MUTED)
     ax.text(0.3, -0.1, "Казань и Самара из Екатеринбурга не в перечне субсидий 2026 — шаг 0: заявка на 2027; без субсидии пороги шагов 1–2 выше на 15 п.п. "
-            "* Минводы–Уфа не выдерживает ответа «Азимута» (results/check_competitor.csv); без него прибыль шага 3 та же.", fontsize=9.5, color=MUTED)
+            "* Минводы–Уфа уязвим к ответу «Азимута» (база в Минводах): если ответит, шаг 3 даёт +0,11 млрд; без рейса — +0,30.", fontsize=9.5, color=MUTED)
     out = RESULTS / "roadmap.png"
     fig.savefig(out, bbox_inches="tight", facecolor="white"); plt.close(fig)
     print(f"Дорожная карта: {out.relative_to(RESULTS.parent)}")
