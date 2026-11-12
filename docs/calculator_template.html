@@ -2,153 +2,176 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Unbounded:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
-/* Layout: пульт слева (условия), справа — карта сети и цифры; на телефоне всё в одну колонку */
+/* Тот же язык, что у карты для слайда: море, белая Россия, красные дуги новых рейсов, карточка-пульт справа */
 :root{
-  --bg:#f4f6f9; --panel:#ffffff; --ink:#141a22; --muted:#5d6878; --line:#dde2ea;
-  --accent:#c4122f; --accent-soft:#f6d9de; --cond:#1d5ea8; --existing:#a9b2bf; --good:#1b7f4a; --zero:#8a94a3;
-  --font-display:"Unbounded","Golos Text",system-ui,sans-serif;
-  --font-body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --font-num:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  --bg:#EAF0F5; --sea:#EAF0F5; --russia:#FFFFFF; --other:#F1F3F5; --border:#C9D2DB; --rborder:#AFBBC7;
+  --panel:#FFFFFF; --panel-ec:#DCE3EA; --ink:#16202B; --muted:#5B6775; --exist:#9AA6B4; --node:#2B3642; --halo:#FFFFFF;
+  --r1:#B5122B; --r2:#E3433B; --r3:#F28C63; --r-soft:#F9E3E6; --chip:#F4F6F8;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0f141b; --panel:#171e28; --ink:#e8edf4; --muted:#9aa6b6; --line:#2a3442;
-  --accent:#ff4d63; --accent-soft:#4a1e27; --cond:#6aa8ef; --existing:#55606f; --good:#4fc286; --zero:#6f7a89; color-scheme:dark}}
+  --bg:#0E1621; --sea:#0E1621; --russia:#1C2836; --other:#151E29; --border:#2B394A; --rborder:#3A4B5F;
+  --panel:#141D28; --panel-ec:#2B394A; --ink:#EEF2F6; --muted:#9AA8B8; --exist:#5D6E82; --node:#DCE4EC; --halo:#0E1621;
+  --r1:#E0283F; --r2:#F05A4F; --r3:#F59A73; --r-soft:#3A1D24; --chip:#1A2431; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0f141b; --panel:#171e28; --ink:#e8edf4; --muted:#9aa6b6; --line:#2a3442;
-  --accent:#ff4d63; --accent-soft:#4a1e27; --cond:#6aa8ef; --existing:#55606f; --good:#4fc286; --zero:#6f7a89; color-scheme:dark}
+  --bg:#0E1621; --sea:#0E1621; --russia:#1C2836; --other:#151E29; --border:#2B394A; --rborder:#3A4B5F;
+  --panel:#141D28; --panel-ec:#2B394A; --ink:#EEF2F6; --muted:#9AA8B8; --exist:#5D6E82; --node:#DCE4EC; --halo:#0E1621;
+  --r1:#E0283F; --r2:#F05A4F; --r3:#F59A73; --r-soft:#3A1D24; --chip:#1A2431; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
-.wrap{max-width:1180px;margin:0 auto;display:grid;gap:18px}
-header h1{font-family:var(--font-display);font-weight:700;font-size:clamp(20px,3.2vw,30px);line-height:1.15;margin:0;text-wrap:balance}
-header p{margin:6px 0 0;color:var(--muted);max-width:70ch}
-header p.upd{color:var(--ink,inherit);font-size:.92em}
-.grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
-@media (max-width:860px){.grid{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
-.controls{display:grid;gap:18px}
-.ctl label{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:14px}
-.ctl label output{font-family:var(--font-num);color:var(--cond);font-weight:600}
-.ctl small{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
-input[type=range]{width:100%;accent-color:var(--cond);margin-top:8px}
-.ticks{display:flex;justify-content:space-between;font-family:var(--font-num);font-size:11px;color:var(--muted)}
-.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
-.seg button{font:inherit;font-size:13.5px;padding:8px 6px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
-.seg button[aria-pressed=true]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
-.seg button:last-child:nth-child(odd){grid-column:1/-1}
-.seg button:focus-visible,input:focus-visible{outline:2px solid var(--cond);outline-offset:2px}
-.presets{display:flex;flex-wrap:wrap;gap:6px}
-.presets button{font:inherit;font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
-.presets button:hover{color:var(--ink);border-color:var(--muted)}
-.right{display:grid;gap:18px;min-width:0}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-@media (max-width:600px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.kpi .k{font-size:12px;color:var(--muted);letter-spacing:.02em}
-.kpi .v{font-family:var(--font-num);font-size:clamp(17px,1.9vw,21px);font-weight:600;font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap}
-.kpi .s{font-size:12.5px;color:var(--muted);margin-top:4px}
-.kpi .v.pos{color:var(--good)} .kpi .v.zero{color:var(--zero)}
-.planes{display:flex;gap:4px;margin-top:8px}
-.planes span{flex:1;height:10px;border-radius:2px;background:var(--existing);position:relative;overflow:hidden}
-.planes span i{position:absolute;inset:0 auto 0 0;background:var(--accent)}
-.verdict{font-size:15.5px}
-.verdict b{color:var(--accent)}
-.mapbox{overflow:hidden}
-#map{width:100%;height:auto;display:block}
-.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:8px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;
+  padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:1320px;margin:0 auto;display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px}
+header h1{font-weight:800;font-size:clamp(22px,3vw,32px);letter-spacing:-.01em;line-height:1.15;margin:0}
+header h1 span{color:var(--r1)}
+header p{margin:4px 0 0;color:var(--muted);max-width:72ch}
+.upd{font-size:13px;color:var(--muted);background:var(--panel);border:1px solid var(--panel-ec);border-radius:12px;padding:10px 14px;max-width:none}
+.upd b{color:var(--ink)} .upd a{color:var(--r1)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+@media (max-width:1000px){.main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--panel-ec);border-radius:18px;padding:18px}
+/* карта */
+.mapcard{position:relative;padding:0;overflow:hidden;background:var(--sea)}
+#map{display:block;width:100%;height:auto}
+.verdict{position:absolute;left:14px;top:14px;max-width:min(520px,calc(100% - 28px));background:var(--panel);border:1px solid var(--panel-ec);
+  border-radius:14px;padding:10px 14px;font-size:14.5px;box-shadow:0 6px 24px rgba(16,32,48,.08)}
+.verdict b{color:var(--r1)}
+.vsub{font-size:12px;color:var(--muted);margin-top:4px}
+.maptag{position:absolute;right:14px;top:14px;font-size:12px;color:var(--muted);background:color-mix(in srgb,var(--panel) 85%,transparent);
+  border-radius:8px;padding:4px 8px}
+.legend{position:absolute;right:14px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);
+  background:color-mix(in srgb,var(--panel) 88%,transparent);border-radius:10px;padding:6px 10px;max-width:calc(100% - 28px)}
 .legend i{display:inline-block;width:18px;height:4px;border-radius:2px;vertical-align:middle;margin-right:6px}
-.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.legend i.dot{width:10px;height:10px;border-radius:50%}
+@media (max-width:900px){.maptag{display:none}}
+@media (max-width:640px){.verdict{position:static;margin:12px 12px 0;max-width:none}.legend{position:static;margin:6px 12px 10px;background:none;padding:0}}
+/* пульт */
+.side{display:grid;gap:16px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+.kpi .v{font-weight:800;font-size:27px;line-height:1.05;letter-spacing:-.01em;color:var(--r1);font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi .v.zero{color:var(--muted)}
+.kpi .k{font-size:12.5px;color:var(--muted);margin-top:4px}
+.planes{display:flex;gap:4px;margin-top:8px}
+.planes span{flex:1;height:8px;border-radius:4px;background:var(--panel-ec);position:relative;overflow:hidden}
+.planes span i{position:absolute;inset:0 auto 0 0;background:var(--r1);border-radius:4px}
+.ctl+.ctl{margin-top:16px}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:14px}
+.ctl label output{color:var(--r1);font-weight:700;font-variant-numeric:tabular-nums}
+.ctl small{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
+input[type=range]{width:100%;accent-color:var(--r1);margin:8px 0 2px}
+.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.seg button,.presets button{font:inherit;cursor:pointer;color:var(--ink);background:var(--chip);border:1px solid transparent}
+.seg button{font-size:13.5px;padding:9px 8px;border-radius:10px;text-align:center}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--panel)}
+.seg button:last-child:nth-child(odd){grid-column:1/-1}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.presets button{font-size:12.5px;padding:6px 11px;border-radius:999px;color:var(--muted)}
+.presets button:hover{color:var(--ink);border-color:var(--panel-ec)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--r1);outline-offset:2px}
+h2{font-size:15px;margin:0 0 10px;font-weight:700}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
 @media (max-width:860px){.two{grid-template-columns:1fr}}
-h2{font-size:14px;margin:0 0 10px;font-weight:600;letter-spacing:.02em}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
-td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+td,th{padding:8px 6px;border-bottom:1px solid var(--panel-ec);text-align:left;vertical-align:middle}
 th{font-weight:500;color:var(--muted);font-size:12px}
-td.n{font-family:var(--font-num);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-tr.best td{font-weight:600}
-tr.cur td:first-child{box-shadow:inset 3px 0 0 var(--cond)}
-.tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent);margin-left:6px}
-.empty{color:var(--muted);font-size:13.5px}
-footer{color:var(--muted);font-size:12.5px;max-width:90ch}
-footer a{color:var(--cond)}
-@media (prefers-reduced-motion:no-preference){.route{transition:stroke-width .25s ease,opacity .25s ease}}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.best td{font-weight:700}
+tr.cur td:first-child{box-shadow:inset 3px 0 0 var(--r1)}
+.num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#fff;font-size:12px;font-weight:700;margin-right:8px;vertical-align:middle}
+.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;background:var(--r-soft);color:var(--r1);margin-left:6px;font-weight:600}
+.empty{color:var(--muted);font-size:13.5px;margin:0}
+footer{color:var(--muted);font-size:12.5px;max-width:100ch}
+footer a{color:var(--r1)}
+svg text{font-family:var(--font)}
+.lbl{paint-order:stroke;stroke:var(--halo);stroke-width:4px;stroke-linejoin:round}
+@media (prefers-reduced-motion:no-preference){.route{transition:opacity .25s ease}}
 </style>
 
 <div class="wrap">
   <header>
-    <h1>Куда поставить новые SJ-100: калькулятор сети Red Wings</h1>
-    <p>Меняйте условия — модель заранее посчитала, какую сеть алгоритм строит на 4 новых бортах при каждом сочетании. Команда «Пухососы», кейс-чемпионат «Моделирование связанности территорий на базе ИИ».</p>
-    <p class="upd"><b>Обновлено 12.11.2026.</b> После сдачи паспорта сверили тариф рейсов короче 550 км с 55 реальными ценами и снизили его до 0,6 от формулы; добавили проверку ответа конкурентов. Цифры здесь осторожнее, чем в сданном паспорте: при выручке +60% — +0,32 млрд ₽ на 1,5 борта (было +0,59 на 3,5), хаб не открывается до +60%. Сданная версия — метка <a href="https://github.com/AndreyV105105105/Puhososy/tree/v1-submitted" target="_blank" rel="noopener">v1-submitted</a> в репозитории.</p>
+    <div>
+      <h1>Куда поставить новые SJ-100 — <span>калькулятор сети Red Wings</span></h1>
+      <p>Меняйте условия — модель заранее посчитала, какую сеть алгоритм строит на 4 новых бортах при каждом сочетании. Команда «Пухососы», кейс-чемпионат «Моделирование связанности территорий на базе ИИ».</p>
+    </div>
   </header>
+  <p class="upd"><b>Обновлено 12.11.2026.</b> После сдачи паспорта сверили тариф рейсов короче 550 км с 55 реальными ценами и снизили его до 0,6 от формулы; добавили проверку ответа конкурентов. Цифры здесь осторожнее, чем в сданном паспорте: при выручке +60% — +0,32 млрд ₽ на 1,5 борта (было +0,59 на 3,5), хаб не открывается до +60%. Сданная версия — метка <a href="https://github.com/AndreyV105105105/Puhososy/tree/v1-submitted" target="_blank" rel="noopener">v1-submitted</a> в репозитории.</p>
 
-  <div class="grid">
-    <section class="card controls" aria-label="Условия">
-      <div class="ctl">
-        <label for="fare">Выручка Red Wings на пассажира <output id="fareOut"></output></label>
-        <input type="range" id="fare" min="0" max="5" step="1">
-        <div class="ticks" id="fareTicks"></div>
-        <small>К минимальным тарифам АТОР. «Азимут» ≈ +15%, средняя выручка Red Wings на пассажира ≈ +70%.</small>
-      </div>
-      <div class="ctl">
-        <label for="cost">Стоимость блок-часа <output id="costOut"></output></label>
-        <input type="range" id="cost" min="0" max="4" step="1">
-        <div class="ticks" id="costTicks"></div>
-        <small>Оценка по РСБУ «Азимута» — 600 тыс. ₽ (диапазон 570–690).</small>
-      </div>
-      <div class="ctl">
-        <label>Субсидии ПП № 1242</label>
-        <div class="seg" role="group" aria-label="Субсидии">
-          <button id="subOn" type="button">есть</button>
-          <button id="subOff" type="button">нет</button>
-        </div>
-        <small>30 недель в году, по ставкам для SSJ-100, рейсы до 1500 км.</small>
-      </div>
-      <div class="ctl">
-        <label>Вариант</label>
-        <div class="seg" role="group" aria-label="Вариант сети" id="modes"></div>
-        <small>Хаб — база с волнами стыковок (118 млн ₽/год), закрытия аэропорта — по факту (Самара 9,5%, Казань 8,0%, Уфа 5,7% времени). Прямые — без новой базы. После поправки тарифа коротких рейсов хаб в Уфе и Казани открывается только при выручке +60% и выше.</small>
-      </div>
-      <div class="ctl">
-        <label>Быстрые сценарии</label>
-        <div class="presets" id="presets"></div>
+  <div class="main">
+    <section class="card mapcard" aria-label="Карта сети">
+      <svg id="map" viewBox="0 0 1000 780" role="img" aria-label="Карта сети Red Wings"></svg>
+      <div class="verdict" id="verdict" aria-live="polite"></div>
+      <div class="legend">
+        <span><i style="background:var(--r1)"></i>новые рейсы / больше частот</span>
+        <span><i style="background:var(--exist)"></i>рейсы Red Wings сейчас</span>
+        <span><i class="dot" style="background:var(--r1)"></i>база (Кольцово)</span>
+        <span><i class="dot" style="background:var(--panel);border:2.5px solid var(--ink)"></i>новый хаб</span>
       </div>
     </section>
 
-    <div class="right">
+    <aside class="side">
       <section class="card">
-        <div class="verdict" id="verdict"></div>
+        <div class="kpis">
+          <div class="kpi"><div class="v" id="kProfit"></div><div class="k">прибыль в год, с субсидиями</div></div>
+          <div class="kpi"><div class="v" id="kPlanes"></div><div class="k">новых бортов занято</div><div class="planes" id="planes"></div></div>
+          <div class="kpi"><div class="v" id="kPax"></div><div class="k">новых пассажиров в год</div></div>
+          <div class="kpi"><div class="v" id="kShare"></div><div class="k" id="kAccess"></div></div>
+        </div>
       </section>
-      <section class="kpis">
-        <div class="card kpi"><div class="k">Прибыль в год, с субсидиями</div><div class="v" id="kProfit"></div></div>
-        <div class="card kpi"><div class="k">Новых бортов занято</div><div class="v" id="kPlanes"></div><div class="planes" id="planes"></div></div>
-        <div class="card kpi"><div class="k">Новых пассажиров в год</div><div class="v" id="kPax"></div></div>
-        <div class="card kpi"><div class="k">Прирост доли рынка</div><div class="v" id="kShare"></div><div class="s" id="kAccess"></div></div>
+      <section class="card" aria-label="Условия">
+        <div class="ctl">
+          <label for="fare">Выручка Red Wings на пассажира <output id="fareOut"></output></label>
+          <input type="range" id="fare" min="0" max="5" step="1">
+          <div class="ticks" id="fareTicks"></div>
+          <small>К минимальным тарифам АТОР. «Азимут» ≈ +15%, средняя выручка Red Wings на пассажира ≈ +70%.</small>
+        </div>
+        <div class="ctl">
+          <label for="cost">Стоимость блок-часа <output id="costOut"></output></label>
+          <input type="range" id="cost" min="0" max="4" step="1">
+          <div class="ticks" id="costTicks"></div>
+          <small>Оценка по РСБУ «Азимута» — 600 тыс. ₽ (диапазон 570–690).</small>
+        </div>
+        <div class="ctl">
+          <label>Субсидии ПП № 1242</label>
+          <div class="seg" role="group" aria-label="Субсидии">
+            <button id="subOn" type="button">есть</button>
+            <button id="subOff" type="button">нет</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <label>Вариант сети</label>
+          <div class="seg" role="group" aria-label="Вариант сети" id="modes"></div>
+          <small>Хаб — база с волнами стыковок (118 млн ₽/год), закрытия аэропорта — по факту (Самара 9,5%, Казань 8,0%, Уфа 5,7% времени). Прямые — без новой базы.</small>
+        </div>
+        <div class="ctl">
+          <label>Быстрые сценарии</label>
+          <div class="presets" id="presets"></div>
+        </div>
       </section>
-      <section class="card mapbox">
-        <h2 id="mapTitle">Сеть</h2>
-        <svg id="map" viewBox="0 0 1000 560" role="img" aria-label="Карта сети Red Wings"></svg>
-        <div class="legend"><span><i style="background:var(--existing)"></i>рейсы Red Wings сейчас</span><span><i style="background:var(--accent)"></i>новые рейсы или больше частот</span><span><i style="background:var(--cond);height:8px;width:8px;border-radius:50%"></i>база (Екатеринбург) / хаб</span></div>
-      </section>
-      <div class="two">
-        <section class="card">
-          <h2>Что добавляется</h2>
-          <div id="legs"></div>
-        </section>
-        <section class="card">
-          <h2>Все варианты при этих условиях</h2>
-          <table id="compare"><thead><tr><th>Вариант</th><th style="text-align:right">Прибыль</th><th style="text-align:right">Бортов</th></tr></thead><tbody></tbody></table>
-        </section>
-      </div>
-    </div>
+    </aside>
+  </div>
+
+  <div class="two">
+    <section class="card">
+      <h2>Что добавляется</h2>
+      <div id="legs"></div>
+    </section>
+    <section class="card">
+      <h2>Все варианты при этих условиях</h2>
+      <table id="compare"><thead><tr><th>Вариант</th><th style="text-align:right">Прибыль, млрд ₽</th><th style="text-align:right">Бортов</th></tr></thead><tbody></tbody></table>
+    </section>
   </div>
 
   <footer>
-    Расчёт: гравитационная модель спроса по табло 40 аэропортов (все перевозчики) + логит-модель выбора пассажира + жадный алгоритм размещения бортов по прибыли на блок-час; учтены загрузка, перегоны, база хаба (118 млн ₽/год), фактические закрытия аэропорта хаба, субсидии; спрос на парах без рейсов ×0,3 (по трём неудачным запускам 2021–2023). Тариф пар короче 550 км — 0,6 от формулы (по 55 реальным ценам на 43 маршрутах). Гибрид — хаб в Уфе плюс прямые рейсы из Екатеринбурга и других городов. Модель передаёт порядок величины (корреляция с фактом 0,51), поэтому сравнивайте варианты и пороги, а не точное число пассажиров. Код и данные: <a href="https://github.com/AndreyV105105105/Puhososy" target="_blank" rel="noopener">github.com/AndreyV105105105/Puhososy</a>.
+    Расчёт: гравитационная модель спроса по табло 40 аэропортов (все перевозчики) + логит-модель выбора пассажира + жадный алгоритм размещения бортов по прибыли на блок-час; учтены загрузка, перегоны, база хаба (118 млн ₽/год), фактические закрытия аэропорта хаба, субсидии; спрос на парах без рейсов ×0,3 (по трём неудачным запускам 2021–2023). Тариф пар короче 550 км — 0,6 от формулы (по 55 реальным ценам на 43 маршрутах). Гибрид — хаб в Уфе плюс прямые рейсы из Екатеринбурга и других городов. Модель передаёт порядок величины (корреляция с фактом 0,51), поэтому сравнивайте варианты и пороги, а не точное число пассажиров. Контуры стран — Natural Earth. Код и данные: <a href="https://github.com/AndreyV105105105/Puhososy" target="_blank" rel="noopener">github.com/AndreyV105105105/Puhososy</a>.
   </footer>
 </div>
 
 <script>
 const DATA = /*DATA*/null;
+const GEO = /*GEO*/null;
 const M = DATA.meta, G = DATA.grid;
 const MODE_NAMES = {"прямые|KUF":"Прямые рейсы","хаб|KUF":"Хаб в Самаре","хаб|VOG":"Хаб в Волгограде","хаб|UFA":"Хаб в Уфе","хаб|KZN":"Хаб в Казани","гибрид|UFA":"Гибрид: хаб в Уфе + прямые"};
 const state = {fare: M.fares.indexOf(M.base_fare), cost: M.costs.indexOf(M.base_cost), sub: 1, mode: "прямые|KUF"};
@@ -156,13 +179,14 @@ const $ = id => document.getElementById(id);
 const nf = (x, d=1) => x.toLocaleString("ru-RU", {minimumFractionDigits:d, maximumFractionDigits:d});
 const pct = f => (f >= 1 ? "+" : "−") + Math.round(Math.abs(f - 1) * 100) + "%";
 const key = (fi, ci, s, m) => `${M.fares[fi]}|${M.costs[ci]}|${s}|${m}`;
+const REDS = ["var(--r1)", "var(--r2)", "var(--r3)"];
+const red = i => REDS[Math.min(i, 2)];
 
-// шкалы
+// шкалы и кнопки
 $("fare").value = state.fare; $("cost").value = state.cost;
 $("fareTicks").innerHTML = M.fares.map(f => `<span>${pct(f)}</span>`).join("");
 $("costTicks").innerHTML = M.costs.map(c => `<span>${c/1000}</span>`).join("");
 $("modes").innerHTML = M.modes.map(m => `<button type="button" data-mode="${m}">${MODE_NAMES[m]}</button>`).join("");
-
 const PRESETS = [
   ["Сегодня", {fare: M.base_fare, cost: 600000, sub: 1}],
   ["Выручка +30%", {fare: 1.3, cost: 600000, sub: 1}],
@@ -172,75 +196,168 @@ const PRESETS = [
 ];
 $("presets").innerHTML = PRESETS.map((p, i) => `<button type="button" data-p="${i}">${p[0]}</button>`).join("");
 
-// карта: простая проекция, долгота сжата на cos(55°)
-const A = M.airports, codes = Object.keys(A);
-const k = Math.cos(55 * Math.PI / 180);
-const xs = codes.map(c => A[c].lon * k), ys = codes.map(c => A[c].lat);
-const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
-const W = 1000, H = 560, pad = 40, padR = 120, sc = Math.min((W - pad - padR)/(maxX - minX), (H - 2*pad)/(maxY - minY));
-const P = c => [pad + (A[c].lon * k - minX) * sc, H - pad - (A[c].lat - minY) * sc];
-const SHOW = new Set(["SVX","KUF","KZN","UFA","OMS","CEK","PEE","TJM","VOG","OVB","KJA","IKT","AER","MRV","KGD","GOJ","SGC","NUX","MCX","REN","STW","ULV","TOF","BAX","GSV"]);
+// ---- проекция Ламберта (та же, что у карты для слайда) ----
+const R = Math.PI / 180;
+const lon0 = 62*R, lat0 = 55*R, p1 = 47*R, p2 = 63*R;
+const n = Math.log(Math.cos(p1)/Math.cos(p2)) / Math.log(Math.tan(Math.PI/4+p2/2)/Math.tan(Math.PI/4+p1/2));
+const F = Math.cos(p1) * Math.pow(Math.tan(Math.PI/4+p1/2), n) / n;
+const rho0 = F / Math.pow(Math.tan(Math.PI/4+lat0/2), n);
+function proj(lon, lat){ const rho = F / Math.pow(Math.tan(Math.PI/4+lat*R/2), n), th = n*(lon*R-lon0); return [rho*Math.sin(th), rho0-rho*Math.cos(th)]; }
+const VW = 1000, VH = 780;
+const yTop = proj(62, 68.6)[1], yBot = proj(62, 41.0)[1];
+const s = VH / (yTop - yBot);
+const xc = (proj(32.0, 56)[0] + proj(87.5, 56)[0]) / 2;
+const T = ([x, y]) => [VW/2 + (x - xc) * s, (yTop - y) * s];
+const P = (lon, lat) => T(proj(lon, lat));
 
-function drawMap(res, mode){
+const A = M.airports;
+A.MOW = A.MOW || {name: "Москва", lat: 55.75, lon: 37.62};
+const XY = c => P(A[c].lon, A[c].lat);
+const OFF = {SVX:[14,-14,"start"], KZN:[-12,-8,"end"], KUF:[-12,6,"end"], OMS:[10,20,"start"], REN:[0,24,"middle"],
+  UFA:[10,16,"start"], MRV:[10,4,"start"], AER:[-10,4,"end"], GOJ:[0,-12,"middle"], GSV:[-10,4,"end"], MCX:[10,14,"start"],
+  NUX:[10,-6,"start"], TJM:[12,5,"start"], NJC:[10,14,"start"], SGC:[-10,-8,"end"], TOF:[10,-6,"start"], BAX:[10,14,"start"],
+  CEK:[10,14,"start"], PEE:[-10,-6,"end"], VOG:[-10,4,"end"], KRR:[-10,4,"end"], STW:[10,4,"start"], OVB:[10,4,"start"], MOW:[-12,14,"end"]};
+
+// фон: страны (строится один раз)
+const pathOf = ring => "M" + ring.map(([lo, la]) => P(lo, la).map(v => v.toFixed(1)).join(",")).join("L") + "Z";
+let base = "";
+for (const [name, polys] of Object.entries(GEO)) {
+  const isR = name === "Russia";
+  base += `<path d="${polys.map(pathOf).join("")}" fill="${isR ? "var(--russia)" : "var(--other)"}" stroke="${isR ? "var(--rborder)" : "var(--border)"}" stroke-width="${isR ? 0.9 : 0.6}" stroke-linejoin="round"/>`;
+}
+const BASE = `<rect width="${VW}" height="${VH}" fill="var(--sea)"/>${base}`;
+
+function arc(i, j, bend){
+  const [a, b] = A[i].lon <= A[j].lon ? [i, j] : [j, i];   // всегда с запада на восток: bend > 0 — дуга выгнута на север
+  const [xa, ya] = XY(a), [xb, yb] = XY(b);
+  const cx = (xa+xb)/2 + (yb-ya)*bend, cy = (ya+yb)/2 - (xb-xa)*bend;
+  const mid = [0.25*xa + 0.5*cx + 0.25*xb, 0.25*ya + 0.5*cy + 0.25*yb];
+  return {d: `M${xa.toFixed(1)},${ya.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${xb.toFixed(1)},${yb.toFixed(1)}`, mid};
+}
+// изгиб: рейсы на север выгибаем вверх, на юг — вниз, чтобы пучок из Кольцово расходился веером
+const BEND = {"KZN-SVX":0.14, "KUF-SVX":0.11, "REN-SVX":-0.2, "OMS-SVX":-0.1, "SVX-UFA":-0.12, "SVX-TJM":0.3, "CEK-SVX":-0.3};
+function bendFor(i, j){
+  const [a, b] = A[i].lon <= A[j].lon ? [i, j] : [j, i];
+  const k1 = [i, j].sort().join("-");
+  if (k1 in BEND) return BEND[k1];
+  if (i !== "SVX" && j !== "SVX") {
+    // рейс не из Кольцово: выбираем изгиб, при котором дуга дальше всего от точки и подписи Екатеринбурга
+    const [ex, ey] = XY("SVX");
+    let bestB = 0.13, bestD = -1;
+    for (const bb of [0.13, -0.13, 0.22, -0.22, 0.32, -0.32]) {
+      const [xa, ya] = XY(a), [xb, yb] = XY(b);
+      const cx = (xa+xb)/2 + (yb-ya)*bb, cy = (ya+yb)/2 - (xb-xa)*bb;
+      let dmin = 1e9;
+      for (let t = 0.05; t < 1; t += 0.05) {
+        const x = (1-t)*(1-t)*xa + 2*(1-t)*t*cx + t*t*xb, y = (1-t)*(1-t)*ya + 2*(1-t)*t*cy + t*t*yb;
+        dmin = Math.min(dmin, Math.hypot(x-ex, y-ey), Math.hypot((x-ex)/2.5, y-(ey-30)));
+      }
+      if (dmin > bestD + 6) { bestD = dmin; bestB = bb; }
+    }
+    return bestB;
+  }
+  return (A[b].lat + A[a].lat) / 2 >= 55.5 ? 0.13 : -0.13;
+}
+
+function drawMap(res, mode, legs){
   const hub = mode.startsWith("прямые") ? null : mode.split("|")[1];
-  const added = new Map(res.new_legs.map(l => [l.i + "-" + l.j, l]));
-  let s = "";
-  for (const r of M.rw_current){
+  const added = new Map(legs.map((l, k) => [l.i + "-" + l.j, k]));
+  const cities = new Set(["SVX"]); if (hub) cities.add(hub);
+  let g = BASE;
+  // Москва
+  const [mx, my] = XY("MOW");
+  g += `<text x="${mx}" y="${my+7}" text-anchor="middle" font-size="22" fill="var(--muted)">★</text>`;
+  g += `<text class="lbl" x="${mx-12}" y="${my+22}" text-anchor="end" font-size="13" fill="var(--muted)">Москва</text>`;
+  // действующие рейсы
+  for (const r of M.rw_current) {
     if (!(r.i in A) || !(r.j in A) || added.has(r.i + "-" + r.j)) continue;
-    const [x1,y1] = P(r.i), [x2,y2] = P(r.j);
-    s += `<line class="route" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--existing)" stroke-width="${1 + r.f/4}" stroke-linecap="round" opacity=".75"/>`;
+    const {d} = arc(r.i, r.j, bendFor(r.i, r.j) * 0.75);
+    g += `<path class="route" d="${d}" fill="none" stroke="var(--exist)" stroke-width="${(1 + r.f*0.3).toFixed(2)}" stroke-linecap="round" opacity=".8"/>`;
+    cities.add(r.i); cities.add(r.j);
   }
-  for (const l of res.new_legs){
-    const [x1,y1] = P(l.i), [x2,y2] = P(l.j);
-    s += `<line class="route" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--accent)" stroke-width="${2 + l.f/2.5}" stroke-linecap="round"/>`;
+  // новые рейсы: в обратном порядке, чтобы главные легли сверху
+  const badges = [];
+  [...legs].reverse().forEach(l => {
+    const k = added.get(l.i + "-" + l.j);
+    const {d, mid} = arc(l.i, l.j, bendFor(l.i, l.j));
+    const w = (3 + l.f * 0.75).toFixed(1);
+    g += `<path d="${d}" fill="none" stroke="var(--halo)" stroke-width="${+w + 4}" stroke-linecap="round" opacity=".9"/>`;
+    g += `<path class="route" d="${d}" fill="none" stroke="${red(k)}" stroke-width="${w}" stroke-linecap="round"${l.f0 === 0 ? ' stroke-dasharray="0"' : ""}/>`;
+    badges.push([mid, k]);
+    cities.add(l.i); cities.add(l.j);
+  });
+  // узлы
+  const main = new Set(legs.flatMap(l => [l.i, l.j]));
+  for (const c of cities) {
+    if (!(c in A) || c === "SVX" || c === hub) continue;
+    const [x, y] = XY(c);
+    g += `<circle cx="${x}" cy="${y}" r="${main.has(c) ? 5.5 : 3.8}" fill="var(--node)" stroke="var(--halo)" stroke-width="1.6"/>`;
   }
-  for (const c of codes){
-    const [x,y] = P(c); const special = c === "SVX" || c === hub;
-    const r = 3 + Math.sqrt(A[c].mass) * 3.2;
-    s += `<circle cx="${x}" cy="${y}" r="${r}" fill="${special ? "var(--cond)" : "var(--ink)"}" opacity="${special ? 1 : .55}"/>`;
-    if (SHOW.has(c) || special || res.new_legs.some(l => l.i === c || l.j === c))
-      s += `<text x="${x + r + 3}" y="${y + 4}" font-size="${special ? 15 : 12}" font-weight="${special ? 600 : 400}" fill="var(--ink)" font-family="Golos Text, system-ui, sans-serif">${A[c].name}</text>`;
+  // Кольцово
+  const [ex, ey] = XY("SVX");
+  g += `<circle cx="${ex}" cy="${ey}" r="34" fill="var(--r1)" opacity=".10"/><circle cx="${ex}" cy="${ey}" r="22" fill="var(--r1)" opacity=".18"/>`;
+  g += `<circle cx="${ex}" cy="${ey}" r="10" fill="var(--r1)" stroke="var(--halo)" stroke-width="3"/>`;
+  // новый хаб
+  if (hub) {
+    const [hx, hy] = XY(hub);
+    g += `<circle cx="${hx}" cy="${hy}" r="11" fill="var(--panel)" stroke="var(--ink)" stroke-width="3.5"/><circle cx="${hx}" cy="${hy}" r="4" fill="var(--ink)"/>`;
   }
-  $("map").innerHTML = s;
+  // бейджи с номерами
+  for (const [[x, y], k] of badges) {
+    g += `<circle cx="${x}" cy="${y}" r="12" fill="${red(k)}" stroke="var(--halo)" stroke-width="2.5"/>`;
+    g += `<text x="${x}" y="${y+4.5}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${k+1}</text>`;
+  }
+  // подписи
+  for (const c of cities) {
+    if (!(c in A) || c === "MOW") continue;
+    const [x, y] = XY(c), [dx, dy, anc] = OFF[c] || [10, 4, "start"];
+    if (c === "SVX") {
+      // над точкой: справа Тюмень, снизу Челябинск, слева дуга из Казани
+      g += `<text class="lbl" x="${x}" y="${y-38}" text-anchor="middle" font-size="21" font-weight="800" fill="var(--ink)">Екатеринбург</text>`;
+      g += `<text class="lbl" x="${x}" y="${y-21}" text-anchor="middle" font-size="12.5" font-weight="600" fill="var(--r1)">Кольцово — база и хаб Red Wings</text>`;
+      continue;
+    }
+    const strong = main.has(c) || c === hub;
+    g += `<text class="lbl" x="${x+dx}" y="${y+dy}" text-anchor="${anc}" font-size="${strong ? 16 : 12.5}" font-weight="${strong ? 700 : 400}" fill="${strong ? "var(--ink)" : "var(--muted)"}">${A[c].name}${c === hub ? " · хаб" : ""}</text>`;
+  }
+  $("map").innerHTML = g;
 }
 
 function render(){
-  const k0 = key(state.fare, state.cost, state.sub, state.mode), res = G[k0];
+  const res = G[key(state.fare, state.cost, state.sub, state.mode)];
   $("fareOut").textContent = pct(M.fares[state.fare]);
   $("costOut").textContent = M.costs[state.cost]/1000 + " тыс. ₽";
   $("subOn").setAttribute("aria-pressed", state.sub === 1); $("subOff").setAttribute("aria-pressed", state.sub === 0);
   document.querySelectorAll("#modes button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === state.mode));
 
-  const p = res.profit, plane = Math.min(res.aircraft, M.aircraft);
-  $("kProfit").textContent = (p > 0.0005 ? "+" : "") + nf(p, 2) + " млрд ₽";
-  $("kProfit").className = "v " + (p > 0.0005 ? "pos" : "zero");
+  const p = res.profit, plane = Math.min(res.aircraft, M.aircraft), on = p > 0.0005;
+  $("kProfit").textContent = (on ? "+" : "") + nf(p, 2) + " млрд ₽";
   $("kPlanes").textContent = nf(plane, 1) + " из " + M.aircraft;
   $("planes").innerHTML = Array.from({length: M.aircraft}, (_, i) => `<span><i style="width:${Math.max(0, Math.min(1, plane - i))*100}%"></i></span>`).join("");
   $("kPax").textContent = (res.pax > 0 ? "+" : "") + Math.round(res.pax/1000).toLocaleString("ru-RU") + " тыс.";
   $("kShare").textContent = (res.share_pp > 0 ? "+" : "") + nf(res.share_pp, 2) + " п.п.";
-  $("kAccess").textContent = "доступность городов " + (res.access_pct > 0 ? "+" : "") + nf(res.access_pct, 1) + "%";
+  $("kAccess").textContent = "доля рынка · доступность городов " + (res.access_pct > 0 ? "+" : "") + nf(res.access_pct, 1) + "%";
+  for (const id of ["kProfit", "kPlanes", "kPax", "kShare"]) $(id).className = "v" + (on ? "" : " zero");
 
-  // все варианты при этих условиях
   const rows = M.modes.map(m => [m, G[key(state.fare, state.cost, state.sub, m)]]);
   const best = rows.reduce((a, b) => b[1].profit > a[1].profit ? b : a);
-  $("compare").querySelector("tbody").innerHTML = rows.map(([m, r]) =>
-    `<tr class="${m === state.mode ? "cur" : ""} ${m === best[0] && best[1].profit > 0.0005 ? "best" : ""}"><td>${MODE_NAMES[m]}${m === best[0] && best[1].profit > 0.0005 ? '<span class="tag">лучший</span>' : ""}</td><td class="n">${nf(r.profit, 2)}</td><td class="n">${nf(Math.min(r.aircraft, M.aircraft), 1)}</td></tr>`).join("");
+  $("compare").querySelector("tbody").innerHTML = rows.map(([m, r]) => {
+    const isBest = m === best[0] && best[1].profit > 0.0005;
+    return `<tr class="${m === state.mode ? "cur" : ""} ${isBest ? "best" : ""}"><td>${MODE_NAMES[m]}${isBest ? '<span class="tag">лучший</span>' : ""}</td><td class="n">${nf(r.profit, 2)}</td><td class="n">${nf(Math.min(r.aircraft, M.aircraft), 1)}</td></tr>`;
+  }).join("");
 
-  // что добавляется
   const legs = [...res.new_legs].sort((a, b) => b.pax - a.pax);
   $("legs").innerHTML = legs.length ? `<table><thead><tr><th>Маршрут</th><th style="text-align:right">Рейсов в неделю</th><th style="text-align:right">Пасс. в год</th></tr></thead><tbody>` +
-    legs.map(l => `<tr><td>${A[l.i].name} – ${A[l.j].name}${l.f0 === 0 ? '<span class="tag">новый</span>' : ""}</td><td class="n">${l.f0 ? nf(l.f0, l.f0 % 1 ? 1 : 0) + " → " : ""}${l.f}</td><td class="n">${Math.round(l.pax/1000)} тыс.</td></tr>`).join("") + "</tbody></table>"
+    legs.map((l, k) => `<tr><td><span class="num" style="background:${red(k)}">${k+1}</span>${A[l.i].name} – ${A[l.j].name}${l.f0 === 0 ? '<span class="tag">новый</span>' : ""}</td><td class="n">${l.f0 ? nf(l.f0, l.f0 % 1 ? 1 : 0) + " → " : "0 → "}${l.f}</td><td class="n">${Math.round(l.pax/1000)} тыс.</td></tr>`).join("") + "</tbody></table>"
     : `<p class="empty">Ни один новый рейс не окупается — при этих условиях борта выгоднее оставить на международных линиях.</p>`;
 
-  // вывод одной фразой
   const name = MODE_NAMES[state.mode];
   let v;
-  if (best[1].profit <= 0.0005) v = `При этих условиях <b>новые рейсы не окупаются</b> ни в одном варианте: все 4 борта остаются на международных линиях.`;
-  else if (best[0] === state.mode) v = `<b>${name}</b> — лучший вариант при этих условиях: ${nf(plane, 1)} борта на внутренних линиях, прибыль +${nf(p, 2)} млрд ₽ в год.`;
-  else v = `${name}: ${p > 0.0005 ? "+" + nf(p, 2) + " млрд ₽" : "не окупается"}. Лучше при этих условиях — <b>${MODE_NAMES[best[0]]}</b> (+${nf(best[1].profit, 2)} млрд ₽).`;
-  $("verdict").innerHTML = v;
-  $("mapTitle").textContent = name + " · выручка " + pct(M.fares[state.fare]) + " · блок-час " + M.costs[state.cost]/1000 + " тыс. ₽" + (state.sub ? "" : " · без субсидий");
-  drawMap(res, state.mode);
+  if (best[1].profit <= 0.0005) v = `При этих условиях <b>новые рейсы не окупаются</b> ни в одном варианте — все 4 борта остаются на международных линиях.`;
+  else if (best[0] === state.mode) v = `<b>${name}</b> — лучший вариант: ${nf(plane, 1)} борта на внутренних линиях, +${nf(p, 2)} млрд ₽ в год.`;
+  else v = `${name}: ${on ? "+" + nf(p, 2) + " млрд ₽" : "не окупается"}. Лучше при этих условиях — <b>${MODE_NAMES[best[0]]}</b> (+${nf(best[1].profit, 2)} млрд ₽).`;
+  $("verdict").innerHTML = v + `<div class="vsub">${name} · выручка ${pct(M.fares[state.fare])} · блок-час ${M.costs[state.cost]/1000} тыс. ₽${state.sub ? "" : " · без субсидий"}</div>`;
+  drawMap(res, state.mode, legs);
 }
 
 $("fare").addEventListener("input", e => { state.fare = +e.target.value; render(); });
