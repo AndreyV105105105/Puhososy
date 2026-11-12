@@ -11,7 +11,7 @@ ML-блок, вариант Б. ML-поправка спроса: учимся �
 Проверка по городам (5 разбиений × 5 повторов), все метрики — только на прогнозах вне обучения.
 Стоп-правило: если корреляция растёт меньше чем на 0,05 или ошибка падает меньше чем на 5% — в модель не встраиваем.
 
-Запуск: python model/ml_demand.py   (после step1, step2, ml_dataset)
+Запуск: python model/ml_demand.py   (после step1, step2, ml_dataset; в run_full не входит: на модель не влияет)
 Выход:  results/ml_demand_metrics.csv, results/ml_demand_pairs.csv (r̂ по всем 780 парам)
 """
 import numpy as np
