@@ -17,7 +17,7 @@ import matplotlib.patheffects as pe
 from pathlib import Path as FPath
 ROOT = FPath(__file__).resolve().parent.parent
 U = str(ROOT)
-G = ROOT / "data" / "geo_countries_50m.json"   # Natural Earth 1:50m (world-atlas 2.0.2), страны вокруг России, координаты до 0,01°
+G = ROOT / "data" / "geo_countries_50m.json"   # Natural Earth 10m (вид РФ) + ДНР, ЛНР, Запорожская и Херсонская обл. в составе России; координаты до 0,01°
 THEME = sys.argv[1] if len(sys.argv) > 1 else "light"
 OUT = str(ROOT / "results" / f"map_slide_{THEME}.png")
 
@@ -171,8 +171,8 @@ rows = [(1, "Шаг 1 · выручка ≥ +30%", "Казань – Екате�
         (3, "Шаг 3 · ≥ +60%, субсидии сохранены", "Омск и Оренбург – Екатеринбург", "2 → 7 и 2 → 3 рейса/нед")]
 y = 0.585
 for s, cond, route, fr in rows:
-    pan.add_patch(Circle((X + 0.025, y - 0.022), 0.024, fc=RED[s - 1], ec="none", transform=pan.transData))
-    pan.text(X + 0.025, y - 0.0225, str(s), fontsize=12, fontweight="bold", color="white", ha="center", va="center")
+    pan.scatter([X + 0.025], [y - 0.022], s=620, color=RED[s - 1], edgecolor="none", zorder=3)   # scatter — всегда круг
+    pan.text(X + 0.025, y - 0.0225, str(s), fontsize=12, fontweight="bold", color="white", ha="center", va="center", zorder=4)
     pan.text(X + 0.08, y, cond, fontsize=10.5, color=C["muted"], va="top")
     pan.text(X + 0.08, y - 0.032, route, fontsize=12.5, fontweight="bold", color=C["ink"], va="top")
     pan.text(X + 0.08, y - 0.066, fr, fontsize=11, color=C["ink"], va="top")
