@@ -43,6 +43,10 @@ def observed_flows(airports: pd.DataFrame) -> pd.DataFrame:
     # убираем дубли кодшеринга
     b = b[~b["перевозчик_IATA"].isin(PARAMS["codeshare_exclude"])]
     seats = b["перевозчик_IATA"].map(PARAMS["seats_by_carrier"]).fillna(PARAMS["seats_default"])
+    if PARAMS.get("fact_v3"):
+        rs = route_seats()
+        key = [(min(o, d), max(o, d), c) for o, d, c in zip(b["откуда"], b["куда"], b["перевозчик_IATA"])]
+        seats = pd.Series([rs.get(k, s) for k, s in zip(key, seats)], index=b.index)
     lf = pd.Series(PARAMS["load_factor_market"], index=b.index)
     if PARAMS.get("use_carrier_lf"):
         t = pd.read_csv(DATA / "load_factors.csv", encoding="utf-8-sig")
@@ -61,12 +65,51 @@ def observed_flows(airports: pd.DataFrame) -> pd.DataFrame:
     one_side = ~(flows.i.isin(origins) & flows.j.isin(origins))
     flows.loc[one_side, "T_obs"] *= 2
     flows["табло_с_обеих_сторон"] = ~one_side
+    if PARAMS.get("fact_v3"):
+        flows = fix_with_airports(flows)
     flows["km"] = [dist_km(*airports.loc[i, ["lat", "lon"]], *airports.loc[j, ["lat", "lon"]])
                    for i, j in zip(flows.i, flows.j)]
     return flows
 
 
-def design(flows, airports, mass_col, hubs=(), vakhta=()):
+def route_seats():
+    """Кресла на рейсе по паре и перевозчику (основной тип самолёта; «87 / 100» → среднее)."""
+    import re
+    path = DATA / "aircraft_types_2026-11.csv"
+    if not path.exists():
+        return {}
+    t = pd.read_csv(path, encoding="utf-8-sig")
+    out = {}
+    for a, b_, c, s in zip(t.iata_1, t.iata_2, t["перевозчик_IATA"], t["кресел"]):
+        nums = [float(x) for x in re.findall(r"\d+", str(s).split("(")[0])]
+        if nums:
+            out[(min(a, b_), max(a, b_), c)] = float(np.mean(nums))
+    return out
+
+
+def fix_with_airports(flows):
+    """Курортная поправка и реальные потоки из отчётов аэропортов (версия 3 «факта»)."""
+    path = DATA / "airport_route_pax.csv"
+    if not path.exists():
+        return flows
+    r = pd.read_csv(path, encoding="utf-8-sig")
+    ref = {(min(i, j), max(i, j)): v for i, j, v in zip(r.i, r.j, r["пассажиров_туда_обратно"])}
+    key = list(zip(flows.i, flows.j))
+    resort = np.array([i in PARAMS["resort_cities"] or j in PARAMS["resort_cities"] for i, j in key])
+    has = np.array([k in ref for k in key])
+    ratio = [ref[k] / t for k, t, rs, h in zip(key, flows.T_obs, resort, has) if rs and h]
+    f = float(np.median(ratio)) if ratio else 1.0
+    flows = flows.copy()
+    flows["T_табло"] = flows.T_obs
+    flows.loc[resort & ~has, "T_obs"] *= f
+    flows.loc[has, "T_obs"] = [ref[k] for k, h in zip(key, has) if h]
+    flows["источник_факта"] = np.where(has, "отчёт аэропорта", np.where(resort, f"табло × курорт {f:.2f}", "табло"))
+    print(f"Версия 3 «факта»: кресла по типу самолёта, {int(has.sum())} пар из отчётов аэропортов, "
+          f"курортная поправка ×{f:.2f} по {len(ratio)} парам для {int((resort & ~has).sum())} пар")
+    return flows
+
+
+def design(flows, airports, mass_col, hubs=(), vakhta=(), resort=()):
     """Матрица признаков для регрессии: [1, ln(Mi*Mj), ln d, флажок «пара с транзитным хабом»]."""
     m = airports[mass_col]
     ln_mm = np.log(m.loc[flows.i].values * m.loc[flows.j].values)
@@ -75,6 +118,8 @@ def design(flows, airports, mass_col, hubs=(), vakhta=()):
         cols.append((flows.i.isin(hubs) | flows.j.isin(hubs)).astype(float).values)
     if vakhta:
         cols.append((flows.i.isin(vakhta) | flows.j.isin(vakhta)).astype(float).values)
+    if resort:
+        cols.append((flows.i.isin(resort) | flows.j.isin(resort)).astype(float).values)
     return np.column_stack(cols)
 
 
@@ -101,15 +146,16 @@ def cross_validate(X, y, k, seed):
     return y_hat
 
 
-def evaluate(name, flows, airports, mass_col, hubs=(), vakhta=()):
+def evaluate(name, flows, airports, mass_col, hubs=(), vakhta=(), resort=()):
     """Обучить вариант модели и проверить его на отложенных парах."""
-    X = design(flows, airports, mass_col, hubs, vakhta)
+    X = design(flows, airports, mass_col, hubs, vakhta, resort)
     y = np.log(flows.T_obs.values)
     coef = fit_ols(X, y)
     y_cv = cross_validate(X, y, PARAMS["holdout_folds"], PARAMS["random_seed"])
     row = {"вариант": name, "пар": len(y), "ln_k": coef[0], "a": coef[1], "theta": -coef[2],
            "хаб_поправка": coef[3] if hubs else 0.0,
-           "вахта_поправка": coef[-1] if vakhta else 0.0,
+           "вахта_поправка": coef[3 + bool(hubs)] if vakhta else 0.0,
+           "курорт_поправка": coef[3 + bool(hubs) + bool(vakhta)] if resort else 0.0,
            "R2_обучение": r2(y, X @ coef), "R2_отложенные": r2(y, y_cv),
            "медианная_ошибка_отложенные": np.median(np.abs(np.exp(y_cv - y) - 1))}
     return row, np.exp(X @ coef), np.exp(y_cv)
@@ -135,8 +181,9 @@ def main():
     flows = flows_all[has(airports, pax, flows_all)].reset_index(drop=True)
     table.append(evaluate("пассажиропоток (все пары)", flows, airports, pax)[0])
     table.append(evaluate(f"пассажиропоток + хаб {','.join(hubs)}", flows, airports, pax, hubs)[0])
-    final, t_fit, t_cv = evaluate(f"ИТОГ: пассажиропоток + хаб {','.join(hubs)} + вахта", flows, airports, pax, hubs,
-                                  PARAMS["vakhta_cities"])
+    resort = PARAMS["resort_cities"] if PARAMS.get("fact_v3") else ()
+    final, t_fit, t_cv = evaluate(f"ИТОГ: пассажиропоток + хаб {','.join(hubs)} + вахта" + (" + курорт" if resort else ""),
+                                  flows, airports, pax, hubs, PARAMS["vakhta_cities"], resort)
     table.append(final)
     coefs = pd.DataFrame(table)
 

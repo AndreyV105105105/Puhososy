@@ -47,7 +47,7 @@ def setup():
     coords = {c: (ap.loc[c, "lat"], ap.loc[c, "lon"]) for c in ap.index}
     km = {(i, j): dist_km(*coords[i], *coords[j]) for i in cities for j in cities if i < j}
     m = ap["масса"]
-    vk = lambda p: vakhta_coef if (p[0] in P["vakhta_cities"] or p[1] in P["vakhta_cities"]) else 0.0
+    vk = lambda p: ch.pair_shift(*p)
     demand = {p: scale * math.exp(ln_k + a * math.log(m[p[0]] * m[p[1]]) - theta * math.log(k) + vk(p))
               for p, k in km.items()}
     top = sorted(demand, key=demand.get, reverse=True)[:P["direct_candidates_top"]]

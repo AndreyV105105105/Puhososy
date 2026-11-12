@@ -36,6 +36,23 @@ def demand_model():
     return row["ln_k"], row["a"], row["theta"], row["хаб_поправка"], row.get("вахта_поправка", 0.0)
 
 
+_SHIFT = None
+
+
+def pair_shift(i, j):
+    """Поправки гравитационной модели для пары: вахтовый город и (версия 3) курорт."""
+    global _SHIFT
+    if _SHIFT is None:
+        c = pd.read_csv(RESULTS / "demand_coefs.csv", encoding="utf-8-sig")
+        row = c[c["вариант"].str.startswith("ИТОГ")].iloc[0]
+        _SHIFT = (float(row.get("вахта_поправка", 0.0)), float(row.get("курорт_поправка", 0.0) or 0.0))
+    v, r = _SHIFT
+    s = v if (i in P["vakhta_cities"] or j in P["vakhta_cities"]) else 0.0
+    if P.get("fact_v3") and (i in P["resort_cities"] or j in P["resort_cities"]):
+        s += r
+    return s
+
+
 def fare_model(airports):
     """Тариф ≈ a + b*км + c*[в обход Москвы]. Подбираем по 24 парам АТОР (минимальные тарифы, август 2026)."""
     f = pd.read_csv(DATA / "fares_ator_2026-08-03.csv", encoding="utf-8-sig")
@@ -249,7 +266,7 @@ def run_network(net, airports, fc, dem, scale=1.0):
             i, j = sorted((cities[x], cities[y]))
             km, opts = options(i, j, airports, net, fc)
             # спрос «откуда–куда» (флажок хаба = 0: транзитных пассажиров S7 в нём нет)
-            vk = vakhta_coef if (i in P["vakhta_cities"] or j in P["vakhta_cities"]) else 0.0
+            vk = pair_shift(i, j)
             T = scale * math.exp(ln_k + a * math.log(m[i] * m[j]) - theta * math.log(km) + vk)
             for o in opts:
                 if o["вариант"] in ("прямой", "доехать до аэропорта", "через Екатеринбург"):
