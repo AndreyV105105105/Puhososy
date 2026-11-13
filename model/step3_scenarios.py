@@ -364,6 +364,16 @@ def combine_seasons(res, nets, SM):
     return tot
 
 
+def idle_cost(nets, M, bh0):
+    """Плата за простой (проверка, P["idle_cost_rub_month"]): борта, занятые летом, но не занятые зимой,
+    x месяцы зимы x ставка. bh0 — блок-часы базовой сети (от неё считаем занятые борта). 0, если ставка 0."""
+    rate = P.get("idle_cost_rub_month", 0)
+    if not rate:
+        return 0.0
+    b = {s: (block_hours(nets[s], M) - bh0) / BH_PER_AIRCRAFT for s in ("лето", "зима")}
+    return rate * max(0.0, b["лето"] - max(b["зима"], 0.0)) * (52 - P["summer_weeks"]) / 52 * 12
+
+
 def evaluate_seasons(nets, SM, case):
     res = {s: evaluate(nets[s], Ms, case) for s, Ms, _ in SM}
     return combine_seasons(res, nets, SM), res
@@ -379,7 +389,8 @@ def greedy_seasons(net0, M, mode, n_aircraft, case):
     nets = {s: net0 for s, _, _ in SM}
     res = {s: evaluate(net0, Ms, case) for s, Ms, _ in SM}
     tot = combine_seasons(res, nets, SM)
-    history = [(dict(nets), tot["прибыль"])]
+    obj = tot["прибыль"] - idle_cost(nets, M, bh0)      # без платы за простой = прибыль, как раньше
+    history = [(dict(nets), obj)]
     log = []
     while True:
         best = None
@@ -396,13 +407,14 @@ def greedy_seasons(net0, M, mode, n_aircraft, case):
                 nn = dict(nets); nn[s] = cand
                 rr = dict(res); rr[s] = r
                 t = combine_seasons(rr, nn, SM)
-                gain = (t["прибыль"] - tot["прибыль"]) / max((bh - bh_now) * w, 1)
+                o = t["прибыль"] - idle_cost(nn, M, bh0)
+                gain = (o - obj) / max((bh - bh_now) * w, 1)
                 if best is None or gain > best[0]:
-                    best = (gain, s, mv, nn, rr, t)
+                    best = (gain, s, mv, nn, rr, t, o)
         if best is None:
             break
-        gain, s, mv, nets, res, tot = best
-        history.append((dict(nets), tot["прибыль"]))
+        gain, s, mv, nets, res, tot, obj = best
+        history.append((dict(nets), obj))
         log.append(dict(сезон=s, ход=mv[0], пара=f"{mv[1][0]}-{mv[1][1]}", рейсов_нед=mv[2],
                         прибыль_на_блок_час=round(gain), прибыль_сети_млрд=round(tot["прибыль"] / 1e9, 3),
                         самолётов_занято=round((block_hours(nets[s], M) - bh0) / BH_PER_AIRCRAFT, 2)))
