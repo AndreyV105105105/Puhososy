@@ -110,8 +110,9 @@ def ru(x):
     return f"{x:g}".replace(".", ",")
 
 
-def draw(mode, airports, s0, title=None, hub_note="кандидат в хаб (надстройка к прямым с выручки +80%)"):
-    path = RESULTS / f"network_{mode}_базовый.csv"
+def draw(mode, airports, s0, title=None, hub_note="кандидат в хаб (надстройка к прямым с выручки +80%)",
+         path=None, out=None):
+    path = path or RESULTS / f"network_{mode}_базовый.csv"
     if not path.exists():
         return None
     legs = pd.read_csv(path, encoding="utf-8-sig")
@@ -189,7 +190,7 @@ def draw(mode, airports, s0, title=None, hub_note="кандидат в хаб (�
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, 0.0), ncol=2, fontsize=9, frameon=False)
     ax.set_title(title or f"{TITLES[mode]}, базовый сценарий: сеть Red Wings между городами модели",
                  fontsize=12.5, color=INK, loc="left")
-    out = RESULTS / f"map_{mode}_базовый.png"
+    out = out or RESULTS / f"map_{mode}_базовый.png"
     fig.savefig(out, bbox_inches="tight", facecolor=SEA); plt.close(fig)
     return out
 
