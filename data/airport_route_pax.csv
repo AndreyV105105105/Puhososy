@@ -8,8 +8,8 @@ OMS,SGC,Омск,Сургут,2024,37400,сверено 13.11.2026,https://bk55.
 NUX,OMS,Омск,Новый Уренгой,2024,29900,сверено 13.11.2026,https://bk55.ru/news/article/241126/
 KZN,OMS,Омск,Казань,2024,25900,сверено 13.11.2026,https://bk55.ru/news/article/241126/
 OMS,SVX,Омск,Екатеринбург,2024,23600,сверено 13.11.2026,https://bk55.ru/news/article/241126/
-AER,KUF,Самара (Курумоч),Сочи,2024,304000,не сверено (ресерч Gemini),https://ar-kuf.ru/about/news/passazhiropotok-aeroporta-kurumoch-prevysil-3-5-milliona-che/
-KGD,KUF,Самара (Курумоч),Калининград,2025,47800,не сверено (ресерч Gemini),см. Материалы ИИ/9
-AER,PEE,Пермь (Большое Савино),Сочи,2024,303700,не сверено (ресерч Gemini),см. Материалы ИИ/9
-OVB,PEE,Пермь (Большое Савино),Новосибирск,2024,49100,не сверено (ресерч Gemini),см. Материалы ИИ/9
-MCX,PEE,Пермь (Большое Савино),Махачкала,2024,34800,не сверено (ресерч Gemini),см. Материалы ИИ/9
+AER,KUF,Самара (Курумоч),Сочи,2024,304000,сверено 13.11.2026,https://ar-kuf.ru/about/news/passazhiropotok-aeroporta-kurumoch-prevysil-3-5-milliona-che/
+KGD,KUF,Самара (Курумоч),Калининград,2025,47800,"не сверено: в указанном Gemini пресс-релизе Курумоча за 2024 год Калининграда нет, итоги 2025 не найдены",см. Материалы ИИ/9
+AER,PEE,Пермь (Большое Савино),Сочи,2024,303700,сверено 13.11.2026,https://properm.ru/news/2025-03-02/permyaki-chasche-vsego-letali-v-moskvu-sochi-i-turtsiyu-v-2024-godu-5335862
+OVB,PEE,Пермь (Большое Савино),Новосибирск,2024,49100,сверено 13.11.2026,https://properm.ru/news/2025-03-02/permyaki-chasche-vsego-letali-v-moskvu-sochi-i-turtsiyu-v-2024-godu-5335862
+MCX,PEE,Пермь (Большое Савино),Махачкала,2024,34800,сверено 13.11.2026,https://properm.ru/news/2025-03-02/permyaki-chasche-vsego-letali-v-moskvu-sochi-i-turtsiyu-v-2024-godu-5335862
