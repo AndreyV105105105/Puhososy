@@ -418,6 +418,9 @@ body.touring .toast{bottom:7rem}
 .foot{border-top:1px solid var(--line);padding:1rem 0 2rem;font-size:.78rem;color:var(--faint);line-height:1.5}
 
 /* ---------- Адаптив ---------- */
+a.tab{text-decoration:none}
+@media (max-width:1600px){.tab{padding:.5rem;gap:.3rem;font-size:.9rem}.top-in{gap:.5rem}.brand{margin-right:0}#resetBtn .long{display:none}}
+@media (max-width:1300px){.top-in{flex-wrap:wrap;row-gap:.4rem}.tabs{order:3;flex-basis:100%;overflow-x:auto;scrollbar-width:none;padding-bottom:.1rem}.tabs::-webkit-scrollbar{display:none}.top-actions{margin-left:auto}}
 @media (max-width:1180px){
   .top-in{flex-wrap:wrap;row-gap:.4rem}
   .tabs{order:3;flex-basis:100%;overflow-x:auto;scrollbar-width:none;padding-bottom:.1rem}
@@ -472,6 +475,188 @@ body.touring .toast{bottom:7rem}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* ================= ИИ-штурман (вкладка 6, бывший navigator.html) — стили только внутри #panel-nav ================= */
+/* ---------- Общие элементы ---------- */
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#panel-nav .eyebrow{font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue-d);margin-bottom:.5rem}
+#panel-nav .card{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);scroll-margin-top:7rem}
+#panel-nav .chip{display:inline-flex;align-items:center;gap:.4rem;border-radius:1rem;line-height:1.3;padding:.3rem .7rem;font-size:.78rem;font-weight:600;background:var(--bg-2);border:1px solid var(--line);color:var(--text)}
+#panel-nav .chip-green{background:var(--green-soft);border-color:var(--green-line);color:var(--green-d)}
+#panel-nav .chip-blue{background:var(--blue-soft);border-color:var(--blue-line);color:var(--blue-d)}
+#panel-nav .tagf,#panel-nav .taga{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:.35rem;padding:.12rem .4rem;vertical-align:.1em;white-space:nowrap}
+#panel-nav .tagf{color:var(--blue-d);background:var(--blue-soft);border:1px solid var(--blue-line)}
+#panel-nav .taga{color:var(--muted);background:#fff;border:1px dashed #B8C7D4}
+#panel-nav .spot{box-shadow:0 0 0 3px var(--blue),0 0 0 10px rgba(45,155,218,.18)!important;border-radius:var(--r);transition:box-shadow .3s;scroll-margin:7rem 0 7.5rem}
+#panel-nav .pad{padding:1.1rem 1.25rem 1.2rem}
+#panel-nav .pad > h3{font-size:1.1rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+#panel-nav .note{font-size:.8rem;color:var(--muted);margin-top:.7rem;line-height:1.4}
+#panel-nav .chipbtn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:.38rem .7rem;font-size:.84rem;font-weight:650;color:var(--text);transition:.15s}
+#panel-nav .chipbtn:hover{border-color:var(--blue)}
+#panel-nav .rv{display:flex;align-items:center;gap:.8rem;padding:1rem 1.1rem;border:1px solid var(--blue-line);border-radius:.9rem;background:linear-gradient(180deg,#F7FBFE,#fff)}
+#panel-nav .rv-stop b{display:block;font-size:clamp(1.5rem,2.2vw,2.1rem);font-weight:800;color:var(--ink);letter-spacing:-.04em;line-height:1}
+#panel-nav .rv-stop span{display:block;font-size:.82rem;color:var(--muted);margin-top:.25rem}
+#panel-nav .rv-stop.is-hub b{color:var(--blue-d)}
+#panel-nav .rv-stop .hubtag{display:inline-block;margin-top:.3rem;font-size:.68rem;font-weight:700;color:var(--blue-d);background:var(--blue-soft);border:1px solid var(--blue-line);border-radius:99px;padding:.1rem .5rem}
+#panel-nav .rv-line{flex:1;min-width:2rem;display:grid;justify-items:center;gap:.2rem;color:var(--blue);font-size:.76rem;font-weight:600}
+#panel-nav .rv-line i{display:block;width:100%;height:0;border-top:2px dashed var(--blue);opacity:.55}
+#panel-nav .rv-line span{color:var(--muted)}
+#panel-nav .rv-meta{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin-top:.7rem}
+
+/* ---------- ИИ-штурман: раскладка ---------- */
+#panel-nav .nav{display:grid;grid-template-columns:minmax(0,1fr) clamp(20rem,27vw,25rem);grid-template-areas:"chat intro" "chat bank";grid-template-rows:auto 1fr;gap:1.1rem 1.25rem;align-items:start}
+#panel-nav .intro{grid-area:intro;padding-top:.3rem}
+#panel-nav .intro h1{font-size:clamp(1.5rem,2.2vw,2.1rem)}
+#panel-nav .intro h1 em{font-style:normal;color:var(--blue-d)}
+#panel-nav .intro .lead{margin-top:.45rem;color:var(--muted)}
+
+/* ---------- Чат ---------- */
+#panel-nav .chat{grid-area:chat;display:flex;flex-direction:column;height:clamp(33rem,100vh - 7.8rem,50rem);overflow:hidden}
+body.touring #panel-nav .chat{height:clamp(27rem,100vh - 13.2rem,50rem)}
+#panel-nav .chat-h{display:flex;align-items:center;gap:.4rem .7rem;flex-wrap:wrap;padding:.6rem 1rem;border-bottom:1px solid var(--line)}
+#panel-nav .ava{width:2.1rem;height:2.1rem;border-radius:.65rem;background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;display:grid;place-items:center;flex:none}
+#panel-nav .chat-h b{display:block;color:var(--ink);font-size:1.05rem;line-height:1.2}
+#panel-nav .chat-h small{color:var(--muted);font-size:.8rem}
+#panel-nav .chat-h .taga{margin-left:auto}
+#panel-nav .log{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;position:relative;padding:1rem;display:flex;flex-direction:column;gap:.7rem;background:var(--bg-2)}
+#panel-nav .log > *{flex:none}
+#panel-nav .msg{max-width:min(100%,46rem);animation:viewIn .25s both}
+#panel-nav .msg.u{align-self:flex-end;background:var(--blue-d);color:#fff;border-radius:1rem 1rem .3rem 1rem;padding:.6rem .9rem;font-weight:500}
+#panel-nav .msg.b{align-self:flex-start;display:grid;gap:.6rem;min-width:0;justify-items:start}
+#panel-nav .msg.wide{width:100%;max-width:none}
+#panel-nav .msg.wide > *{max-width:100%}
+#panel-nav .bub{background:#fff;border:1px solid var(--line);border-radius:1rem 1rem 1rem .3rem;padding:.6rem .9rem;color:var(--ink);max-width:46rem;box-shadow:0 1px 2px rgba(14,34,56,.05)}
+#panel-nav .dots{display:flex;gap:.3rem;padding:.85rem .9rem}
+#panel-nav .dots i{width:.42rem;height:.42rem;border-radius:50%;background:var(--faint);animation:dot 1s infinite}
+#panel-nav .dots i:nth-child(2){animation-delay:.15s}
+#panel-nav .dots i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+#panel-nav .sys{align-self:center;text-align:center;font-size:.76rem;color:var(--faint)}
+#panel-nav .box{width:100%;background:#fff;border:1px solid var(--line);border-radius:.9rem;padding:.8rem .95rem;animation:viewIn .3s both}
+#panel-nav .box h4{font-size:.95rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+#panel-nav .box h4 .ic{color:var(--blue-d)}
+#panel-nav .box .note{margin-top:.55rem}
+#panel-nav .duo{width:100%;display:flex;flex-wrap:wrap;gap:.6rem;align-items:flex-start}
+#panel-nav .duo > *{flex:1 1 17rem;min-width:0;width:auto}
+#panel-nav .duo > :first-child{flex:1.55 1 22rem}
+#panel-nav .legs li{display:grid;grid-template-columns:1.2rem 2.9rem 1fr auto;gap:.5rem;align-items:baseline;padding:.26rem 0;border-bottom:1px solid var(--line);font-size:.86rem;line-height:1.3}
+#panel-nav .legs .ic{color:var(--faint);align-self:center}
+#panel-nav .legs time{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+#panel-nav .legs b{font-weight:650;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+#panel-nav .legs .fl span{color:var(--ink);font-weight:600}
+#panel-nav .legs .fl .ic{color:var(--blue-d)}
+#panel-nav .legs li:nth-child(3){border-bottom:2px solid #C9D5DF}      /* граница «туда / обратно» */
+#panel-nav .total{display:flex;align-items:center;flex-wrap:wrap;gap:.3rem .8rem;padding:.5rem 0 .45rem}
+#panel-nav .total span{font-weight:700;color:var(--ink)}
+#panel-nav .total b{margin-left:auto;font-size:1.7rem;font-weight:800;color:var(--ink);letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}
+#panel-nav .cmp{width:100%;border-collapse:collapse;font-size:.84rem;font-variant-numeric:tabular-nums}
+#panel-nav .cmp th,#panel-nav .cmp td{padding:.34rem .3rem .34rem 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-weight:400}
+#panel-nav .cmp thead th{font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+#panel-nav .cmp td{color:var(--ink);font-weight:600}
+#panel-nav .cmp .tot td{font-weight:800;font-size:.98rem;border:0}
+#panel-nav .cmp .tot th{border:0;font-weight:700;color:var(--ink)}
+#panel-nav .risk{display:grid;gap:.4rem}
+#panel-nav .risk li{display:grid;grid-template-columns:4.3rem 1fr 3rem;gap:.6rem;align-items:center;font-size:.88rem;color:var(--ink)}
+#panel-nav .risk b{text-align:right;font-variant-numeric:tabular-nums}
+#panel-nav .bar{height:.5rem;border-radius:99px;background:#E4ECF2;overflow:hidden}
+#panel-nav .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--blue-d));transition:width .5s}
+#panel-nav .push{width:min(100%,27rem);background:var(--ink);color:#fff;border-radius:1rem;padding:.8rem .95rem;box-shadow:0 12px 30px rgba(14,34,56,.25);animation:viewIn .3s both}
+#panel-nav .push small{display:flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9CCFF0}
+#panel-nav .push > b{display:block;margin:.4rem 0 .65rem;font-size:1rem;line-height:1.35}
+#panel-nav .push-a{display:flex;align-items:center;gap:.4rem;font-weight:700;color:#9FE0BC;font-size:.9rem}
+#panel-nav .push .btn:focus-visible{outline-color:#fff}
+#panel-nav .hit{animation:hit .5s}
+@keyframes hit{50%{box-shadow:0 0 0 .4rem rgba(45,155,218,.35)}}
+#panel-nav .row{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem}
+#panel-nav .row small{font-size:.78rem;color:var(--muted)}
+#panel-nav .tkt li{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem;color:var(--ink)}
+#panel-nav .tkt li .ic{color:var(--green);margin-top:.12rem}
+#panel-nav .win{display:inline-flex;align-items:center;gap:.5rem;background:var(--green-soft);border:1px solid var(--green-line);color:var(--green-d);font-weight:800;font-size:1.05rem;letter-spacing:-.01em;border-radius:.85rem;padding:.55rem .9rem;animation:viewIn .3s both}
+#panel-nav .box .rv{padding:.8rem .9rem}
+#panel-nav .saved{width:100%;display:flex;gap:.6rem;align-items:flex-start;background:var(--green-soft);border:1px solid var(--green-line);border-radius:.9rem;padding:.7rem .9rem;color:var(--green-d);font-size:.88rem;animation:viewIn .3s both}
+#panel-nav .saved > .ic{width:1.3rem;height:1.3rem;margin-top:.05rem}
+#panel-nav .saved b{display:block;font-size:.98rem}
+#panel-nav .saved span b{display:inline;font-size:inherit}
+#panel-nav .saved button{border:0;background:none;padding:0;color:var(--green-d);font-weight:700;text-decoration:underline}
+#panel-nav .hints{display:flex;gap:.4rem;padding:.6rem 1rem 0;border-top:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+#panel-nav .hints::-webkit-scrollbar{display:none}
+#panel-nav .hint{display:flex;align-items:center;gap:.4rem;flex:none;white-space:nowrap}
+#panel-nav .hint:first-child{flex:0 1 auto;min-width:13rem}
+#panel-nav .hint span:last-child{overflow:hidden;text-overflow:ellipsis}
+#panel-nav .send{display:flex;gap:.5rem;padding:.6rem 1rem .8rem}
+#panel-nav .send input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:.7rem;padding:.6rem .85rem;font-size:max(1rem,16px);background:#fff;color:var(--ink)}
+#panel-nav .send input::placeholder{color:var(--faint)}
+#panel-nav .send input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(45,155,218,.2)}
+
+/* ---------- Копилка спроса ---------- */
+#panel-nav .bank{grid-area:bank}
+#panel-nav .bank li{display:grid;grid-template-columns:1fr auto;gap:.3rem .8rem;align-items:baseline;padding:.5rem .5rem;margin-inline:-.5rem;border-radius:.6rem;transition:background .6s}
+#panel-nav .bank li span{color:var(--ink);font-weight:600}
+#panel-nav .bank li span i{font-style:normal;color:var(--blue)}
+#panel-nav .bank li b{position:relative;font-size:1.1rem;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+#panel-nav .bank .bar{grid-column:1/-1}
+#panel-nav .bank li.new{background:var(--green-soft)}
+#panel-nav .bank li.new .bar i{background:linear-gradient(90deg,var(--blue),var(--green))}
+#panel-nav .bank li.new b{color:var(--green-d)}
+#panel-nav .bank li.new b::before{content:"+1";position:absolute;right:calc(100% + .4rem);top:.1rem;font-size:.8rem;color:var(--green-d);animation:viewIn .4s both}
+#panel-nav .bank .btn{margin-top:.8rem}
+
+/* ---------- Схема цикла ---------- */
+#panel-nav .loopc{margin-top:1.25rem}
+#panel-nav .loop{display:grid;grid-template-columns:repeat(4,1fr);gap:2.4rem}
+#panel-nav .loop li{position:relative;border:1.5px solid var(--line);border-radius:.9rem;padding:.75rem .95rem .85rem;background:#fff;transition:background .3s,border-color .3s,box-shadow .3s}
+#panel-nav .loop li:not(:last-child)::after{content:"→";position:absolute;left:100%;top:50%;width:2.4rem;text-align:center;transform:translateY(-50%);color:var(--blue);font-weight:800;font-size:1.35rem;line-height:1}
+#panel-nav .loop small{display:block;font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+#panel-nav .loop b{display:block;color:var(--ink);font-size:1rem;margin-top:.15rem;line-height:1.25}
+#panel-nav .loop li:last-child{background:var(--green-soft);border-color:var(--green-line)}
+#panel-nav .loop li:last-child b{color:var(--green-d)}
+#panel-nav .loop li.on{background:var(--blue-soft);border-color:var(--blue);box-shadow:0 0 0 1.5px var(--blue)}
+#panel-nav .loop li:last-child.on{background:var(--green-soft);border-color:var(--green);box-shadow:0 0 0 1.5px var(--green)}
+#panel-nav .loop-back{position:relative;height:1.6rem;margin:0 calc((100% - 7.2rem)/8) 1.5rem;border:2px solid var(--blue);border-top:0;border-radius:0 0 .9rem .9rem}
+#panel-nav .loop-back::before{content:"";position:absolute;left:-7px;top:-3px;border:6px solid transparent;border-top:0;border-bottom:8px solid var(--blue)}
+#panel-nav .loop-back span{position:absolute;left:50%;bottom:-.7rem;transform:translateX(-50%);background:#fff;padding:0 .7rem;font-size:.8rem;font-weight:700;color:var(--blue-d);white-space:nowrap}
+#panel-nav .two-p{font-size:1.02rem;color:var(--ink);font-weight:600}
+#panel-nav .two-p b{color:var(--blue-d)}
+
+/* ---------- Адаптив ---------- */
+@media (max-width:1300px){   /* в loyalty.html — 1180px; здесь раньше из-за шестого пункта меню */
+  #panel-nav .top-in{flex-wrap:wrap;row-gap:.4rem}
+  #panel-nav .tabs{order:3;flex-basis:100%;overflow-x:auto;scrollbar-width:none;padding-bottom:.1rem}
+  #panel-nav .tabs::-webkit-scrollbar{display:none}
+  #panel-nav .top-actions{margin-left:auto}
+  #panel-nav .chat{height:clamp(30rem,100vh - 10.6rem,50rem)}
+  body.touring #panel-nav .chat{height:clamp(26rem,100vh - 16rem,50rem)}
+}
+@media (max-width:980px){
+  #panel-nav .nav{grid-template-columns:minmax(0,1fr);grid-template-areas:"intro" "chat" "bank";grid-template-rows:none}
+  #panel-nav .chat{height:clamp(26rem,100vh - 21rem,50rem)}
+}
+@media (max-width:720px){
+  #panel-nav .strip span{display:none}
+  #panel-nav .btn .long{display:none}
+  #panel-nav .tour-in{flex-wrap:wrap;gap:.5rem}
+  #panel-nav .tour-cap{flex-basis:100%;order:2;font-size:.95rem}
+  #panel-nav .tour-ctl{order:3;margin-left:auto}
+  body.touring #panel-nav{padding-bottom:11rem}
+  body.touring #panel-nav .chat{height:clamp(22rem,100vh - 20rem,50rem)}
+  #panel-nav .chat-h .taga{margin-left:0}
+  #panel-nav .log{padding:.75rem}
+  #panel-nav .hints{padding-inline:.75rem}
+  #panel-nav .hint:first-child{flex:none;min-width:0;max-width:74%}
+  #panel-nav .send{padding-inline:.75rem}
+  #panel-nav .rv{gap:.45rem;padding:.8rem}
+  #panel-nav .rv-line span{display:none}
+  #panel-nav .legs li{grid-template-columns:1.2rem 2.7rem 1fr auto;gap:.4rem}
+  #panel-nav .loop{grid-template-columns:1fr;gap:1.9rem}
+  #panel-nav .loop li:not(:last-child)::after{content:"↓";left:0;top:100%;width:100%;transform:none;line-height:1.9rem}
+  #panel-nav .loop-back{height:auto;margin:.7rem 0 1rem;border:0}
+  #panel-nav .loop-back::before{display:none}
+  #panel-nav .loop-back span{position:static;display:block;transform:none;text-align:center;white-space:normal;padding:0}
+}
+@media (prefers-reduced-motion:reduce){
+  #panel-nav *,#panel-nav *::before,#panel-nav *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
 </style>
 </head>
 <body>
@@ -490,6 +675,7 @@ body.touring .toast{bottom:7rem}
       <button class="tab" role="tab" id="tab-trip" data-tab="trip" aria-controls="panel-trip" aria-selected="false" tabindex="-1"><span class="n">3</span>Моя поездка</button>
       <button class="tab" role="tab" id="tab-wallet" data-tab="wallet" aria-controls="panel-wallet" aria-selected="false" tabindex="-1"><span class="n">4</span>Кошелёк</button>
       <button class="tab" role="tab" id="tab-biz" data-tab="biz" aria-controls="panel-biz" aria-selected="false" tabindex="-1"><span class="n">5</span>Для Red Wings</button>
+      <button class="tab" role="tab" id="tab-nav" data-tab="nav" aria-controls="panel-nav" aria-selected="false" tabindex="-1"><span class="n">6</span>ИИ-штурман</button>
     </nav>
     <div class="top-actions">
       <button class="btn btn-primary" id="tourBtn" type="button" data-tour><span data-ic="play"></span><span id="tourBtnTxt">Сценарий<span class="long"> для жюри</span></span></button>
@@ -505,11 +691,11 @@ body.touring .toast{bottom:7rem}
     <div class="hero">
       <div>
         <p class="eyebrow">«Попутный ветер» · концепт программы лояльности</p>
-        <h1>Между регионами — <em>без&nbsp;Москвы.</em><br>Без скрытых доплат.</h1>
+        <h1>Полёты между регионами <em>без&nbsp;Москвы</em></h1>
         <p class="lead">Баллы начисляются за тарифные пакеты и услуги, а не за километры. Пассажир видит прозрачную цену и всю поездку в одной карточке. Red Wings получает больше выручки на пассажира — и открывает новые рейсы из Екатеринбурга.</p>
         <div class="hero-cta">
           <button class="btn btn-primary btn-lg" type="button" data-go="shop">Попробовать покупку <span data-ic="arrow"></span></button>
-          <button class="btn btn-soft btn-lg" type="button" data-tour><span data-ic="play"></span>Сценарий для жюри · 60 с</button>
+          <button class="btn btn-soft btn-lg" type="button" data-tour><span data-ic="play"></span>Сценарий для жюри · 40 с</button>
         </div>
       </div>
       <ul class="values" aria-label="Что получает пассажир">
@@ -681,6 +867,49 @@ body.touring .toast{bottom:7rem}
       </div>
     </div>
   </section>
+  <section class="view" id="panel-nav" role="tabpanel" aria-labelledby="tab-nav" tabindex="-1" hidden>
+  <div class="nav">
+    <div class="intro">
+      <p class="eyebrow">ИИ-штурман · концепт</p>
+      <h1>Не справочник, а <em>штурман</em></h1>
+      <p class="lead">Сам ведёт поездку от двери до двери — и возвращает запросы пассажиров в модель сети как данные спроса.</p>
+    </div>
+
+    <section class="card chat" id="nvChat" aria-label="Чат с ИИ-штурманом">
+      <div class="chat-h">
+        <span class="ava" data-ic="spark"></span>
+        <div><b>ИИ-штурман</b><small>ведёт поездку от двери до двери</small></div>
+        <span class="taga">Демо: сценарии записаны заранее</span>
+      </div>
+      <div class="log" id="nvLog" role="log" aria-live="polite" tabindex="0" aria-label="Сообщения"></div>
+      <div class="hints" id="nvHints" role="group" aria-label="Подсказки — записанные сценарии"></div>
+      <form class="send" id="nvForm" autocomplete="off">
+        <label class="sr" for="nvQ">Запрос штурману</label>
+        <input id="nvQ" type="text" maxlength="200" placeholder="Напишите запрос — в демо ответит ближайший сценарий">
+        <button class="btn btn-primary" type="submit" aria-label="Отправить"><span data-ic="arrow"></span></button>
+      </form>
+    </section>
+
+    <aside class="card pad bank" id="nvBank" aria-labelledby="nvHBank">
+      <h3 id="nvHBank">Копилка спроса <span class="taga">числа условные · демо</span></h3>
+      <ul id="nvBankList" aria-label="Сколько раз пассажиры запросили маршрут"></ul>
+      <p class="note">Каждый запрос — данные «откуда–куда», которых нет в открытом доступе. Они уходят в модель сети и делают её точнее.</p>
+      <a class="btn btn-soft" href="https://andreyv105105105.github.io/Puhososy/calculator.html" target="_blank" rel="noopener">Калькулятор сети <span data-ic="ext"></span></a>
+    </aside>
+  </div>
+
+  <section class="card pad loopc" id="nvLoopCard" aria-labelledby="nvHLoop">
+    <h3 id="nvHLoop">Как запрос пассажира превращается в новый рейс</h3>
+    <ol class="loop" id="nvLoop" aria-label="Цикл из четырёх шагов, после четвёртого — снова первый">
+      <li><small>Шаг 1</small><b>Пассажир пишет штурману</b></li>
+      <li><small>Шаг 2</small><b>Данные спроса откуда–куда</b></li>
+      <li><small>Шаг 3</small><b>Модель сети точнее</b></li>
+      <li><small>Шаг 4</small><b>Новые рейсы там, где их ждут</b></li>
+    </ol>
+    <div class="loop-back" aria-hidden="true"><span>↺ и снова — «Пассажир пишет штурману»</span></div>
+    <p class="two-p"><b>Один ИИ — два продукта:</b> планирование сети для Red Wings и штурман для пассажира</p>
+  </section>
+  </section>
 </main>
 
 <footer class="wrap foot">
@@ -700,6 +929,18 @@ body.touring .toast{bottom:7rem}
   </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="tour" id="nvTour" role="region" aria-label="Сценарий ИИ-штурмана" hidden>
+  <div class="tour-bar"><i id="nvTourBar"></i></div>
+  <div class="tour-in">
+    <span class="tour-step" id="nvTourStep"></span>
+    <p class="tour-cap" id="nvTourCap" aria-live="polite"></p>
+    <div class="tour-ctl">
+      <button type="button" id="nvTourPause">Пауза</button>
+      <button type="button" id="nvTourStop">Остановить</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="nvToast" role="status" aria-live="polite"></div>
 
 <script>
 (()=>{'use strict';
@@ -812,12 +1053,14 @@ let toastT;
 function toast(msg){if(tour.on)return;const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3600)}
 
 /* ================= Вкладки ================= */
-const TABS=['home','shop','trip','wallet','biz'];
+const TABS=['home','shop','trip','wallet','biz','nav'];
 function go(tab,focusPanel){
   if(!TABS.includes(tab))tab='home';
   state.tab=tab;
-  $$('.tab').forEach(t=>{const on=t.dataset.tab===tab;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1});
+  if(tab!=='nav'&&window.__nav&&window.__nav.on)window.__nav.stopTour();
+  $$('.tab[data-tab]').forEach(t=>{const on=t.dataset.tab===tab;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1});
   $$('.view').forEach(v=>{v.hidden=v.id!=='panel-'+tab});
+  {const tb=$('.tabs'),at=$('#tab-'+tab);if(tb&&at&&tb.scrollWidth>tb.clientWidth)tb.scrollLeft=at.offsetLeft-tb.offsetLeft-(tb.clientWidth-at.clientWidth)/2}
   window.scrollTo(0,0);
   try{history.replaceState(null,'','#'+tab)}catch(e){}
   if(focusPanel)$('#panel-'+tab).focus({preventScroll:true});
@@ -1137,7 +1380,7 @@ const STEPS=[
     run(){applyPreset('s1',true,2600)},at:[[3300,()=>spot('#stepsCard','start','#gaugeCard')]]}
 ];
 const TOTAL=STEPS.reduce((a,s)=>a+s.d,0);
-const tour={on:false,paused:false,i:0,el:0,last:0,fired:0,iv:0,speed:1};
+const tour={on:false,paused:false,i:0,el:0,last:0,fired:0,iv:0,speed:1.6};   // 1.6 — показ ≈ 38 с вместо 61 с
 function tourBtnSync(){
   $('#tourBtn').firstElementChild.innerHTML=tour.on?IC.stop:IC.play;
   $('#tourBtnTxt').innerHTML=tour.on?'Остановить':'Сценарий<span class="long"> для жюри</span>';
@@ -1182,6 +1425,7 @@ function tourStop(finished){
 function renderAll(){syncRoute();renderRoute();renderFares();renderExtras();renderSummary();renderTrip();renderWallet();updateBiz()}
 function resetDemo(silent){
   if(tour.on)tourStop();
+  if(window.__nav)window.__nav.reset(true);
   Object.assign(state,fresh(),{route:'direct',fare:'light',extras:[],redeem:false});
   store.clear();shownBalance=state.balance;lastStep=0;
   renderAll();applyPreset('today');go('home');
@@ -1192,7 +1436,9 @@ function resetDemo(silent){
 $$('[data-ic]').forEach(e=>{e.innerHTML=IC[e.dataset.ic]||''});
 document.addEventListener('click',e=>{
   const t=e.target.closest('[data-tour],[data-go],[data-act],[data-preset]');if(!t)return;
-  if(t.hasAttribute('data-tour')){tour.on?tourStop():tourStart();return}
+  if(t.hasAttribute('data-tour')){
+    if(state.tab==='nav'&&window.__nav){if(window.__nav.on)window.__nav.stopTour();else{if(tour.on)tourStop();window.__nav.startTour()}return}
+    tour.on?tourStop():tourStart();return}
   if(t.dataset.go){go(t.dataset.go,true);return}
   if(t.dataset.preset){applyPreset(t.dataset.preset,true);return}
   switch(t.dataset.act){
@@ -1202,7 +1448,7 @@ document.addEventListener('click',e=>{
     case 'disc':{const p=$('#'+t.dataset.target),open=p.hidden;p.hidden=!open;t.setAttribute('aria-expanded',String(open));break}
   }
 });
-$$('.tab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.tab)));
+$$('.tab[data-tab]').forEach(t=>t.addEventListener('click',()=>go(t.dataset.tab)));
 $('.tabs').addEventListener('keydown',e=>{
   const i=TABS.indexOf(state.tab);let n=-1;
   if(e.key==='ArrowRight')n=(i+1)%TABS.length;else if(e.key==='ArrowLeft')n=(i+TABS.length-1)%TABS.length;
@@ -1226,10 +1472,268 @@ renderAll();
 const q=new URLSearchParams(location.search);
 const sp=parseFloat(q.get('speed'));if(sp>0)tour.speed=sp;
 go((location.hash||'').slice(1)||'home');
+window.addEventListener('hashchange',()=>{const h=(location.hash||'').slice(1);if(TABS.includes(h)&&h!==state.tab)go(h)});
 if(q.get('tour')==='1')tourStart();
 window.__krylia={model,revLevel,calc,state,tour,PRESETS};   // для самопроверки расчётов в консоли
 })();
 
+</script>
+<script>
+/* ================= ИИ-штурман (вкладка 6) ================= */
+(()=>{'use strict';
+/* ================= Утилиты ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const nf=new Intl.NumberFormat('ru-RU');
+const rub=n=>nf.format(n)+' ₽';
+const plural=(n,a,b,c)=>{const d=n%100;if(d>=11&&d<=14)return c;const e=n%10;return e===1?a:(e>=2&&e<=4?b:c)};
+const reduce=()=>!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const svg=p=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const IC={
+  check:svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+  plane:svg('<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'),
+  car:svg('<path d="M5 12l1.6-4.2A2 2 0 018.5 6.5h7a2 2 0 011.9 1.3L19 12M4 12h16v5.5H4zM7 17.5V19M17 17.5V19M7.5 14.8h.01M16.5 14.8h.01"/>'),
+  train:svg('<rect x="6" y="3.5" width="12" height="13" rx="3"/><path d="M6 10.5h12M9.5 13.5h.01M14.5 13.5h.01M9 16.5L7 20.5M15 16.5l2 4"/>'),
+  bell:svg('<path d="M6 16v-5a6 6 0 1112 0v5l1.5 2h-15zM10 21h4"/>'),
+  spark:svg('<path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/>'),
+  arrow:svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
+  play:svg('<path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/>'),
+  stop:svg('<rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor"/>'),
+  ext:svg('<path d="M14 5h5v5M19 5l-8 8M11 7H6a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-5"/>')
+};
+
+/* ================= Данные демо (условные, кроме помеченных) ================= */
+const PROMPTS=[
+  'В четверг к 10:00 мне на встречу в Казань из Екатеринбурга, вечером обратно',
+  'Что если рейс отменят?',
+  'Хочу из Самары в Омск напрямую'];
+// По каким словам свободный запрос относится к сценарию
+const KEYS=[
+  /встреч|казан|екатеринб|обратно|четверг|командиров|такси|поезд|л[её]т|нужно|надо|собери|отел|гостиниц|к \d/g,
+  /отмен|задерж|погод|закры|перен[её]с|перенос|сорв|опозд|туман|что если|а если|угроз/g,
+  /напрям|прям|самар|омск|пересад|маршрут|нет рейс|из [а-яё-]+ (?=в [а-яё])/g];
+const FARE=9900, RATE=4;                 // тариф «Стандарт» и % баллами — как в loyalty.html
+const LEGS=[                             // [иконка, время, описание, цена, это рейс]
+  ['car','06:40','Такси от дома до Кольцово',900],
+  ['plane','08:40','КР 102 в Казань · прилёт 08:25 · 12A у окна',FARE,1],
+  ['car','08:50','Такси до встречи · у двери в 09:35',800],
+  ['car','17:45','Такси от встречи до аэропорта',800],
+  ['plane','19:30','КР 103 в Екатеринбург · прилёт 23:15 · 12A у окна',FARE,1],
+  ['car','23:35','Такси до дома · дома в 00:15',900]];
+const SUM=LEGS.reduce((s,l)=>s+l[3],0), TRAIN=11200, PTS=Math.floor(FARE*RATE/100)*2;
+const RISK=[['Самара','9,5%',95],['Казань','8%',80],['Уфа','5,7%',57]];   // из модели сети команды
+const BANK0=[['Самара','Омск',212],['Казань','Омск',187],['Оренбург','Казань',143],['Уфа','Омск',96],['Самара','Оренбург',58]];
+let bank=[];
+
+/* ================= Разметка ответов ================= */
+const tripHTML=()=>`<div class="duo">
+  <div class="box"><h4>${IC.plane} Четверг: Екатеринбург ⇄ Казань <span class="taga">время и цены условные</span></h4>
+    <ul class="legs">${LEGS.map(l=>`<li class="${l[4]?'fl':''}">${IC[l[0]]}<time>${l[1]}</time><span>${l[2]}</span><b>${rub(l[3])}</b></li>`).join('')}</ul>
+    <div class="total"><span>Итог одной суммой</span><b>${rub(SUM)}</b><button class="btn btn-primary" type="button" data-act="book">Оформить всё</button></div>
+    <div class="row"><span class="chip chip-green">${IC.spark} +${PTS} балла «Попутного ветра»</span><small>Время местное: Екатеринбург = Москва + 2 ч</small></div></div>
+  <div class="box"><h4>${IC.train} Честное сравнение с поездом <span class="taga">условно</span></h4>
+    <table class="cmp"><thead><tr><th></th><th>Самолёт + такси</th><th>Поезд + такси</th></tr></thead><tbody>
+      <tr><th>Выезд из дома</th><td>чт 06:40</td><td>ср 17:30</td></tr>
+      <tr><th>Снова дома</th><td>пт 00:15</td><td>пт 13:00</td></tr>
+      <tr><th>В дороге</th><td>≈ 9,5 ч</td><td>≈ 32 ч, две ночи</td></tr>
+      <tr class="tot"><th>Итог</th><td>${rub(SUM)}</td><td>≈ ${rub(TRAIN)}</td></tr></tbody></table>
+    <p class="note">Поезд дешевле на ≈ ${rub(SUM-TRAIN)}, но поездка длится на сутки дольше. Если важнее цена — оформлю поезд.</p></div></div>`;
+const riskHTML=`<div class="box"><h4>Доля времени, когда аэропорт закрыт <span class="taga">по модели сети команды</span></h4>
+  <ul class="risk">${RISK.map(r=>`<li><span>${r[0]}</span><div class="bar"><i style="width:${r[2]}%"></i></div><b>${r[1]}</b></li>`).join('')}</ul></div>`;
+const pushHTML=`<div class="push"><small>${IC.bell} Уведомление от штурмана · симуляция</small>
+  <b>Ваш рейс под угрозой из-за погоды — перенести на утренний бесплатно?</b>
+  <div class="push-a"><button class="btn btn-soft" type="button" data-gate>Перенести бесплатно</button></div></div>`;
+const movedHTML=`<div class="row"><span class="chip chip-green">${IC.check} Рейс — утренний</span><span class="chip chip-green">${IC.check} Такси переназначено</span><span class="taga">симуляция</span></div>
+  <button class="btn btn-ghost" type="button" data-gate>А если рейс отменят совсем?</button>`;
+const trainHTML=`<div class="box tkt"><h4>${IC.train} Карточка поездки <span class="taga">макет</span></h4>
+  <ul><li>${IC.check}<span>Поезд вместо отменённого рейса — билет уже в карточке</span></li></ul></div>
+  <div class="win">${IC.check} Ни одного звонка в колл-центр</div>`;
+const stop=(c,n,h)=>`<div class="rv-stop${h?' is-hub':''}"><b>${c}</b><span>${n}</span>${h?'<span class="hubtag">пересадка 1 ч 35 мин</span>':''}</div>`;
+const line=d=>`<div class="rv-line">${IC.plane}<i></i><span>${d}</span></div>`;
+const routeHTML=`<div class="box"><div class="rv">${stop('KUF','Самара')}${line('1 ч 50 мин')}${stop('SVX','Екатеринбург',1)}${line('1 ч 40 мин')}${stop('OMS','Омск')}</div>
+  <div class="rv-meta"><span class="chip">Один билет, один багаж</span><span class="chip chip-green">${IC.spark} +300 баллов за стыковку</span>
+    <span class="chip chip-blue">38% пассажиров из Самары уже пересаживаются в Кольцово <span class="tagf">факт</span></span><span class="taga">время условное</span></div></div>`;
+const savedHTML=n=>`<div class="saved">${IC.check}<div><b>Ваш запрос добавлен в копилку спроса</b>
+  <span>Самара → Омск: <b class="num">${n}</b> ${plural(n,'запрос','запроса','запросов')}. Чем больше таких запросов, тем раньше модель сети предложит прямой рейс. <span class="taga">число условное</span> <button type="button" data-act="bank">Показать копилку</button></span></div></div>`;
+
+/* ================= Часы сценария: пауза и отмена ================= */
+const ABORT={}, T={on:false,paused:false,speed:1.7};   // 1.7 — показ штурмана ≈ 32 с вместо 55 с
+const TOTAL=54800;                       // длительность автопоказа, мс (сумма пауз ниже) — для полосы прогресса
+let run=0, vt=0, due=0, last=0;
+function halt(){                         // остановить текущий сценарий и привести чат в порядок
+  run++;
+  $$('#nvLog [data-t]').forEach(p=>{p.textContent=p.dataset.t;p.removeAttribute('data-t')});
+  $$('#nvLog .dots').forEach(p=>p.parentNode.remove());
+  $$('#nvLog [data-gate]').forEach(b=>{b.disabled=true});
+  log.removeAttribute('aria-busy');
+}
+function begin(){halt();vt=due=0;last=performance.now()}
+function sleep(ms){
+  const id=run;due+=ms;
+  return new Promise((ok,no)=>{(function tick(){
+    if(id!==run)return no(ABORT);
+    const n=performance.now();if(!T.paused)vt+=(n-last)*T.speed;last=n;
+    if(T.on)$('#nvTourBar').style.width=Math.min(100,vt/TOTAL*100)+'%';
+    if(vt>=due)ok();else setTimeout(tick,T.paused?80:Math.min(30,Math.max(4,(due-vt)/T.speed)));
+  })()});
+}
+
+/* ================= Чат ================= */
+const log=$('#nvLog');
+function show(el,jump){                  // новое видно целиком; если не помещается — видно его начало
+  const y=el.getBoundingClientRect().top-log.getBoundingClientRect().top+log.scrollTop-10;
+  if(jump||reduce())log.scrollTop=y;else log.scrollTo({top:y,behavior:'smooth'});
+}
+function put(cls,html){const d=document.createElement('div');d.className=cls;d.innerHTML=html||'';log.appendChild(d);show(d);return d}
+function user(t){put('msg u').textContent=t}
+function add(m,html){                    // карточки под текстом ответа
+  const n=m.children.length;m.classList.add('wide');m.insertAdjacentHTML('beforeend',html);show(m.children[n]);return m.children[n];
+}
+async function say(text,html){           // ответ штурмана с анимацией набора
+  const m=put('msg b','<p class="bub dots"><i></i><i></i><i></i></p>'),p=m.firstChild;
+  await sleep(650);
+  p.className='bub';p.dataset.t=text;log.setAttribute('aria-busy','true');
+  const D=Math.min(1700,text.length*13),n=reduce()?1:Math.max(1,Math.round(D/30));
+  for(let i=1;i<=n;i++){p.textContent=text.slice(0,Math.ceil(text.length*i/n));show(m,1);await sleep(D/n)}
+  p.removeAttribute('data-t');log.removeAttribute('aria-busy');
+  if(html)add(m,html);
+  return m;
+}
+async function gate(btn,auto){           // ждём нажатия кнопки; в автопоказе нажимаем сами
+  if(T.on){await sleep(auto);btn.classList.add('hit');await sleep(450)}
+  else while(!btn.dataset.ok)await sleep(80);
+  btn.disabled=true;
+}
+function book(b){
+  if(b.disabled)return;
+  b.disabled=true;b.innerHTML=IC.check+' Оформлено';
+  const box=b.closest('.box');
+  box.insertAdjacentHTML('beforeend','<p class="note"><b>Демо:</b> билеты, такси и оплата не настоящие. В продукте — одна оплата, и вся поездка сразу в карточке «Моя поездка».</p>');
+  if(log.contains(box))show(box.lastElementChild);
+}
+
+/* ================= Сценарии ================= */
+const SC=[
+  async()=>{
+    const m=await say('Собрал поездку от двери до двери. Место у окна — запомнил из прошлых поездок.',tripHTML());
+    if(!T.on)return;
+    await sleep(5200);show($('.total',m));
+    await sleep(4600);const b=$('[data-act=book]',m);b.classList.add('hit');await sleep(450);book(b);
+    await sleep(2800);
+  },
+  async()=>{
+    const m=await say('По нашей модели аэропорт бывает закрыт: Самара — 9,5% времени, Казань — 8%, Уфа — 5,7%. Поэтому я слежу за рейсом сам и предупреждаю заранее. Вот как это выглядит.',riskHTML);
+    await sleep(T.on?3200:1100);
+    const p=add(m,pushHTML);
+    await gate($('button',p),3000);
+    $('.push-a',p).innerHTML=IC.check+' Вы выбрали: перенести';
+    const m2=await say('Перенесено. Такси переназначено.',movedHTML);
+    const q=$('button',m2);
+    await gate(q,2600);q.remove();
+    user('А если рейс отменят совсем?');
+    await say('Купил вам поезд, билет в карточке поездки.',trainHTML);
+    if(T.on)await sleep(4200);
+  },
+  async()=>{
+    const m=await say('Прямого рейса пока нет. Предлагаю через Кольцово: один билет, багаж едет до Омска.',routeHTML);
+    await sleep(T.on?3400:900);
+    bank[0][2]++;renderBank(0);
+    add(m,savedHTML(bank[0][2]));
+    if(T.on){await sleep(1500);spot('#nvBank');await sleep(4200);clearSpot()}
+  }];
+const HELP='Это демо: настоящей нейросети здесь нет, я отвечаю по трём записанным сценариям. Нажмите подсказку ниже — или спросите про поездку на встречу, отмену рейса или маршрут без прямого рейса.';
+const nearest=t=>{const s=KEYS.map(k=>(t.toLowerCase().match(k)||[]).length),m=Math.max(...s);return m?s.indexOf(m):-1};
+async function play(i,text){
+  if(T.on)tourStop();
+  begin();user(text);
+  try{
+    if(i<0){await say(HELP);return}
+    if(text!==PROMPTS[i])put('sys','Демо: показываю ближайший записанный сценарий');
+    await SC[i]();
+  }catch(e){if(e!==ABORT)throw e}
+}
+
+/* ================= Копилка спроса ================= */
+function renderBank(hit){
+  const max=Math.max(...bank.map(r=>r[2]));
+  $('#nvBankList').innerHTML=bank.map((r,i)=>`<li class="${i===hit?'new':''}"><span>${r[0]} <i>→</i> ${r[1]}</span><b class="num">${r[2]}</b><div class="bar"><i style="width:${Math.round(r[2]/max*100)}%"></i></div></li>`).join('');
+}
+function clearSpot(){$$('.spot').forEach(e=>e.classList.remove('spot'))}
+function spot(sel){
+  clearSpot();const e=$(sel);e.classList.add('spot');
+  e.scrollIntoView({behavior:reduce()?'auto':'smooth',block:'nearest'});
+}
+let toastT=0;
+function toast(msg){const t=$('#nvToast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3600)}
+
+/* ================= Сценарий для жюри: 1 → 2 → 3, не дольше 60 с ================= */
+const CAPS=[
+  'Одна фраза пассажира — и штурман собирает поездку от двери до двери. И честно сравнивает с поездом.',
+  'Сбой? Штурман предупреждает заранее и сам всё переносит. Ни одного звонка в колл-центр.',
+  'Прямого рейса нет — запрос не пропадает: он попадает в копилку спроса и в модель сети.',
+  'Один ИИ — два продукта: планирование сети для Red Wings и штурман для пассажира.'];
+function cap(i){$('#nvTourStep').textContent=i<3?`Сценарий ${i+1} из 3`:'Итог';$('#nvTourCap').textContent=CAPS[i]}
+function tourSync(){
+  $('#tourBtn').firstElementChild.innerHTML=T.on?IC.stop:IC.play;
+  $('#tourBtnTxt').innerHTML=T.on?'Остановить':'Сценарий<span class="long"> для жюри</span>';
+  $('#nvTourPause').textContent=T.paused?'Продолжить':'Пауза';
+}
+async function tourStart(){
+  reset(true);begin();
+  T.on=true;T.paused=false;
+  $('#nvTour').hidden=false;document.body.classList.add('touring');tourSync();
+  $('#nvChat').scrollIntoView({block:'nearest'});
+  try{
+    for(let i=0;i<3;i++){cap(i);await sleep(700);user(PROMPTS[i]);await SC[i]();await sleep(900)}
+    cap(3);spot('#nvLoopCard');
+    for(const li of $$('#nvLoop li')){li.classList.add('on');await sleep(800)}
+    await sleep(2800);
+    tourStop(true);
+  }catch(e){if(e!==ABORT)throw e}
+}
+function tourStop(finished){
+  if(!T.on)return;
+  halt();T.on=false;T.paused=false;
+  $('#nvTour').hidden=true;document.body.classList.remove('touring');clearSpot();tourSync();
+  toast(finished?'Сценарий завершён — дальше можно показывать вручную':'Сценарий остановлен');
+}
+
+/* ================= Сброс ================= */
+function reset(silent){
+  if(T.on)tourStop();
+  halt();clearSpot();
+  bank=BANK0.map(r=>r.slice());renderBank();
+  $$('#nvLoop li').forEach(li=>li.classList.remove('on'));
+  log.innerHTML='';
+  put('msg b','<p class="bub">Я штурман «Попутного ветра». Скажите, куда и к какому времени вам нужно, — соберу поездку от двери до двери и прослежу за ней сам. Нажмите подсказку ниже или напишите запрос.</p>');
+  if(!silent){window.scrollTo(0,0);toast('Демо сброшено: чат и копилка спроса — в исходном состоянии')}
+}
+
+/* ================= События ================= */
+$$('#panel-nav [data-ic]').forEach(e=>{e.innerHTML=IC[e.dataset.ic]||''});
+$('#nvHints').innerHTML=PROMPTS.map((p,i)=>`<button class="chipbtn hint" type="button" data-sc="${i}" title="${p}"><span class="n">${i+1}</span><span>${p}</span></button>`).join('');
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-sc],[data-gate],[data-act]');if(!t||!t.closest('#panel-nav'))return;
+  if(t.dataset.sc){play(+t.dataset.sc,PROMPTS[t.dataset.sc]);return}
+  if(t.hasAttribute('data-gate')){t.dataset.ok=1;return}
+  if(t.dataset.act==='book')book(t);
+  if(t.dataset.act==='bank'){spot('#nvBank');setTimeout(clearSpot,2600)}
+});
+$('#nvForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const q=$('#nvQ'),t=q.value.trim();if(!t){q.focus();return}
+  q.value='';play(nearest(t),t);
+});
+$('#nvTourPause').addEventListener('click',()=>{T.paused=!T.paused;tourSync()});
+$('#nvTourStop').addEventListener('click',()=>tourStop());
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&T.on)tourStop()});
+
+/* ================= Старт ================= */
+reset(true);
+window.__nav={reset,startTour:()=>tourStart(),stopTour:()=>tourStop(),get on(){return T.on}};
+const qs=new URLSearchParams(location.search);
+const sp=parseFloat(qs.get('speed'));if(sp>0)T.speed=sp;
+})();
 </script>
 </body>
 </html>
