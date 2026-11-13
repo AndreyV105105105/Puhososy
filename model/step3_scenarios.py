@@ -160,6 +160,8 @@ def evaluate(net, M, case, detail=False, cache=None, changed=None):
     """Пересчитать всю сеть: пассажиры Red Wings, деньги, время пассажиров, доступность городов.
     Ускорение: если известен результат по парам для прошлой сети (cache) и изменился один рейс (changed),
     пересчитываем только пары, где участвует один из его городов, — остальные не меняются."""
+    if M.get("rival_mult"):
+        net = rival_scaled(net, M)               # летние частоты конкурентов на курортных парах (проверка)
     hub = net.get("hub")
     if cache is None or changed is None:
         pr = {p: pair_eval(p[0], p[1], net, M, case) for p in M["demand"]}
@@ -347,8 +349,25 @@ def season_models(M):
             week_winter = D / (ws * r + ww)
             dem[p] = 52 * (week_winter * r if summer else week_winter)
         Ms["demand"] = dem
+        share = P.get("summer_rival_share", 0.0)
+        if summer and share:
+            Ms["rival_mult"] = {p: 1 + share * (summer_ratio(p) - 1) for p in M["km"] if summer_ratio(p) > 1}
+            if P.get("summer_rival_moscow"):
+                Ms["rival_mult_mow"] = {c: 1 + share * (r - 1) for c, r in P["resort_summer_ratio"].items()}
         out.append((name, Ms, weeks / 52))
     return out
+
+
+def rival_scaled(net, M):
+    """Копия сети, где рейсы других авиакомпаний (не WZ) умножены на M["rival_mult"][пара],
+    а рейсы в Москву — на M["rival_mult_mow"][город]. Рейсы Red Wings и хаб не меняются."""
+    mult, mow = M["rival_mult"], M.get("rival_mult_mow", {})
+    direct = dict(net["direct"])
+    for p, k in mult.items():
+        if p in direct:
+            direct[p] = {c: (f if c == "WZ" else f * k) for c, f in direct[p].items()}
+    to_mow = {c: f * mow.get(c, 1.0) for c, f in net["to_moscow"].items()} if mow else net["to_moscow"]
+    return dict(net, direct=direct, to_moscow=to_mow)
 
 
 def combine_seasons(res, nets, SM):
@@ -392,12 +411,19 @@ def greedy_seasons(net0, M, mode, n_aircraft, case):
     obj = tot["прибыль"] - idle_cost(nets, M, bh0)      # без платы за простой = прибыль, как раньше
     history = [(dict(nets), obj)]
     log = []
+    rnd = P.get("greedy_random")
+    rng = np.random.default_rng(rnd["seed"]) if rnd else None
+    eps = P.get("greedy_tie_eps", 0.0)             # равные ходы (разница < eps) — по названию, а не по ошибке округления
     while True:
         best = None
+        cands = []                                    # все ходы шага (только для случайного варианта)
         for s, Ms, w in SM:
             net = nets[s]
             bh_now = block_hours(net, Ms)
-            for mv in candidate_moves(net, Ms, mode):
+            moves = candidate_moves(net, Ms, mode)
+            if rng is not None:
+                moves = [moves[i] for i in rng.permutation(len(moves))]
+            for mv in moves:
                 cand = apply(net, mv)
                 bh = block_hours(cand, Ms)
                 if bh - bh0 > budget:
@@ -409,10 +435,16 @@ def greedy_seasons(net0, M, mode, n_aircraft, case):
                 t = combine_seasons(rr, nn, SM)
                 o = t["прибыль"] - idle_cost(nn, M, bh0)
                 gain = (o - obj) / max((bh - bh_now) * w, 1)
-                if best is None or gain > best[0]:
+                if rng is not None:
+                    cands.append((gain, s, mv, nn, rr, t, o))
+                if best is None or gain > best[0] + eps * max(1.0, abs(best[0])) or (
+                        eps and abs(gain - best[0]) <= eps * max(1.0, abs(best[0])) and (s, mv) < best[1:3]):
                     best = (gain, s, mv, nn, rr, t, o)
         if best is None:
             break
+        if rng is not None:                           # случайный ход из почти лучших
+            near = [c for c in cands if c[0] >= best[0] - rnd["tol"] * abs(best[0])]
+            best = near[int(rng.integers(len(near)))]
         gain, s, mv, nets, res, tot, obj = best
         history.append((dict(nets), obj))
         log.append(dict(сезон=s, ход=mv[0], пара=f"{mv[1][0]}-{mv[1][1]}", рейсов_нед=mv[2],

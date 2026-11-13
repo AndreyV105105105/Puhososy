@@ -1,0 +1,77 @@
+﻿проверка,условие,выручка,бортов_дано,вариант,сид,прибыль_млрд,прибыль_минус_простой_млрд,бортов_лето,бортов_зима,рейсы_лето,рейсы_зима
+конкуренты,зимние частоты (как раньше),1.6,8,прямые,,0.397,0.204,7.9,5.0,AER-GOJ×7; AER-GSV×14; AER-REN×14; KUF-SVX×7; KZN-MRV×3; KZN-SVX×14; MRV-UFA×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; MRV-UFA×7; OMS-SVX×7; REN-SVX×3
+конкуренты,зимние частоты (как раньше),1.6,8,гибрид с Уфой,,0.67,0.586,7.7,6.4,AER-GOJ×7; AER-KUF×7; AER-REN×14; KUF-MRV×14; KUF-SVX×7; KZN-MRV×3; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3; SVX-UFA×7,AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; MRV-UFA×14
+конкуренты,зимние частоты (как раньше),1.6,8,гибрид без Минвод-Уфы,,0.476,0.365,7.8,6.1,AER-GOJ×7; AER-GSV×14; AER-REN×14; KUF-MRV×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; SVX-UFA×7,AER-GSV×3; AER-KUF×7; AER-REN×3; AER-UFA×7; KUF-MRV×7; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.6,8,прямые,,0.36,0.19,7.6,5.0,AER-GSV×14; AER-REN×14; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; MRV-UFA×7; OMS-SVX×7; REN-SVX×3
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.6,8,гибрид с Уфой,,0.702,0.632,7.5,6.4,AER-KUF×14; AER-REN×14; KUF-MRV×14; KUF-SVX×7; KZN-MRV×3; KZN-SVX×14; MRV-UFA×7,AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; MRV-UFA×14
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.6,8,гибрид без Минвод-Уфы,,0.447,0.301,7.6,5.3,AER-GSV×14; AER-REN×14; AER-UFA×7; KUF-MRV×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14,AER-GSV×3; AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; SVX-UFA×7
+конкуренты,конкуренты летом ×k,1.6,8,прямые,,0.361,0.19,7.6,5.0,AER-GSV×14; AER-REN×14; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; MRV-UFA×7; OMS-SVX×7; REN-SVX×3
+конкуренты,конкуренты летом ×k,1.6,8,гибрид с Уфой,,0.718,0.622,7.9,6.4,AER-KUF×14; AER-REN×14; KUF-MRV×14; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14,AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; MRV-UFA×14
+конкуренты,конкуренты летом ×k,1.6,8,гибрид без Минвод-Уфы,,0.474,0.369,7.7,6.1,AER-GSV×14; AER-KUF×3; AER-REN×14; KUF-MRV×14; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; SVX-UFA×7,AER-GSV×3; AER-KUF×7; AER-REN×3; AER-UFA×7; KUF-MRV×7; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14
+конкуренты,конкуренты и Москва летом ×k,1.6,8,прямые,,0.361,0.191,7.6,5.0,AER-GSV×14; AER-REN×14; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; MRV-UFA×7; OMS-SVX×7; REN-SVX×3
+конкуренты,конкуренты и Москва летом ×k,1.6,8,гибрид с Уфой,,0.72,0.624,7.9,6.4,AER-KUF×14; AER-REN×14; KUF-MRV×14; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14,AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; MRV-UFA×14
+конкуренты,конкуренты и Москва летом ×k,1.6,8,гибрид без Минвод-Уфы,,0.439,0.293,7.6,5.3,AER-GSV×14; AER-REN×14; AER-UFA×7; KUF-MRV×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14,AER-GSV×3; AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; SVX-UFA×7
+конкуренты,зимние частоты (как раньше),1.3,4,прямые,,0.081,0.081,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,зимние частоты (как раньше),1.3,4,хаб в Уфе,,0.0,0.0,0.0,0.0,,
+конкуренты,зимние частоты (как раньше),1.3,4,гибрид с Уфой,,0.081,0.081,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,зимние частоты (как раньше),1.3,4,гибрид без Минвод-Уфы,,0.081,0.081,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,зимние частоты (как раньше),1.45,4,прямые,,0.17,0.147,0.9,0.6,AER-GOJ×3; KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,зимние частоты (как раньше),1.45,4,хаб в Уфе,,0.0,0.0,0.0,0.0,,
+конкуренты,зимние частоты (как раньше),1.45,4,гибрид с Уфой,,0.17,0.147,0.9,0.6,AER-GOJ×3; KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,зимние частоты (как раньше),1.45,4,гибрид без Минвод-Уфы,,0.17,0.147,0.9,0.6,AER-GOJ×3; KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,зимние частоты (как раньше),1.6,4,прямые,,0.412,0.408,4.0,3.9,AER-GOJ×7; AER-REN×3; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×7; REN-SVX×3
+конкуренты,зимние частоты (как раньше),1.6,4,хаб в Уфе,,0.046,0.046,1.6,1.6,MRV-UFA×14,MRV-UFA×14
+конкуренты,зимние частоты (как раньше),1.6,4,гибрид с Уфой,,0.441,0.441,3.7,3.7,AER-GOJ×7; AER-REN×14; KUF-SVX×7; KZN-SVX×14; SVX-UFA×7,AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7
+конкуренты,зимние частоты (как раньше),1.6,4,гибрид без Минвод-Уфы,,0.308,0.308,3.6,3.9,AER-GOJ×7; AER-REN×14; KUF-SVX×7; KZN-SVX×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; OMS-SVX×7; REN-SVX×3
+конкуренты,зимние частоты (как раньше),1.8,4,прямые,,1.024,1.021,4.0,3.9,AER-GOJ×7; AER-REN×3; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14,AER-GSV×3; AER-REN×3; KUF-MRV×3; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3
+конкуренты,зимние частоты (как раньше),1.8,4,хаб в Уфе,,0.339,0.255,3.4,2.1,AER-UFA×14; MRV-UFA×14,MRV-UFA×14; TJM-UFA×7
+конкуренты,зимние частоты (как раньше),1.8,4,гибрид с Уфой,,1.086,1.086,3.9,4.0,AER-GOJ×7; AER-REN×14; BAX-SVX×3; KUF-SVX×7; KZN-SVX×14; REN-SVX×3; SVX-UFA×7,AER-KUF×7; AER-REN×3; BAX-SVX×3; KUF-MRV×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3; REN-SVX×3
+конкуренты,зимние частоты (как раньше),1.8,4,гибрид без Минвод-Уфы,,0.951,0.951,3.9,3.9,AER-GOJ×7; AER-REN×14; BAX-SVX×3; KUF-SVX×7; KZN-SVX×14; REN-SVX×3; SVX-UFA×7,AER-GSV×3; AER-REN×3; KUF-MRV×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; REN-SVX×3; SVX-UFA×7
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.3,4,прямые,,0.081,0.081,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.3,4,хаб в Уфе,,0.0,0.0,0.0,0.0,,
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.3,4,гибрид с Уфой,,0.081,0.081,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.3,4,гибрид без Минвод-Уфы,,0.081,0.081,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.45,4,прямые,,0.17,0.17,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.45,4,хаб в Уфе,,0.0,0.0,0.0,0.0,,
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.45,4,гибрид с Уфой,,0.17,0.17,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.45,4,гибрид без Минвод-Уфы,,0.17,0.17,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.6,4,прямые,,0.378,0.378,3.7,3.9,AER-REN×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×7; REN-SVX×3
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.6,4,хаб в Уфе,,0.058,0.058,1.6,1.6,MRV-UFA×14,MRV-UFA×14
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.6,4,гибрид с Уфой,,0.501,0.494,3.8,3.7,AER-REN×14; KUF-MRV×3; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7,AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.6,4,гибрид без Минвод-Уфы,,0.27,0.27,3.6,3.9,AER-GSV×7; AER-REN×14; KUF-SVX×7; KZN-SVX×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; OMS-SVX×7; REN-SVX×3
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.8,4,прямые,,0.98,0.978,4.0,3.9,AER-REN×7; BAX-SVX×3; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14; OMS-SVX×3; REN-SVX×3,AER-GSV×3; AER-REN×3; KUF-MRV×3; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.8,4,хаб в Уфе,,0.375,0.29,3.4,2.1,AER-UFA×14; MRV-UFA×14,MRV-UFA×14; TJM-UFA×7
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.8,4,гибрид с Уфой,,1.154,1.154,4.0,4.0,AER-GSV×3; AER-REN×3; KUF-MRV×14; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7,AER-KUF×7; AER-REN×3; BAX-SVX×3; KUF-MRV×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3; REN-SVX×3
+конкуренты,"конкуренты летом ×(1+0,5(k-1))",1.8,4,гибрид без Минвод-Уфы,,0.916,0.913,4.0,3.9,AER-GSV×7; AER-REN×14; AER-VOG×3; KUF-SVX×7; KZN-SVX×14; SVX-UFA×7,AER-GSV×3; AER-REN×3; KUF-MRV×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; REN-SVX×3; SVX-UFA×7
+конкуренты,конкуренты летом ×k,1.3,4,прямые,,0.082,0.082,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты летом ×k,1.3,4,хаб в Уфе,,0.0,0.0,0.0,0.0,,
+конкуренты,конкуренты летом ×k,1.3,4,гибрид с Уфой,,0.082,0.082,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты летом ×k,1.3,4,гибрид без Минвод-Уфы,,0.082,0.082,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты летом ×k,1.45,4,прямые,,0.17,0.17,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты летом ×k,1.45,4,хаб в Уфе,,0.0,0.0,0.0,0.0,,
+конкуренты,конкуренты летом ×k,1.45,4,гибрид с Уфой,,0.17,0.17,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты летом ×k,1.45,4,гибрид без Минвод-Уфы,,0.17,0.17,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты летом ×k,1.6,4,прямые,,0.378,0.378,3.7,3.9,AER-REN×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×7; REN-SVX×3
+конкуренты,конкуренты летом ×k,1.6,4,хаб в Уфе,,0.066,0.066,1.6,1.6,MRV-UFA×14,MRV-UFA×14
+конкуренты,конкуренты летом ×k,1.6,4,гибрид с Уфой,,0.502,0.496,3.8,3.7,AER-REN×14; KUF-MRV×3; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7,AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7
+конкуренты,конкуренты летом ×k,1.6,4,гибрид без Минвод-Уфы,,0.288,0.288,4.0,4.0,AER-GSV×7; AER-REN×14; BAX-SVX×3; KUF-SVX×7; KZN-SVX×14; OMS-SVX×3; REN-SVX×3; SVX-UFA×7,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; OMS-SVX×7; REN-SVX×3; SVX-UFA×7
+конкуренты,конкуренты летом ×k,1.8,4,прямые,,0.981,0.978,4.0,3.9,AER-REN×7; BAX-SVX×3; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14; OMS-SVX×3; REN-SVX×3,AER-GSV×3; AER-REN×3; KUF-MRV×3; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3
+конкуренты,конкуренты летом ×k,1.8,4,хаб в Уфе,,0.384,0.299,3.4,2.1,AER-UFA×14; MRV-UFA×14,MRV-UFA×14; TJM-UFA×7
+конкуренты,конкуренты летом ×k,1.8,4,гибрид с Уфой,,1.154,1.154,3.9,4.0,AER-REN×14; KUF-MRV×3; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3; REN-SVX×3,AER-KUF×7; AER-REN×3; BAX-SVX×3; KUF-MRV×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3; REN-SVX×3
+конкуренты,конкуренты летом ×k,1.8,4,гибрид без Минвод-Уфы,,0.916,0.914,4.0,3.9,AER-GSV×7; AER-REN×14; AER-VOG×3; KUF-SVX×7; KZN-SVX×14; SVX-UFA×7,AER-GSV×3; AER-REN×3; KUF-MRV×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; REN-SVX×3; SVX-UFA×7
+конкуренты,конкуренты и Москва летом ×k,1.3,4,прямые,,0.082,0.082,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты и Москва летом ×k,1.3,4,хаб в Уфе,,0.0,0.0,0.0,0.0,,
+конкуренты,конкуренты и Москва летом ×k,1.3,4,гибрид с Уфой,,0.082,0.082,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты и Москва летом ×k,1.3,4,гибрид без Минвод-Уфы,,0.082,0.082,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты и Москва летом ×k,1.45,4,прямые,,0.17,0.17,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты и Москва летом ×k,1.45,4,хаб в Уфе,,0.0,0.0,0.0,0.0,,
+конкуренты,конкуренты и Москва летом ×k,1.45,4,гибрид с Уфой,,0.17,0.17,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты и Москва летом ×k,1.45,4,гибрид без Минвод-Уфы,,0.17,0.17,0.6,0.6,KUF-SVX×7; KZN-SVX×14,KUF-SVX×7; KZN-SVX×14
+конкуренты,конкуренты и Москва летом ×k,1.6,4,прямые,,0.379,0.379,3.7,3.9,AER-REN×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×7; REN-SVX×3
+конкуренты,конкуренты и Москва летом ×k,1.6,4,хаб в Уфе,,0.068,0.068,1.6,1.6,MRV-UFA×14,MRV-UFA×14
+конкуренты,конкуренты и Москва летом ×k,1.6,4,гибрид с Уфой,,0.504,0.497,3.8,3.7,AER-REN×14; KUF-MRV×3; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7,AER-KUF×7; AER-REN×3; KUF-MRV×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7
+конкуренты,конкуренты и Москва летом ×k,1.6,4,гибрид без Минвод-Уфы,,0.289,0.288,4.0,4.0,AER-GSV×7; AER-REN×14; BAX-SVX×3; KUF-SVX×7; KZN-SVX×14; OMS-SVX×3; REN-SVX×3; SVX-UFA×7,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; OMS-SVX×7; REN-SVX×3; SVX-UFA×7
+конкуренты,конкуренты и Москва летом ×k,1.8,4,прямые,,0.981,0.979,4.0,3.9,AER-REN×7; BAX-SVX×3; KUF-SVX×7; KZN-SVX×14; MRV-UFA×14; OMS-SVX×3; REN-SVX×3,AER-GSV×3; AER-REN×3; KUF-MRV×3; KUF-SVX×7; KZN-MRV×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3
+конкуренты,конкуренты и Москва летом ×k,1.8,4,хаб в Уфе,,0.386,0.301,3.4,2.1,AER-UFA×14; MRV-UFA×14,MRV-UFA×14; TJM-UFA×7
+конкуренты,конкуренты и Москва летом ×k,1.8,4,гибрид с Уфой,,1.157,1.157,4.0,4.0,AER-GSV×3; AER-REN×3; KUF-MRV×14; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7,AER-KUF×7; AER-REN×3; BAX-SVX×3; KUF-MRV×7; KUF-SVX×7; KZN-SVX×14; MRV-UFA×7; OMS-SVX×3; REN-SVX×3
+конкуренты,конкуренты и Москва летом ×k,1.8,4,гибрид без Минвод-Уфы,,0.917,0.914,4.0,3.9,AER-GSV×7; AER-REN×14; AER-VOG×3; KUF-SVX×7; KZN-SVX×14; SVX-UFA×7,AER-GSV×3; AER-REN×3; KUF-MRV×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; REN-SVX×3; SVX-UFA×7

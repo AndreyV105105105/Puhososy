@@ -1,0 +1,4 @@
+﻿выручка,бортов_дано,вариант,обычный_млрд,мин_млрд,медиана_млрд,макс_млрд,лучшее_найденное_млрд,размах_млрд,лучшее_рейсы_лето,лучшее_рейсы_зима
+1.6,8,прямые без Минвод-Уфы,0.294,0.294,0.294,0.294,0.294,0.0,AER-GOJ×7; AER-GSV×14; AER-REN×14; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; OMS-SVX×7; REN-SVX×3
+1.6,4,прямые без Минвод-Уфы,0.308,0.308,0.308,0.308,0.308,0.0,AER-GOJ×7; AER-REN×14; KUF-SVX×7; KZN-SVX×14,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; OMS-SVX×7; REN-SVX×3
+1.8,4,прямые без Минвод-Уфы,0.904,0.889,0.932,0.947,0.947,0.058,AER-GOJ×7; AER-GSV×7; AER-REN×7; KUF-SVX×7; KZN-MRV×3; KZN-SVX×14; OMS-SVX×3,AER-GSV×3; AER-REN×3; KUF-SVX×7; KZN-MRV×14; KZN-SVX×14; OMS-SVX×7; REN-SVX×3

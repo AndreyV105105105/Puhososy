@@ -180,7 +180,9 @@ def options(i, j, airports, net, fc):
     # 1) прямые рейсы — отдельный вариант на каждого перевозчика
     for carrier, f in net["direct"].get(key(i, j), {}).items():
         opts.append(dict(вариант="прямой", перевозчик=carrier, часы=block_h(km), пересадок=0,
-                         рейсов_нед=f, цена=fare(km, 1, fc), плечи=[key(i, j)]))
+                         рейсов_нед=f, цена=fare(km, 1, fc) * (1.0 if carrier == "WZ" else
+                                                                P["rival_fare_factor"].get(key(i, j), 1.0)),
+                         плечи=[key(i, j)]))
     # 2) через Москву — есть всегда, частота = узкое место из двух плеч
     k1, k2 = D(i, "MOW"), D("MOW", j)
     f_m = min(net["to_moscow"].get(i, 0), net["to_moscow"].get(j, 0))
