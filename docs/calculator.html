@@ -9,31 +9,34 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
-/* Тот же язык, что у карты для слайда: море, белая Россия, красные дуги новых рейсов, карточка-пульт справа */
+/* Палитра как в презентации: синий — новые рейсы и акценты (шаг 1 темнее), зелёный — положительные показатели, без красного */
 :root{
   --bg:#EAF0F5; --sea:#EAF0F5; --russia:#FFFFFF; --other:#F1F3F5; --border:#C9D2DB; --rborder:#AFBBC7;
   --panel:#FFFFFF; --panel-ec:#DCE3EA; --ink:#16202B; --muted:#5B6775; --exist:#9AA6B4; --node:#2B3642; --halo:#FFFFFF;
-  --r1:#B5122B; --r2:#E3433B; --r3:#F28C63; --r-soft:#F9E3E6; --chip:#F4F6F8;
+  --a1:#1467AE; --a2:#2D9BDA; --a3:#86C8EE; --a-soft:#E3F1FA; --chip:#F4F6F8;
+  --pos:#2E9A5E; --pos-soft:#E6F4EC; --warn:#A86A12; --warn-soft:#FBEFD9; --plane:#16202B;
   --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0E1621; --sea:#0E1621; --russia:#1C2836; --other:#151E29; --border:#2B394A; --rborder:#3A4B5F;
   --panel:#141D28; --panel-ec:#2B394A; --ink:#EEF2F6; --muted:#9AA8B8; --exist:#5D6E82; --node:#DCE4EC; --halo:#0E1621;
-  --r1:#E0283F; --r2:#F05A4F; --r3:#F59A73; --r-soft:#3A1D24; --chip:#1A2431; color-scheme:dark}}
+  --a1:#62B8F2; --a2:#3D8FD3; --a3:#2C6699; --a-soft:#142B3D; --chip:#1A2431;
+  --pos:#5CC98A; --pos-soft:#15301F; --warn:#E3AA4F; --warn-soft:#3A2C14; --plane:#FFFFFF; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0E1621; --sea:#0E1621; --russia:#1C2836; --other:#151E29; --border:#2B394A; --rborder:#3A4B5F;
   --panel:#141D28; --panel-ec:#2B394A; --ink:#EEF2F6; --muted:#9AA8B8; --exist:#5D6E82; --node:#DCE4EC; --halo:#0E1621;
-  --r1:#E0283F; --r2:#F05A4F; --r3:#F59A73; --r-soft:#3A1D24; --chip:#1A2431; color-scheme:dark}
+  --a1:#62B8F2; --a2:#3D8FD3; --a3:#2C6699; --a-soft:#142B3D; --chip:#1A2431;
+  --pos:#5CC98A; --pos-soft:#15301F; --warn:#E3AA4F; --warn-soft:#3A2C14; --plane:#FFFFFF; color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;
   padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px))}
 .wrap{max-width:1320px;margin:0 auto;display:grid;gap:16px}
 header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px}
 header h1{font-weight:800;font-size:clamp(22px,3vw,32px);letter-spacing:-.01em;line-height:1.15;margin:0}
-header h1 span{color:var(--r1)}
+header h1 span{color:var(--a1)}
 header p{margin:4px 0 0;color:var(--muted);max-width:72ch}
 .upd{font-size:13px;color:var(--muted);background:var(--panel);border:1px solid var(--panel-ec);border-radius:12px;padding:10px 14px;max-width:none}
-.upd b{color:var(--ink)} .upd a{color:var(--r1)}
+.upd b{color:var(--ink)} .upd a{color:var(--a1)}
 .main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
 @media (max-width:1000px){.main{grid-template-columns:1fr}}
 .card{background:var(--panel);border:1px solid var(--panel-ec);border-radius:18px;padding:18px}
@@ -42,7 +45,7 @@ header p{margin:4px 0 0;color:var(--muted);max-width:72ch}
 #map{display:block;width:100%;height:auto}
 .verdict{position:absolute;left:14px;top:14px;max-width:min(520px,calc(100% - 28px));background:var(--panel);border:1px solid var(--panel-ec);
   border-radius:14px;padding:10px 14px;font-size:14.5px;box-shadow:0 6px 24px rgba(16,32,48,.08)}
-.verdict b{color:var(--r1)}
+.verdict b{color:var(--a1)}
 .vsub{font-size:12px;color:var(--muted);margin-top:4px}
 .maptag{position:absolute;right:14px;top:14px;font-size:12px;color:var(--muted);background:color-mix(in srgb,var(--panel) 85%,transparent);
   border-radius:8px;padding:4px 8px}
@@ -55,17 +58,17 @@ header p{margin:4px 0 0;color:var(--muted);max-width:72ch}
 /* пульт */
 .side{display:grid;gap:16px}
 .kpis{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
-.kpi .v{font-weight:800;font-size:27px;line-height:1.05;letter-spacing:-.01em;color:var(--r1);font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi .v{font-weight:800;font-size:27px;line-height:1.05;letter-spacing:-.01em;color:var(--pos);font-variant-numeric:tabular-nums;white-space:nowrap}
 .kpi .v.zero{color:var(--muted)}
 .kpi .k{font-size:12.5px;color:var(--muted);margin-top:4px}
 .planes{display:flex;gap:4px;margin-top:8px}
 .planes span{flex:1;height:8px;border-radius:4px;background:var(--panel-ec);position:relative;overflow:hidden}
-.planes span i{position:absolute;inset:0 auto 0 0;background:var(--r1);border-radius:4px}
+.planes span i{position:absolute;inset:0 auto 0 0;background:var(--a1);border-radius:4px}
 .ctl+.ctl{margin-top:16px}
 .ctl label{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:14px}
-.ctl label output{color:var(--r1);font-weight:700;font-variant-numeric:tabular-nums}
+.ctl label output{color:var(--a1);font-weight:700;font-variant-numeric:tabular-nums}
 .ctl small{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
-input[type=range]{width:100%;accent-color:var(--r1);margin:8px 0 2px}
+input[type=range]{width:100%;accent-color:var(--a1);margin:8px 0 2px}
 .ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .seg button,.presets button{font:inherit;cursor:pointer;color:var(--ink);background:var(--chip);border:1px solid transparent}
@@ -75,7 +78,7 @@ input[type=range]{width:100%;accent-color:var(--r1);margin:8px 0 2px}
 .presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .presets button{font-size:12.5px;padding:6px 11px;border-radius:999px;color:var(--muted)}
 .presets button:hover{color:var(--ink);border-color:var(--panel-ec)}
-button:focus-visible,input:focus-visible{outline:2px solid var(--r1);outline-offset:2px}
+button:focus-visible,input:focus-visible{outline:2px solid var(--a1);outline-offset:2px}
 h2{font-size:15px;margin:0 0 10px;font-weight:700}
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
 @media (max-width:860px){.two{grid-template-columns:1fr}}
@@ -83,13 +86,15 @@ table{width:100%;border-collapse:collapse;font-size:13.5px}
 td,th{padding:8px 6px;border-bottom:1px solid var(--panel-ec);text-align:left;vertical-align:middle}
 th{font-weight:500;color:var(--muted);font-size:12px}
 td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-tr.best td{font-weight:700}
-tr.cur td:first-child{box-shadow:inset 3px 0 0 var(--r1)}
+tr.best td{font-weight:700} tr.best td.n:nth-child(2){color:var(--pos)}
+tr.cur td:first-child{box-shadow:inset 3px 0 0 var(--a1)}
 .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#fff;font-size:12px;font-weight:700;margin-right:8px;vertical-align:middle}
-.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;background:var(--r-soft);color:var(--r1);margin-left:6px;font-weight:600}
+.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;background:var(--a-soft);color:var(--a1);margin-left:6px;font-weight:600}
+.tag.good{background:var(--pos-soft);color:var(--pos)} .tag.warn{background:var(--warn-soft);color:var(--warn);cursor:help}
+.planebtn{font:inherit;font-size:12px;cursor:pointer;color:var(--muted);background:none;border:0;padding:0;text-decoration:underline dotted;text-underline-offset:3px}
 .empty{color:var(--muted);font-size:13.5px;margin:0}
 footer{color:var(--muted);font-size:12.5px;max-width:100ch}
-footer a{color:var(--r1)}
+footer a{color:var(--a1)}
 svg text{font-family:var(--font)}
 .lbl{paint-order:stroke;stroke:var(--halo);stroke-width:4px;stroke-linejoin:round}
 @media (prefers-reduced-motion:no-preference){.route{transition:opacity .25s ease}}
@@ -111,10 +116,11 @@ svg text{font-family:var(--font)}
       <svg id="map" viewBox="0 0 1000 780" role="img" aria-label="Карта сети Red Wings"></svg>
       <div class="verdict" id="verdict" aria-live="polite"></div>
       <div class="legend">
-        <span><i style="background:var(--r1)"></i>новые рейсы / больше частот</span>
+        <span><i style="background:var(--a1)"></i>новые рейсы / больше частот</span>
         <span><i style="background:var(--exist)"></i>рейсы Red Wings сейчас</span>
-        <span><i class="dot" style="background:var(--r1)"></i>база (Кольцово)</span>
+        <span><i class="dot" style="background:var(--a1)"></i>база (Кольцово)</span>
         <span><i class="dot" style="background:var(--panel);border:2.5px solid var(--ink)"></i>новый хаб</span>
+        <button type="button" class="planebtn" id="planeBtn"></button>
       </div>
     </section>
 
@@ -193,7 +199,7 @@ const $ = id => document.getElementById(id);
 const nf = (x, d=1) => x.toLocaleString("ru-RU", {minimumFractionDigits:d, maximumFractionDigits:d});
 const pct = f => (f >= 1 ? "+" : "−") + Math.round(Math.abs(f - 1) * 100) + "%";
 const key = (fi, ci, s, m) => `${M.fares[fi]}|${M.costs[ci]}|${s}|${m}` + (M.fleets ? `|${state.fleet}` : "");
-const REDS = ["var(--r1)", "var(--r2)", "var(--r3)"];
+const REDS = ["var(--a1)", "var(--a2)", "var(--a3)"];   // шаги: 1 — самый насыщенный
 const red = i => REDS[Math.min(i, 2)];
 
 // шкалы и кнопки
@@ -275,6 +281,19 @@ function bendFor(i, j){
   return (A[b].lat + A[a].lat) / 2 >= 55.5 ? 0.13 : -0.13;
 }
 
+// анимация: по каждой новой дуге летит самолётик (SVG animateMotion), выключается кнопкой и при «уменьшить движение»
+const PLANE = "M9 0 3-1.6-1-8h-2.2L-1-1.6h-5l-2-2.4h-1.4l1.2 4-1.2 4h1.4l2-2.4h5L-3.2 8H-1l4-6.4z";
+const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+let anim = !reduce.matches;
+function plane(d, k, l){
+  const [x0, y0] = XY(l.i), [x1, y1] = XY(l.j);
+  const dur = (Math.hypot(x1 - x0, y1 - y0) / 55 + 2.5).toFixed(1);   // ≈ 55 px/с, длинные дуги — дольше
+  const back = l.j === "SVX" ? ' keyPoints="1;0" keyTimes="0;1"' : "";   // все летят из Кольцово
+  return `<g opacity="0"><path d="${PLANE}" fill="var(--plane)" stroke="var(--halo)" stroke-width="1.4" stroke-linejoin="round" transform="scale(1.15)${back ? " rotate(180)" : ""}"/>`
+    + `<animateMotion dur="${dur}s" begin="${(k * 0.7).toFixed(1)}s" repeatCount="indefinite" rotate="auto" calcMode="linear"${back} path="${d}"/>`
+    + `<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.88;1" dur="${dur}s" begin="${(k * 0.7).toFixed(1)}s" repeatCount="indefinite"/></g>`;
+}
+
 function drawMap(res, mode, legs){
   const hub = mode.startsWith("прямые") ? null : mode.split("|")[1];
   const added = new Map(legs.map((l, k) => [l.i + "-" + l.j, k]));
@@ -292,7 +311,7 @@ function drawMap(res, mode, legs){
     cities.add(r.i); cities.add(r.j);
   }
   // новые рейсы: в обратном порядке, чтобы главные легли сверху
-  const badges = [];
+  const badges = [], planes = [];
   [...legs].reverse().forEach(l => {
     const k = added.get(l.i + "-" + l.j);
     const {d, mid} = arc(l.i, l.j, bendFor(l.i, l.j));
@@ -300,6 +319,7 @@ function drawMap(res, mode, legs){
     g += `<path d="${d}" fill="none" stroke="var(--halo)" stroke-width="${+w + 4}" stroke-linecap="round" opacity=".9"/>`;
     g += `<path class="route" d="${d}" fill="none" stroke="${red(k)}" stroke-width="${w}" stroke-linecap="round"${l.f0 === 0 ? ' stroke-dasharray="0"' : ""}/>`;
     badges.push([mid, k]);
+    if (anim) planes.push(plane(d, k, l));
     cities.add(l.i); cities.add(l.j);
   });
   // узлы
@@ -311,13 +331,14 @@ function drawMap(res, mode, legs){
   }
   // Кольцово
   const [ex, ey] = XY("SVX");
-  g += `<circle cx="${ex}" cy="${ey}" r="34" fill="var(--r1)" opacity=".10"/><circle cx="${ex}" cy="${ey}" r="22" fill="var(--r1)" opacity=".18"/>`;
-  g += `<circle cx="${ex}" cy="${ey}" r="10" fill="var(--r1)" stroke="var(--halo)" stroke-width="3"/>`;
+  g += `<circle cx="${ex}" cy="${ey}" r="34" fill="var(--a1)" opacity=".10"/><circle cx="${ex}" cy="${ey}" r="22" fill="var(--a1)" opacity=".18"/>`;
+  g += `<circle cx="${ex}" cy="${ey}" r="10" fill="var(--a1)" stroke="var(--halo)" stroke-width="3"/>`;
   // новый хаб
   if (hub) {
     const [hx, hy] = XY(hub);
     g += `<circle cx="${hx}" cy="${hy}" r="11" fill="var(--panel)" stroke="var(--ink)" stroke-width="3.5"/><circle cx="${hx}" cy="${hy}" r="4" fill="var(--ink)"/>`;
   }
+  g += planes.join("");
   // бейджи с номерами
   for (const [[x, y], k] of badges) {
     g += `<circle cx="${x}" cy="${y}" r="12" fill="${red(k)}" stroke="var(--halo)" stroke-width="2.5"/>`;
@@ -330,7 +351,7 @@ function drawMap(res, mode, legs){
     if (c === "SVX") {
       // над точкой: справа Тюмень, снизу Челябинск, слева дуга из Казани
       g += `<text class="lbl" x="${x}" y="${y-38}" text-anchor="middle" font-size="21" font-weight="800" fill="var(--ink)">Екатеринбург</text>`;
-      g += `<text class="lbl" x="${x}" y="${y-21}" text-anchor="middle" font-size="12.5" font-weight="600" fill="var(--r1)">Кольцово — база и хаб Red Wings</text>`;
+      g += `<text class="lbl" x="${x}" y="${y-21}" text-anchor="middle" font-size="12.5" font-weight="600" fill="var(--a1)">Кольцово — база и хаб Red Wings</text>`;
       continue;
     }
     const strong = main.has(c) || c === hub;
@@ -360,12 +381,12 @@ function render(){
   const best = rows.reduce((a, b) => b[1].profit > a[1].profit ? b : a);
   $("compare").querySelector("tbody").innerHTML = rows.map(([m, r]) => {
     const isBest = m === best[0] && best[1].profit > 0.0005;
-    return `<tr class="${m === state.mode ? "cur" : ""} ${isBest ? "best" : ""}"><td>${MODE_NAMES[m]}${isBest ? '<span class="tag">лучший</span>' : ""}</td><td class="n">${nf(r.profit, 2)}</td><td class="n">${nf(Math.min(r.aircraft, state.fleet), 1)}</td></tr>`;
+    return `<tr class="${m === state.mode ? "cur" : ""} ${isBest ? "best" : ""}"><td>${MODE_NAMES[m]}${isBest ? '<span class="tag good">лучший</span>' : ""}</td><td class="n">${nf(r.profit, 2)}</td><td class="n">${nf(Math.min(r.aircraft, state.fleet), 1)}</td></tr>`;
   }).join("");
 
   const legs = [...res.new_legs].sort((a, b) => b.pax - a.pax);
   $("legs").innerHTML = legs.length ? `<table><thead><tr><th>Маршрут</th><th style="text-align:right">Рейсов в неделю</th><th style="text-align:right">Пасс. в год</th></tr></thead><tbody>` +
-    legs.map((l, k) => `<tr><td><span class="num" style="background:${red(k)}">${k+1}</span>${A[l.i].name} – ${A[l.j].name}${l.f0 === 0 ? '<span class="tag">новый</span>' : ""}${l.i === "MRV" && l.j === "UFA" ? '<span class="tag" title="Минводы — база «Азимута», он уже летает этот рейс 4 раза в неделю. Если ответит тем же числом рейсов, прибыль сети при +60% падает с 0,32 до 0,11 млрд ₽; без этого рейса — 0,30">уязвим к ответу «Азимута»</span>' : ""}</td><td class="n">${l.f0 ? nf(l.f0, l.f0 % 1 ? 1 : 0) + " → " : "0 → "}${l.f}</td><td class="n">${Math.round(l.pax/1000)} тыс.</td></tr>`).join("") + "</tbody></table>"
+    legs.map((l, k) => `<tr><td><span class="num" style="background:${red(k)}">${k+1}</span>${A[l.i].name} – ${A[l.j].name}${l.f0 === 0 ? '<span class="tag">новый</span>' : ""}${l.i === "MRV" && l.j === "UFA" ? '<span class="tag warn" title="Минводы — база «Азимута», он уже летает этот рейс 4 раза в неделю. Если ответит тем же числом рейсов, прибыль сети при +60% падает с 0,32 до 0,11 млрд ₽; без этого рейса — 0,30">уязвим к ответу «Азимута»</span>' : ""}</td><td class="n">${l.f0 ? nf(l.f0, l.f0 % 1 ? 1 : 0) + " → " : "0 → "}${l.f}</td><td class="n">${Math.round(l.pax/1000)} тыс.</td></tr>`).join("") + "</tbody></table>"
     : `<p class="empty">Ни один новый рейс не окупается — при этих условиях борта выгоднее оставить на международных линиях.</p>`;
 
   const name = MODE_NAMES[state.mode];
@@ -389,6 +410,9 @@ $("presets").addEventListener("click", e => {
   state.fare = M.fares.indexOf(p.fare); state.cost = M.costs.indexOf(p.cost); state.sub = p.sub; state.fleet = p.fleet || M.aircraft;
   $("fare").value = state.fare; $("cost").value = state.cost; render();
 });
+const planeLbl = () => { $("planeBtn").textContent = anim ? "остановить самолёты" : "запустить самолёты"; };
+$("planeBtn").addEventListener("click", () => { anim = !anim; planeLbl(); render(); });
+planeLbl();
 render();
 </script>
 
