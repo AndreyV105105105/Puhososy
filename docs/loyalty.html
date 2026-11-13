@@ -1,0 +1,1235 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Крылья+ — концепт программы лояльности · демо команды fluffuums</title>
+<!-- Шрифт подключается неблокирующе: без интернета страница сразу рисуется системным шрифтом -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" media="print" onload="this.media='all'">
+<style>
+/* ---------- Токены ---------- */
+:root{
+  --blue:#2D9BDA; --blue-d:#1467AE; --blue-dd:#0E4F88; --blue-soft:#EAF5FC; --blue-line:#CDE5F5;
+  --green:#2E9A5E; --green-d:#1F7A48; --green-soft:#E6F4EC; --green-line:#BFE2CE;
+  --ink:#0E2238; --text:#33475B; --muted:#5F7183; --faint:#8A9AAA;
+  --line:#E3E9EF; --bg:#fff; --bg-2:#F6F9FC;
+  --r:1rem; --gut:clamp(16px,2.6vw,48px);
+  --shadow:0 1px 2px rgba(14,34,56,.05),0 8px 24px rgba(14,34,56,.06);
+}
+*{box-sizing:border-box}
+html{font-size:clamp(15px,.42vw + 9.8px,19px);-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4{color:var(--ink);letter-spacing:-.02em;margin:0;line-height:1.15}
+p{margin:0}
+button{font:inherit;cursor:pointer;color:inherit}
+a{color:var(--blue-d)}
+ul,ol{margin:0;padding:0;list-style:none}
+b,strong{font-weight:700}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:.4rem}
+.wrap{width:min(100% - 2*var(--gut),1600px);margin-inline:auto}
+.num,.tnum{font-variant-numeric:tabular-nums}
+.ic{width:1.15em;height:1.15em;flex:none;vertical-align:-.18em}
+.skip{position:absolute;left:-999px;top:0;background:#fff;padding:.6rem 1rem;z-index:99}
+.skip:focus{left:.5rem;top:.5rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Шапка ---------- */
+.chrome{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.strip{background:var(--blue-d);color:#fff;font-size:.74rem;font-weight:600;letter-spacing:.02em;text-align:center;padding:.32rem 1rem}
+.strip span{opacity:.85;font-weight:500}
+.top-in{display:flex;align-items:center;gap:.9rem;padding-block:.55rem}
+.brand{display:flex;align-items:center;gap:.55rem;font-weight:800;font-size:1.3rem;color:var(--ink);letter-spacing:-.03em;margin-right:.4rem;white-space:nowrap}
+.brand svg{width:2.1rem;height:2.1rem;flex:none}
+.brand i{font-style:normal;color:var(--blue)}
+.tabs{display:flex;gap:.2rem;flex:1;min-width:0}
+.tab{border:0;background:none;padding:.5rem .8rem;border-radius:.6rem;font-weight:600;font-size:.94rem;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:.45rem;transition:background .15s,color .15s}
+.tab:hover{color:var(--ink);background:var(--bg-2)}
+.tab[aria-selected=true]{color:var(--blue-d);background:var(--blue-soft)}
+.tab .n{font-size:.7rem;font-weight:700;width:1.3rem;height:1.3rem;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid var(--line);color:var(--muted)}
+.tab[aria-selected=true] .n{background:var(--blue-d);border-color:var(--blue-d);color:#fff}
+.tab.has-dot::after{content:"";width:.5rem;height:.5rem;border-radius:50%;background:var(--green)}
+.top-actions{display:flex;gap:.5rem}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border:1px solid transparent;border-radius:.7rem;padding:.55rem .95rem;font-weight:650;font-size:.92rem;line-height:1.2;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s,transform .1s,box-shadow .15s}
+.btn-primary{background:var(--blue-d);color:#fff;box-shadow:0 1px 2px rgba(14,34,56,.2),0 6px 16px rgba(20,103,174,.22)}
+.btn-primary:hover{background:var(--blue-dd)}
+.btn-soft{background:var(--blue-soft);color:var(--blue-d);border-color:var(--blue-line)}
+.btn-soft:hover{background:#DDEFFA}
+.btn-ghost{background:#fff;color:var(--text);border-color:var(--line)}
+.btn-ghost:hover{border-color:#C9D5DF;background:var(--bg-2)}
+.btn-lg{padding:.8rem 1.25rem;font-size:1rem;border-radius:.85rem}
+.btn-block{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ---------- Общие элементы ---------- */
+.view{padding-block:clamp(1rem,1.8vw,1.75rem) 3rem;animation:viewIn .32s cubic-bezier(.2,.7,.2,1) both}
+.view[hidden]{display:none}
+.view:focus{outline:none}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.view-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem}
+.view-head h2{font-size:clamp(1.5rem,2.2vw,2.1rem)}
+.view-head p{margin-top:.35rem;color:var(--muted);max-width:68ch}
+.eyebrow{font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue-d);margin-bottom:.5rem}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);scroll-margin-top:7rem}
+.chip{display:inline-flex;align-items:center;gap:.4rem;border-radius:1rem;line-height:1.3;padding:.3rem .7rem;font-size:.78rem;font-weight:600;background:var(--bg-2);border:1px solid var(--line);color:var(--text)}
+.chip-green{background:var(--green-soft);border-color:var(--green-line);color:var(--green-d)}
+.chip-blue{background:var(--blue-soft);border-color:var(--blue-line);color:var(--blue-d)}
+.tagf,.taga{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:.35rem;padding:.12rem .4rem;vertical-align:.1em;white-space:nowrap}
+.tagf{color:var(--blue-d);background:var(--blue-soft);border:1px solid var(--blue-line)}
+.taga{color:var(--muted);background:#fff;border:1px dashed #B8C7D4}
+.spot{box-shadow:0 0 0 3px var(--blue),0 0 0 10px rgba(45,155,218,.18)!important;border-radius:var(--r);transition:box-shadow .3s;scroll-margin:7rem 0 7.5rem}
+
+/* ---------- Обзор ---------- */
+.hero{display:grid;grid-template-columns:1.35fr .65fr;gap:clamp(1rem,2.5vw,2.5rem);align-items:center;padding:clamp(1.2rem,1.9vw,2.4rem) clamp(1.2rem,2.4vw,2.6rem);border-radius:1.4rem;border:1px solid var(--blue-line);background:radial-gradient(120% 140% at 100% 0%,#DDF0FB 0%,#F3FAFE 38%,#fff 70%)}
+.hero h1{font-size:clamp(2.1rem,3.6vw,3.9rem);line-height:1.04;letter-spacing:-.04em}
+.hero h1 em{font-style:normal;color:var(--blue-d)}
+.lead{margin-top:.8rem;font-size:clamp(1rem,1.15vw,1.2rem);color:var(--text);max-width:74ch}
+.hero-cta{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.1rem}
+.values{display:grid;gap:.5rem}
+.values li{display:grid;grid-template-columns:auto 1fr;gap:.2rem .8rem;background:#fff;border:1px solid var(--line);border-radius:.9rem;padding:.6rem .85rem;box-shadow:var(--shadow)}
+.values .vi{grid-row:span 2;width:2.3rem;height:2.3rem;border-radius:.65rem;background:var(--blue-soft);color:var(--blue-d);display:grid;place-items:center}
+.values .vi .ic{width:1.25rem;height:1.25rem}
+.values b{color:var(--ink);font-size:1rem}
+.values span{font-size:.86rem;color:var(--muted);line-height:1.35}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:.9rem;border-radius:var(--r)}
+.fact{padding:.9rem 1.2rem 1rem;position:relative}
+.fact .tagf{position:absolute;top:1rem;right:1rem}
+.fact-n{font-size:clamp(2.6rem,3.9vw,4.4rem);font-weight:800;letter-spacing:-.05em;line-height:1;color:var(--blue-d);font-variant-numeric:tabular-nums}
+.fact h3{font-size:1.02rem;margin-top:.4rem;font-weight:700;letter-spacing:-.01em;line-height:1.25}
+.fact p{margin-top:.3rem;font-size:.88rem;color:var(--muted)}
+.chain{display:grid;grid-template-columns:repeat(4,1fr);margin-top:.9rem;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff}
+.chain li{padding:.9rem 1.1rem .95rem 1.7rem;position:relative;border-left:1px solid var(--line)}
+.chain li:first-child{border-left:0;padding-left:1.1rem}
+.chain li:not(:first-child)::before{content:"";position:absolute;left:-.55rem;top:50%;width:1.05rem;height:1.05rem;background:#fff;border-top:1px solid var(--line);border-right:1px solid var(--line);transform:translateY(-50%) rotate(45deg);z-index:1}
+.chain small{display:block;font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+.chain b{display:block;color:var(--ink);font-size:1rem;margin-top:.15rem;line-height:1.2}
+.chain span{display:block;font-size:.82rem;color:var(--muted);margin-top:.25rem;line-height:1.3}
+.chain li:last-child{background:var(--green-soft)}
+.chain li:last-child b{color:var(--green-d)}
+
+/* ---------- Покупка ---------- */
+.shop{display:grid;grid-template-columns:minmax(0,1fr) clamp(20rem,27vw,25rem);gap:1.25rem;align-items:start}
+.shop-main{display:grid;gap:1rem;min-width:0}
+.sec{padding:1.15rem 1.25rem 1.25rem}
+.sec-h{display:flex;align-items:center;gap:.75rem;margin-bottom:.9rem}
+.sec-h .no{width:1.9rem;height:1.9rem;border-radius:.6rem;background:var(--blue-soft);color:var(--blue-d);display:grid;place-items:center;font-weight:800;font-size:.9rem;flex:none}
+.sec-h h3{font-size:1.2rem}
+.sec-h p{font-size:.84rem;color:var(--muted);margin-top:.1rem}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;background:var(--bg-2);border:1px solid var(--line);border-radius:.9rem;padding:.3rem}
+.seg-opt{position:relative;display:block;border-radius:.65rem;padding:.55rem .8rem;cursor:pointer;transition:background .15s,box-shadow .15s}
+.seg-opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.seg-opt b{display:block;color:var(--ink);font-size:.95rem}
+.seg-opt small{display:block;color:var(--muted);font-size:.8rem;margin-top:.1rem}
+.seg-opt.is-on{background:#fff;box-shadow:0 1px 3px rgba(14,34,56,.12),0 0 0 1.5px var(--blue)}
+.seg-opt.is-on b{color:var(--blue-d)}
+.ring{position:absolute;inset:0;border-radius:inherit;pointer-events:none}
+input:focus-visible + .ring{outline:3px solid var(--blue);outline-offset:2px}
+.rv{display:flex;align-items:center;gap:.8rem;margin-top:1rem;padding:1rem 1.1rem;border:1px solid var(--blue-line);border-radius:.9rem;background:linear-gradient(180deg,#F7FBFE,#fff)}
+.rv-stop b{display:block;font-size:clamp(1.5rem,2.2vw,2.1rem);font-weight:800;color:var(--ink);letter-spacing:-.04em;line-height:1}
+.rv-stop span{display:block;font-size:.82rem;color:var(--muted);margin-top:.25rem}
+.rv-stop.is-hub b{color:var(--blue-d)}
+.rv-stop .hubtag{display:inline-block;margin-top:.3rem;font-size:.68rem;font-weight:700;color:var(--blue-d);background:var(--blue-soft);border:1px solid var(--blue-line);border-radius:99px;padding:.1rem .5rem}
+.rv-line{flex:1;min-width:2rem;display:grid;justify-items:center;gap:.2rem;color:var(--blue);font-size:.76rem;font-weight:600}
+.rv-line i{display:block;width:100%;height:0;border-top:2px dashed var(--blue);opacity:.55}
+.rv-line span{color:var(--muted)}
+.rv-meta{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.8rem}
+
+.fares{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.fare{position:relative;display:flex;flex-direction:column;border:1.5px solid var(--line);border-radius:1rem;padding:1rem 1rem .9rem;cursor:pointer;background:#fff;transition:border-color .15s,box-shadow .15s,transform .15s}
+.fare:hover{border-color:#B9D9EE;transform:translateY(-2px)}
+.fare input{position:absolute;opacity:0;width:1px;height:1px}
+.fare.is-on{border-color:var(--blue);box-shadow:0 0 0 1.5px var(--blue),0 10px 24px rgba(45,155,218,.16);background:linear-gradient(180deg,#F5FBFF,#fff 45%)}
+.fare-top{display:flex;justify-content:space-between;align-items:center}
+.fare-name{font-weight:800;color:var(--ink);font-size:1.12rem;letter-spacing:-.02em}
+.fare-radio{width:1.25rem;height:1.25rem;border-radius:50%;border:2px solid #B8C7D4;display:grid;place-items:center}
+.fare.is-on .fare-radio{border-color:var(--blue-d)}
+.fare.is-on .fare-radio::after{content:"";width:.6rem;height:.6rem;border-radius:50%;background:var(--blue-d)}
+.fare-price{font-size:clamp(1.55rem,2.1vw,2rem);font-weight:800;color:var(--ink);letter-spacing:-.04em;margin-top:.35rem;font-variant-numeric:tabular-nums}
+.fare-note{font-size:.8rem;color:var(--muted)}
+.fare-feats{display:grid;gap:.4rem;margin:.8rem 0;padding-top:.8rem;border-top:1px solid var(--line);font-size:.88rem}
+.fare-feats > span{display:flex;gap:.5rem;align-items:flex-start;line-height:1.3}
+.fare-feats .y{color:var(--ink)} .fare-feats .y .ic{color:var(--green)}
+.fare-feats .n{color:var(--faint)} .fare-feats .n .ic{color:#B8C7D4}
+.fare-pts{margin-top:auto;display:flex;align-items:center;gap:.4rem;font-size:.84rem;font-weight:700;color:var(--green-d);background:var(--green-soft);border-radius:.6rem;padding:.45rem .6rem}
+
+.extras{display:grid;gap:.6rem}
+.extra{position:relative;display:grid;grid-template-columns:auto auto 1fr auto;align-items:center;gap:.8rem;border:1.5px solid var(--line);border-radius:.9rem;padding:.8rem 1rem;cursor:pointer;transition:border-color .15s,background .15s}
+.extra:hover{border-color:#B9D9EE}
+.extra input{position:absolute;opacity:0;width:1px;height:1px}
+.extra .box{width:1.4rem;height:1.4rem;border-radius:.4rem;border:2px solid #B8C7D4;display:grid;place-items:center;color:transparent;transition:.15s}
+.extra .box .ic{width:1rem;height:1rem}
+.extra.is-on{border-color:var(--blue);background:#F5FBFF;box-shadow:0 0 0 1.5px var(--blue)}
+.extra.is-on .box{background:var(--blue-d);border-color:var(--blue-d);color:#fff}
+.extra-ic{width:2.3rem;height:2.3rem;border-radius:.65rem;background:var(--blue-soft);color:var(--blue-d);display:grid;place-items:center}
+.extra-ic .ic{width:1.25rem;height:1.25rem}
+.extra-txt b{display:block;color:var(--ink)}
+.extra-txt small{display:block;color:var(--muted);font-size:.82rem;margin-top:.1rem}
+.extra-price{font-weight:800;color:var(--ink);font-size:1.05rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.extra.is-inc{cursor:default;background:var(--bg-2);border-style:dashed}
+.extra.is-inc .box{background:var(--green);border-color:var(--green);color:#fff}
+.extra.is-inc .extra-price{color:var(--green-d);font-size:.9rem}
+.law{display:flex;gap:.6rem;align-items:flex-start;margin-top:.9rem;font-size:.84rem;color:var(--muted);background:var(--bg-2);border-radius:.7rem;padding:.65rem .8rem}
+.law .ic{color:var(--blue-d);margin-top:.1rem}
+
+.shop-side{position:sticky;top:6.6rem}
+.sum{padding:1rem 1.25rem 1.1rem}
+.sum-h{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.7rem}
+.sum-h h3{font-size:1.2rem}
+.mini-wallet{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(120deg,var(--blue-d),var(--blue));color:#fff;border-radius:.85rem;padding:.5rem .95rem}
+.mini-wallet span{font-size:.82rem;font-weight:600;opacity:.92}
+.mini-wallet b{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.redeem{display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
+.redeem b{color:var(--ink);font-size:.95rem;display:block}
+.redeem small{color:var(--muted);font-size:.8rem;display:block;margin-top:.1rem}
+.switch{flex:none;width:3rem;height:1.75rem;border-radius:99px;border:0;background:#CBD6DF;padding:.2rem;transition:background .2s;position:relative}
+.switch::before{content:"";display:block;width:1.35rem;height:1.35rem;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(14,34,56,.3);transition:transform .2s}
+.switch[aria-checked=true]{background:var(--green)}
+.switch[aria-checked=true]::before{transform:translateX(1.25rem)}
+.switch:disabled{opacity:.5;cursor:not-allowed}
+.rows{padding:.7rem 0 .2rem}
+.row{display:flex;justify-content:space-between;gap:.8rem;font-size:.92rem;padding:.22rem 0;color:var(--text)}
+.row b{color:var(--ink);font-weight:650;white-space:nowrap;font-variant-numeric:tabular-nums}
+.row.g, .row.g b{color:var(--green-d)}
+.row.mut{color:var(--faint)}
+.total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:.5rem;padding-top:.7rem}
+.total span{font-weight:700;color:var(--ink)}
+.total b{font-size:clamp(1.9rem,2.5vw,2.4rem);font-weight:800;color:var(--ink);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.earn{background:var(--green-soft);border:1px solid var(--green-line);border-radius:.85rem;padding:.6rem .9rem;margin:.7rem 0 .8rem}
+.earn-top{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;color:var(--green-d);font-weight:700;font-size:.92rem}
+.earn-top b{font-size:1.45rem;font-weight:800;letter-spacing:-.03em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.earn ul{margin-top:.35rem;font-size:.8rem;color:var(--green-d)}
+.earn li{display:flex;justify-content:space-between;gap:.5rem;padding:.08rem 0;opacity:.92}
+.fine{font-size:.74rem;color:var(--faint);margin-top:.7rem;line-height:1.4}
+
+/* ---------- Поездка ---------- */
+.trip{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:1.25rem;align-items:start}
+.trip-col{display:grid;gap:1rem;min-width:0}
+.pad{padding:1.1rem 1.25rem 1.2rem}
+.pad > h3{font-size:1.1rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.th-top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.th-route{font-size:clamp(1.6rem,2.4vw,2.3rem);font-weight:800;letter-spacing:-.04em}
+.th-route span{color:var(--blue)}
+.th-sub{color:var(--muted);font-size:.9rem;margin-top:.25rem}
+.status{display:inline-flex;align-items:center;gap:.45rem;font-weight:700;font-size:.86rem;color:var(--green-d);background:var(--green-soft);border:1px solid var(--green-line);border-radius:99px;padding:.35rem .8rem;white-space:nowrap}
+.status i{width:.55rem;height:.55rem;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
+.status.done i{animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(46,154,94,.5)}100%{box-shadow:0 0 0 .5rem rgba(46,154,94,0)}}
+.th-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.8rem}
+.th-chips .chip .ic{color:var(--green)}
+.th-cta{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-top:.95rem;padding-top:.95rem;border-top:1px solid var(--line)}
+.th-hint{font-size:.86rem;color:var(--green-d);font-weight:600}
+.accr{display:inline-flex;align-items:center;gap:.4rem;font-weight:700;color:var(--green-d);background:var(--green-soft);border-radius:.7rem;padding:.5rem .8rem}
+.passes{display:grid;gap:.7rem}
+.pass{display:grid;grid-template-columns:1fr auto;border:1px solid var(--blue-line);border-radius:1rem;background:linear-gradient(180deg,#fff,#F7FBFE);overflow:hidden}
+.pass-main{padding:.9rem 1.1rem;min-width:0}
+.pass-route{display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:center}
+.pass-route b{display:block;font-size:1.55rem;font-weight:800;color:var(--ink);letter-spacing:-.04em;line-height:1}
+.pass-route span{display:block;font-size:.76rem;color:var(--muted);margin-top:.15rem}
+.pass-route time{display:block;font-weight:700;color:var(--blue-d);font-size:.95rem;margin-top:.15rem;font-variant-numeric:tabular-nums}
+.pass-route .r{text-align:right}
+.pass-mid{display:grid;justify-items:center;gap:.15rem;color:var(--blue);font-size:.74rem}
+.pass-mid i{display:block;width:100%;border-top:2px dashed var(--blue);opacity:.5}
+.pass-mid small{color:var(--muted)}
+.pass-grid{display:grid;grid-template-columns:repeat(5,auto);justify-content:space-between;gap:.5rem 1rem;margin:.8rem 0 0;padding-top:.7rem;border-top:1px dashed var(--blue-line)}
+.pass-grid dt{font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.pass-grid dd{margin:.1rem 0 0;font-weight:700;color:var(--ink);font-size:.95rem;white-space:nowrap}
+.pass-stub{border-left:2px dashed var(--blue-line);padding:.8rem;display:grid;align-content:center;justify-items:center;gap:.4rem;width:6rem;background:#fff}
+.barcode{width:100%;height:4rem;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px,var(--ink) 5px 6px,transparent 6px 9px,var(--ink) 9px 12px,transparent 12px 14px);opacity:.85}
+.pass-stub small{font-size:.6rem;font-weight:800;letter-spacing:.14em;color:var(--faint);text-align:center;line-height:1.3}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.svc li{display:flex;justify-content:space-between;gap:.8rem;padding:.4rem 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.svc li:last-child{border:0}
+.svc li span{display:flex;gap:.5rem;align-items:center;color:var(--ink)}
+.svc li .ic{color:var(--green)}
+.svc li em{font-style:normal;color:var(--muted);white-space:nowrap}
+.svc li b{white-space:nowrap}
+.paid{margin-top:.6rem;font-size:.86rem;color:var(--muted)}
+.paid b{color:var(--ink)}
+.manage{display:grid;gap:.5rem}
+.manage .btn{justify-content:flex-start}
+.disc{font-size:.86rem;color:var(--text);background:var(--bg-2);border:1px solid var(--line);border-radius:.7rem;padding:.7rem .8rem;display:grid;gap:.55rem}
+.disc[hidden]{display:none}
+.tl li{display:grid;grid-template-columns:4.3rem 1.2rem 1fr;gap:.55rem;padding-bottom:.85rem;position:relative}
+.tl li:last-child{padding-bottom:0}
+.tl time{font-weight:700;color:var(--ink);font-size:.86rem;text-align:right;font-variant-numeric:tabular-nums;padding-top:.05rem}
+.tl time.w{font-size:.72rem;color:var(--muted);font-weight:600;padding-top:.15rem}
+.tl .dot{width:.85rem;height:.85rem;border-radius:50%;border:2px solid #B8C7D4;background:#fff;margin:.22rem auto 0;position:relative;z-index:1;transition:.3s}
+.tl li::before{content:"";position:absolute;left:calc(4.3rem + .55rem + .6rem - 1px);top:.9rem;bottom:-.3rem;width:2px;background:#DCE6EE;transition:background .3s}
+.tl li:last-child::before{display:none}
+.tl li.done .dot{background:var(--green);border-color:var(--green)}
+.tl li.done::before{background:var(--green)}
+.tl li.now .dot{border-color:var(--blue);background:var(--blue);box-shadow:0 0 0 .3rem rgba(45,155,218,.22)}
+.tl-body b{display:block;color:var(--ink);font-size:.93rem;line-height:1.3}
+.tl-body small{display:block;color:var(--muted);font-size:.82rem;margin-top:.1rem;line-height:1.35}
+.tl li.hub .tl-body{background:var(--blue-soft);border:1px solid var(--blue-line);border-radius:.7rem;padding:.5rem .7rem;margin-top:-.25rem}
+.tl-tag{display:inline-block;font-size:.7rem;font-weight:700;color:#fff;background:var(--blue-d);border-radius:99px;padding:.1rem .55rem;margin-bottom:.25rem}
+.tl li.pts .tl-body b{color:var(--green-d)}
+.feed li{display:grid;grid-template-columns:auto 1fr;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.feed li:last-child{border:0;padding-bottom:0}
+.feed .fi{width:1.8rem;height:1.8rem;border-radius:.5rem;background:var(--blue-soft);color:var(--blue-d);display:grid;place-items:center}
+.feed li.new .fi{background:var(--green-soft);color:var(--green-d)}
+.feed b{display:block;color:var(--ink);font-weight:600;line-height:1.3}
+.feed small{color:var(--faint);font-size:.76rem}
+.empty{padding:clamp(2rem,5vw,4rem) 1.5rem;text-align:center;max-width:46rem;margin:1rem auto}
+.empty-ic{width:4rem;height:4rem;border-radius:1.2rem;background:var(--blue-soft);color:var(--blue-d);display:grid;place-items:center;margin:0 auto 1rem}
+.empty-ic .ic{width:2rem;height:2rem}
+.empty h3{font-size:1.5rem}
+.empty p{color:var(--muted);margin:.6rem auto 1.3rem;max-width:52ch}
+.empty-cta{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+
+/* ---------- Кошелёк ---------- */
+.wal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.25rem;align-items:start}
+.balance-card{border-radius:1.2rem;padding:1.3rem 1.5rem;color:#fff;background:radial-gradient(120% 160% at 100% 0%,#49B3EC 0%,var(--blue) 30%,var(--blue-d) 75%);box-shadow:0 14px 34px rgba(20,103,174,.28);scroll-margin-top:7rem}
+.bc-top{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:.9rem}
+.bc-top span:last-child{background:rgba(255,255,255,.18);border-radius:99px;padding:.25rem .7rem;font-size:.8rem}
+.bc-num{font-size:clamp(3rem,5vw,4.6rem);font-weight:800;letter-spacing:-.05em;line-height:1;margin-top:.7rem;font-variant-numeric:tabular-nums}
+.bc-sub{opacity:.9;font-size:.9rem;margin-top:.35rem}
+.bc-pend{display:inline-flex;align-items:center;gap:.4rem;margin-top:.9rem;background:#fff;color:var(--green-d);font-weight:700;font-size:.86rem;border-radius:.6rem;padding:.4rem .7rem}
+.lvl-track{position:relative;height:.6rem;border-radius:99px;background:#E4ECF2;margin:2.4rem 1rem 2.9rem}
+.lvl-fill{position:absolute;inset:0 auto 0 0;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .8s cubic-bezier(.2,.7,.2,1)}
+.lvl-node{position:absolute;top:50%;transform:translate(-50%,-50%);width:1.3rem;height:1.3rem;border-radius:50%;background:#fff;border:3px solid #C5D3DF}
+.lvl-node.on{border-color:var(--green);background:var(--green)}
+.lvl-node b{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.86rem;color:var(--ink)}
+.lvl-node small{position:absolute;top:1.5rem;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.74rem;color:var(--muted)}
+.lvl-node:first-of-type b,.lvl-node:first-of-type small{left:-.3rem;transform:none}
+.lvl-node:last-of-type b,.lvl-node:last-of-type small{left:auto;right:-.3rem;transform:none}
+.lvl-msg{font-size:.98rem;color:var(--ink);font-weight:600}
+.lvl-msg b{color:var(--green-d)}
+.perks{margin-top:.8rem;display:grid;gap:.4rem;font-size:.86rem}
+.perks li{display:grid;grid-template-columns:5.2rem 1fr;gap:.6rem;color:var(--muted)}
+.perks li b{color:var(--ink)}
+.perks li.cur b{color:var(--green-d)}
+.ledger li{display:flex;justify-content:space-between;gap:1rem;padding:.55rem 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.ledger li:last-child{border:0}
+.ledger span{color:var(--ink)}
+.ledger b{white-space:nowrap;font-variant-numeric:tabular-nums}
+.ledger .in b{color:var(--green-d)}
+.ledger .out b{color:var(--ink)}
+.rules{width:100%;border-collapse:collapse;font-size:.9rem}
+.rules td{padding:.45rem 0;border-bottom:1px solid var(--line)}
+.rules tr:last-child td{border:0}
+.rules td:last-child{text-align:right;font-weight:700;color:var(--green-d);white-space:nowrap}
+.note{font-size:.8rem;color:var(--muted);margin-top:.7rem;line-height:1.4}
+
+/* ---------- Для Red Wings ---------- */
+.biz{display:grid;grid-template-columns:clamp(20rem,28vw,26rem) minmax(0,1fr);gap:1.25rem;align-items:start}
+.biz-ctl{padding:1.1rem 1.25rem 1.2rem}
+.presets{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-bottom:.9rem}
+.presets > span{font-size:.8rem;color:var(--muted);font-weight:600;width:100%}
+.chipbtn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:.38rem .7rem;font-size:.84rem;font-weight:650;color:var(--text);transition:.15s}
+.chipbtn:hover{border-color:var(--blue)}
+.chipbtn[aria-pressed=true]{background:var(--blue-d);border-color:var(--blue-d);color:#fff}
+fieldset{border:0;margin:0;padding:.8rem 0 .2rem;border-top:1px solid var(--line);min-width:0}
+legend{padding:0;font-weight:800;color:var(--ink);font-size:1rem;display:flex;align-items:center;gap:.5rem;float:left;width:100%;margin-bottom:.5rem}
+legend + *{clear:both}
+legend .ic{color:var(--blue-d)}
+.sl{margin-bottom:.55rem}
+.sl-top{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem}
+.sl-top label{font-size:.86rem;color:var(--text)}
+.sl-top output{font-weight:800;color:var(--ink);font-size:1.05rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1.6rem;background:transparent;cursor:pointer;margin:0;display:block}
+input[type=range]::-webkit-slider-runnable-track{height:.42rem;border-radius:99px;background:linear-gradient(to right,var(--blue-d) var(--p,0%),#DCE6EE var(--p,0%))}
+input[type=range]::-moz-range-track{height:.42rem;border-radius:99px;background:#DCE6EE}
+input[type=range]::-moz-range-progress{height:.42rem;border-radius:99px;background:var(--blue-d)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:1.3rem;height:1.3rem;border-radius:50%;background:#fff;border:.22rem solid var(--blue-d);margin-top:-.44rem;box-shadow:0 1px 4px rgba(14,34,56,.25)}
+input[type=range]::-moz-range-thumb{width:.9rem;height:.9rem;border-radius:50%;background:#fff;border:.22rem solid var(--blue-d);box-shadow:0 1px 4px rgba(14,34,56,.25)}
+.biz-out{display:grid;gap:1rem;min-width:0;scroll-margin-top:7rem}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;border-radius:var(--r)}
+.kpi{padding:1rem 1.15rem 1.05rem;display:grid;align-content:start}
+.kpi-l{font-size:.84rem;font-weight:650;color:var(--muted)}
+.kpi-v{font-size:clamp(2.2rem,3.5vw,3.5rem);font-weight:800;letter-spacing:-.05em;line-height:1.05;color:var(--ink);margin-top:.25rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi-s{font-size:.78rem;color:var(--muted);margin-top:.3rem;line-height:1.35}
+.kpi-main{background:var(--blue-soft);border-color:var(--blue-line);transition:background .3s,border-color .3s}
+.kpi-main .kpi-v{color:var(--blue-d);transition:color .3s}
+.kpi-main.ok{background:var(--green-soft);border-color:var(--green-line)}
+.kpi-main.ok .kpi-v{color:var(--green-d)}
+.formula{font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.5}
+.formula b{color:var(--ink)}
+.formula code{font-family:inherit;background:var(--bg-2);border:1px solid var(--line);border-radius:.4rem;padding:.1rem .4rem;color:var(--ink);white-space:nowrap}
+.gauge{position:relative;margin:2.7rem .5rem 2.7rem}
+.g-track{position:relative;height:.8rem;border-radius:99px;background:#E4ECF2}
+.g-fill{position:absolute;inset:0 auto 0 0;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--blue-d));transition:width .25s ease-out,background .3s}
+.g-fill.ok{background:linear-gradient(90deg,var(--blue),var(--green))}
+.g-tick{position:absolute;left:var(--x);top:-.35rem;bottom:-.35rem;width:2px;background:#9FB2C2;transform:translateX(-1px)}
+.g-tick b,.g-tick small{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap}
+.g-tick b{top:1.6rem;font-size:.88rem;color:var(--ink)}
+.g-tick small{top:2.75rem;font-size:.72rem;color:var(--muted);font-weight:600}
+.g-tick.on{background:var(--green)} .g-tick.on b,.g-tick.on small{color:var(--green-d)}
+.g-pin{position:absolute;left:0;top:50%;width:1.5rem;height:1.5rem;border-radius:50%;background:#fff;border:.3rem solid var(--blue-d);transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(14,34,56,.3);transition:left .25s ease-out,border-color .3s;z-index:2}
+.g-pin.ok{border-color:var(--green)}
+.g-pin span{position:absolute;bottom:1.55rem;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-weight:800;font-size:.95rem;border-radius:.5rem;padding:.2rem .55rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.steps-card{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:1.25rem;align-items:center}
+.step-now{display:flex;gap:.9rem;align-items:center;margin-bottom:.9rem}
+.step-num{width:3.6rem;height:3.6rem;border-radius:1rem;display:grid;place-items:center;font-size:2.1rem;font-weight:800;background:var(--bg-2);border:1px solid var(--line);color:var(--muted);flex:none;font-variant-numeric:tabular-nums;transition:.3s}
+.step-num.ok{background:var(--green);border-color:var(--green);color:#fff}
+.step-num.pop{animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.step-now b{display:block;color:var(--ink);font-size:1.2rem;letter-spacing:-.02em;line-height:1.2}
+.step-now p{color:var(--muted);font-size:.9rem;margin-top:.15rem}
+.steps{display:grid;gap:.5rem}
+.step{display:grid;grid-template-columns:auto 1fr auto;gap:.75rem;align-items:center;border:1.5px solid var(--line);border-radius:.85rem;padding:.6rem .85rem;background:#fff;transition:background .3s,border-color .3s}
+.step .sb{width:1.9rem;height:1.9rem;border-radius:50%;background:var(--bg-2);color:var(--faint);display:grid;place-items:center}
+.step .sb .ic{width:1rem;height:1rem}
+.step .sb .i-ok{display:none}
+.step b{display:block;color:var(--muted);font-size:.86rem}
+.step p{color:var(--muted);font-size:.9rem;line-height:1.3}
+.step .sp{text-align:right;font-weight:800;font-size:1.25rem;color:var(--faint);letter-spacing:-.03em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.step .sp small{display:block;font-size:.68rem;font-weight:600;letter-spacing:0;color:var(--faint)}
+.step.open{background:var(--green-soft);border-color:var(--green-line)}
+.step.open .sb{background:var(--green);color:#fff}
+.step.open .sb .i-ok{display:block} .step.open .sb .i-lock{display:none}
+.step.open b{color:var(--green-d)} .step.open p{color:var(--ink);font-weight:600}
+.step.open .sp,.step.open .sp small{color:var(--green-d)}
+.map svg{display:block;width:100%;height:auto}
+.map .ln{fill:none;stroke:#C5D3DF;stroke-width:2;stroke-dasharray:3 6;stroke-linecap:round;transition:stroke .4s,stroke-width .4s}
+.map .ln.on{stroke:var(--blue);stroke-width:4.5;stroke-dasharray:none}
+.map .ct{fill:#fff;stroke:#9FB2C2;stroke-width:2.5;transition:.4s}
+.map .ct.on{fill:var(--blue);stroke:var(--blue)}
+.map .hubc{fill:var(--blue-d)}
+.map .hubr{fill:none;stroke:var(--blue);stroke-width:1.5;opacity:.45}
+.map text{font-family:inherit;font-size:14.5px;fill:var(--muted)}
+.map text.c{font-weight:700;fill:var(--ink);font-size:17px}
+.map text.f{font-weight:700;fill:var(--muted);font-size:14.5px;transition:fill .3s}
+.map text.f.on{fill:var(--blue-d)}
+.map figcaption{font-size:.74rem;color:var(--faint);margin-top:.2rem;line-height:1.35}
+.caveat{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r);padding:.9rem 1.15rem;font-size:.86rem;color:var(--text);line-height:1.5}
+.caveat b{color:var(--ink)}
+
+/* ---------- Сценарий, тост, подвал ---------- */
+.tour{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);width:min(100% - 1.5rem,64rem);background:var(--ink);color:#fff;border-radius:1rem;box-shadow:0 20px 50px rgba(14,34,56,.4);z-index:50;overflow:hidden}
+.tour[hidden]{display:none}
+.tour-bar{height:5px;background:rgba(255,255,255,.14)}
+.tour-bar i{display:block;height:100%;width:0;background:var(--blue);transition:width .12s linear}
+.tour-in{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem}
+.tour-step{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9CCFF0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tour-cap{flex:1;font-size:1.05rem;font-weight:600;line-height:1.35}
+.tour-ctl{display:flex;gap:.4rem}
+.tour-ctl button{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;border-radius:.6rem;padding:.45rem .75rem;font-weight:650;font-size:.84rem;white-space:nowrap}
+.tour-ctl button:hover{background:rgba(255,255,255,.18)}
+.tour-ctl button:focus-visible{outline-color:#fff}
+body.touring{padding-bottom:7.5rem}
+body.touring .toast{bottom:7rem}
+.toast{position:fixed;bottom:1.4rem;left:50%;transform:translate(-50%,1rem);opacity:0;pointer-events:none;background:var(--ink);color:#fff;border-radius:.8rem;padding:.7rem 1.1rem;font-weight:600;font-size:.92rem;box-shadow:0 12px 30px rgba(14,34,56,.3);transition:opacity .25s,transform .25s;max-width:min(92vw,40rem);text-align:center;z-index:60}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.foot{border-top:1px solid var(--line);padding:1rem 0 2rem;font-size:.78rem;color:var(--faint);line-height:1.5}
+
+/* ---------- Адаптив ---------- */
+@media (max-width:1180px){
+  .top-in{flex-wrap:wrap;row-gap:.4rem}
+  .tabs{order:3;flex-basis:100%;overflow-x:auto;scrollbar-width:none;padding-bottom:.1rem}
+  .tabs::-webkit-scrollbar{display:none}
+  .top-actions{margin-left:auto}
+  .shop-side{top:9.6rem}
+  .steps-card{grid-template-columns:1fr}
+}
+@media (max-width:980px){
+  .hero,.shop,.trip,.wal,.biz{grid-template-columns:1fr}
+  .shop-side{position:static}
+  .facts{grid-template-columns:1fr}
+  .chain{grid-template-columns:1fr 1fr}
+  .chain li:nth-child(3){border-left:0;padding-left:1.1rem}
+  .chain li:nth-child(3)::before{display:none}
+  .chain li:nth-child(n+3){border-top:1px solid var(--line)}
+  .caveat{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  .strip span{display:none}
+  .fares{grid-template-columns:1fr}
+  .fare-feats{grid-template-columns:1fr 1fr}
+  .kpis{grid-template-columns:1fr}
+  .kpi{grid-template-columns:1fr auto;align-items:center;column-gap:.8rem}
+  .kpi-v{grid-row:span 2;grid-column:2;margin:0;font-size:2.1rem}
+  .kpi-s{grid-column:1}
+  .two{grid-template-columns:1fr}
+  .seg{grid-template-columns:1fr}
+  .btn .long{display:none}
+  .tour-in{flex-wrap:wrap;gap:.5rem}
+  .tour-cap{flex-basis:100%;order:2;font-size:.95rem}
+  .tour-ctl{order:3;margin-left:auto}
+  body.touring{padding-bottom:11rem}
+  .pass{grid-template-columns:1fr}
+  .pass-stub{width:auto;border-left:0;border-top:2px dashed var(--blue-line);grid-template-columns:1fr auto;align-items:center}
+  .barcode{height:2.2rem}
+  .pass-grid{grid-template-columns:repeat(3,auto)}
+  .th-top{flex-direction:column;gap:.6rem}
+  .chain{grid-template-columns:1fr}
+  .chain li{border-left:0;padding-left:1.1rem;border-top:1px solid var(--line)}
+  .chain li:first-child{border-top:0}
+  .chain li::before{display:none!important}
+  .extra{grid-template-columns:auto 1fr auto}
+  .extra-ic{display:none}
+  .g-tick small{display:none}
+  .gauge{margin-bottom:2rem}
+  .rv{gap:.45rem;padding:.8rem}
+  .rv-line span{display:none}
+  .tl li{grid-template-columns:3.6rem 1.2rem 1fr}
+  .tl li::before{left:calc(3.6rem + .55rem + .6rem - 1px)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">К содержимому</a>
+
+<div class="chrome">
+  <div class="strip" role="note">Концепт команды fluffuums для кейса Red Wings · демо<span> — не официальный продукт авиакомпании · цены и расписание условные</span></div>
+  <header class="wrap top-in">
+    <div class="brand" aria-label="Крылья плюс">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2D9BDA"/><stop offset="1" stop-color="#1467AE"/></linearGradient></defs><rect width="32" height="32" rx="9" fill="url(#bg)"/><path d="M7 20.5c7 .4 12.6-3 17.8-11-.6 7.4-5 13.6-12.6 14.4-2.6.3-4.4-.9-5.2-3.4z" fill="#fff"/><path d="M7.5 15.5c4 .2 7.6-1.4 11-5.2-1.6 4-4.6 6.8-8.4 7.2-1.3.1-2.2-.6-2.6-2z" fill="#fff" opacity=".6"/></svg>
+      <span>Крылья<i>+</i></span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Разделы демо">
+      <button class="tab" role="tab" id="tab-home" data-tab="home" aria-controls="panel-home" aria-selected="true"><span class="n">1</span>Обзор</button>
+      <button class="tab" role="tab" id="tab-shop" data-tab="shop" aria-controls="panel-shop" aria-selected="false" tabindex="-1"><span class="n">2</span>Покупка</button>
+      <button class="tab" role="tab" id="tab-trip" data-tab="trip" aria-controls="panel-trip" aria-selected="false" tabindex="-1"><span class="n">3</span>Моя поездка</button>
+      <button class="tab" role="tab" id="tab-wallet" data-tab="wallet" aria-controls="panel-wallet" aria-selected="false" tabindex="-1"><span class="n">4</span>Кошелёк</button>
+      <button class="tab" role="tab" id="tab-biz" data-tab="biz" aria-controls="panel-biz" aria-selected="false" tabindex="-1"><span class="n">5</span>Для Red Wings</button>
+    </nav>
+    <div class="top-actions">
+      <button class="btn btn-primary" id="tourBtn" type="button" data-tour><span data-ic="play"></span><span id="tourBtnTxt">Сценарий<span class="long"> для жюри</span></span></button>
+      <button class="btn btn-ghost" id="resetBtn" type="button"><span>Сбросить<span class="long"> демо</span></span></button>
+    </div>
+  </header>
+</div>
+
+<main id="main" class="wrap">
+
+  <!-- ================= 1. Обзор ================= -->
+  <section class="view" id="panel-home" role="tabpanel" aria-labelledby="tab-home" tabindex="-1">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">Крылья+ · концепт программы лояльности</p>
+        <h1>Честная цена сегодня.<br><em>Новые прямые рейсы</em> завтра.</h1>
+        <p class="lead">Баллы начисляются за тарифные пакеты и услуги, а не за километры. Пассажир видит прозрачную цену и всю поездку в одной карточке. Red Wings получает больше выручки на пассажира — и открывает новые рейсы из Екатеринбурга.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary btn-lg" type="button" data-go="shop">Попробовать покупку <span data-ic="arrow"></span></button>
+          <button class="btn btn-soft btn-lg" type="button" data-tour><span data-ic="play"></span>Сценарий для жюри · 60 с</button>
+        </div>
+      </div>
+      <ul class="values" aria-label="Что получает пассажир">
+        <li><span class="vi" data-ic="card"></span><b>Удобно</b><span>Одна карточка поездки: рейс, посадочный, услуги и пересадка — без повторного ввода кода брони</span></li>
+        <li><span class="vi" data-ic="shield"></span><b>Честно</b><span>Ни одной заранее отмеченной услуги. Итоговая цена видна до оплаты</span></li>
+        <li><span class="vi" data-ic="spark"></span><b>Выгодно</b><span>Баллы за пакеты и услуги. До 50% стоимости услуг можно оплатить баллами</span></li>
+      </ul>
+    </div>
+
+    <div class="facts" id="facts">
+      <article class="card fact"><span class="tagf">Факт</span><div class="fact-n">3,0</div><h3>оценка приложения Red Wings в RuStore</h3><p>54 оценки. У S7 — 4,8, у Utair — 4,3.</p></article>
+      <article class="card fact"><span class="tagf">Факт</span><div class="fact-n">0</div><h3>своих программ лояльности у Red Wings</h3><p>Проверено на сайте 13.11.2026. У всех крупных конкурентов, кроме «Победы», программа есть.</p></article>
+      <article class="card fact"><span class="tagf">Факт</span><div class="fact-n">≈ 15%</div><h3>выручки «Победы» — допуслуги</h3><p>Интервью гендиректора. В мире в 2025 году — 15,7% (IdeaWorks).</p></article>
+    </div>
+
+    <ol class="chain" aria-label="Логика стратегии">
+      <li><small>Шаг 1</small><b>Цифровые сервисы и лояльность</b><span>Крылья+: баллы, честная цена, одна карточка поездки</span></li>
+      <li><small>Шаг 2</small><b>Выручка на пассажира</b><span>Больше добровольно купленных услуг и пакетов</span></li>
+      <li><small>Шаг 3</small><b>Новые прямые рейсы из Кольцово</b><span>Пилот: Казань–Екатеринбург, 7 → 14 рейсов в неделю</span></li>
+      <li><small>Результат</small><b>Рост доли рынка</b><span>Связанность регионов через хаб в Екатеринбурге</span></li>
+    </ol>
+  </section>
+
+  <!-- ================= 2. Покупка ================= -->
+  <section class="view" id="panel-shop" role="tabpanel" aria-labelledby="tab-shop" tabindex="-1" hidden>
+    <div class="shop">
+      <div class="shop-main">
+        <section class="card sec" id="sec-route" aria-labelledby="h-route">
+          <div class="sec-h"><span class="no">1</span><div><h3 id="h-route">Маршрут</h3><p>Демонстрационный сценарий · цены и расписание условные</p></div></div>
+          <div class="seg" role="radiogroup" aria-label="Тип маршрута">
+            <label class="seg-opt"><input type="radio" name="route" value="direct" checked><span class="ring"></span><b>Прямой рейс</b><small>Казань → Екатеринбург</small></label>
+            <label class="seg-opt"><input type="radio" name="route" value="hub"><span class="ring"></span><b>С пересадкой в Кольцово</b><small>Казань → Екатеринбург → Омск · единый билет</small></label>
+          </div>
+          <div id="routeViz" aria-live="polite"></div>
+        </section>
+
+        <section class="card sec" id="sec-fares" aria-labelledby="h-fares">
+          <div class="sec-h"><span class="no">2</span><div><h3 id="h-fares">Тариф</h3><p>Что включено — видно сразу. Баллы — за пакет, а не за километры</p></div></div>
+          <div class="fares" id="fares" role="radiogroup" aria-labelledby="h-fares"></div>
+        </section>
+
+        <section class="card sec" id="sec-extras" aria-labelledby="h-extras">
+          <div class="sec-h"><span class="no">3</span><div><h3 id="h-extras">Услуги по желанию</h3><p>Ничего не выбрано заранее — добавляйте только нужное</p></div></div>
+          <div class="extras" id="extras"></div>
+          <p class="law"><span data-ic="shield"></span><span>С 1 сентября 2025 года закон запрещает заранее отмеченные платные услуги. В Крылья+ все услуги добавляет только сам пассажир. <span class="tagf">Факт</span></span></p>
+        </section>
+      </div>
+
+      <aside class="shop-side" aria-label="Итог покупки">
+        <div class="card sum" id="summary">
+          <div class="sum-h"><h3>Ваша покупка</h3><span class="chip chip-green">Без скрытых услуг</span></div>
+          <div class="mini-wallet"><span>Баллы Крылья+</span><b id="sumBalance">0</b></div>
+          <div class="redeem">
+            <div><b id="redeemLabel">Оплатить услуги баллами</b><small id="redeemHint">До 50% стоимости услуг · 1 балл = 1 ₽</small></div>
+            <button class="switch" id="redeem" type="button" role="switch" aria-checked="false" aria-labelledby="redeemLabel" aria-describedby="redeemHint"></button>
+          </div>
+          <div class="rows" id="sumRows"></div>
+          <div class="total"><span>К оплате</span><b id="sumTotal">0 ₽</b></div>
+          <div class="earn">
+            <div class="earn-top"><span>После перелёта начислим</span><b id="sumEarn">+0</b></div>
+            <ul id="earnRows"></ul>
+          </div>
+          <button class="btn btn-primary btn-lg btn-block" id="buy" type="button">Оформить в демо</button>
+          <p class="fine">Без реальных платежей и персональных данных. Цены тарифов условные, цены услуг — минимальные у Red Wings. Правила начисления — допущение команды.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 3. Моя поездка ================= -->
+  <section class="view" id="panel-trip" role="tabpanel" aria-labelledby="tab-trip" tabindex="-1" hidden>
+    <div id="trip"></div>
+  </section>
+
+  <!-- ================= 4. Кошелёк ================= -->
+  <section class="view" id="panel-wallet" role="tabpanel" aria-labelledby="tab-wallet" tabindex="-1" hidden>
+    <div id="wallet"></div>
+  </section>
+
+  <!-- ================= 5. Для Red Wings ================= -->
+  <section class="view" id="panel-biz" role="tabpanel" aria-labelledby="tab-biz" tabindex="-1" hidden>
+    <div class="view-head">
+      <div><p class="eyebrow">Бизнес-кейс</p><h2>Сколько услуг нужно продать, чтобы открыть новые рейсы</h2></div>
+    </div>
+    <div class="biz">
+      <div class="card biz-ctl">
+        <div class="presets" role="group" aria-label="Готовые сценарии">
+          <span>Сценарий — доля допуслуг в выручке:</span>
+          <button class="chipbtn" type="button" data-preset="today" aria-pressed="true">Сегодня</button>
+          <button class="chipbtn" type="button" data-preset="s1" aria-pressed="false">15% · «Победа»</button>
+          <button class="chipbtn" type="button" data-preset="s2" aria-pressed="false">25%</button>
+          <button class="chipbtn" type="button" data-preset="s3" aria-pressed="false">31%</button>
+        </div>
+        <fieldset>
+          <legend><span data-ic="bag"></span>Багаж</legend>
+          <div class="sl"><div class="sl-top"><label for="bagShare">Доля пассажиров, покупающих услугу</label><output id="bagShareOut" for="bagShare"></output></div><input type="range" id="bagShare" min="0" max="100" step="1" value="8"></div>
+          <div class="sl"><div class="sl-top"><label for="bagPay">Средний платёж</label><output id="bagPayOut" for="bagPay"></output></div><input type="range" id="bagPay" min="2700" max="5000" step="100" value="2700"></div>
+        </fieldset>
+        <fieldset>
+          <legend><span data-ic="seat"></span>Выбор места</legend>
+          <div class="sl"><div class="sl-top"><label for="seatShare">Доля пассажиров, покупающих услугу</label><output id="seatShareOut" for="seatShare"></output></div><input type="range" id="seatShare" min="0" max="100" step="1" value="7"></div>
+          <div class="sl"><div class="sl-top"><label for="seatPay">Средний платёж</label><output id="seatPayOut" for="seatPay"></output></div><input type="range" id="seatPay" min="1500" max="3000" step="100" value="1500"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Допущения <span class="taga">допущение</span></legend>
+          <div class="sl"><div class="sl-top"><label for="a0">Стартовая доля допуслуг a₀ (3–5%)</label><output id="a0Out" for="a0"></output></div><input type="range" id="a0" min="3" max="5" step="0.5" value="4"></div>
+          <div class="sl"><div class="sl-top"><label for="fare">Средний тариф без услуг (условно)</label><output id="fareOut" for="fare"></output></div><input type="range" id="fare" min="5000" max="12000" step="100" value="7600"></div>
+        </fieldset>
+      </div>
+
+      <div class="biz-out" id="bizOut">
+        <div class="kpis" id="kpis">
+          <div class="card kpi"><span class="kpi-l">Допвыручка на пассажира</span><b class="kpi-v" id="kA"></b><span class="kpi-s" id="kAs"></span></div>
+          <div class="card kpi"><span class="kpi-l">Доля допуслуг в выручке, a</span><b class="kpi-v" id="kShare"></b><span class="kpi-s">«Победа» ≈ 15% · мир 15,7% (IdeaWorks, 2025)</span></div>
+          <div class="card kpi kpi-main" id="kMain"><span class="kpi-l">Уровень выручки на пассажира</span><b class="kpi-v" id="kLevel"></b><span class="kpi-s">к минимальным тарифам АТОР · сейчас ≈ +15% (оценка на уровне «Азимута»)</span></div>
+        </div>
+
+        <div class="card pad" id="gaugeCard">
+          <p class="formula" id="formula"></p>
+          <div class="gauge" id="gauge" role="img" aria-label="">
+            <div class="g-track">
+              <div class="g-fill" id="gFill"></div>
+              <span class="g-tick" style="--x:20%"><b>+15%</b><small>сейчас</small></span>
+              <span class="g-tick" style="--x:40%" data-th="1"><b>+30%</b><small>шаг 1</small></span>
+              <span class="g-tick" style="--x:60%" data-th="2"><b>+45%</b><small>шаг 2</small></span>
+              <span class="g-tick" style="--x:80%" data-th="3"><b>+60%</b><small>шаг 3</small></span>
+              <span class="g-pin" id="gPin"><span id="gPinV"></span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card pad steps-card" id="stepsCard">
+          <div>
+            <div class="step-now" aria-live="polite">
+              <span class="step-num" id="stepNum">0</span>
+              <div><b id="stepTitle"></b><p id="stepSub"></p></div>
+            </div>
+            <ol class="steps" id="steps">
+              <li class="step" data-step="1"><span class="sb"><span class="i-lock" data-ic="lock"></span><span class="i-ok" data-ic="check"></span></span><div><b>Шаг 1 · от +30% · с субсидией</b><p>Казань–Екатеринбург: 7 → 14 рейсов в неделю</p></div><div class="sp">+0,08<small>млрд ₽/год</small></div></li>
+              <li class="step" data-step="2"><span class="sb"><span class="i-lock" data-ic="lock"></span><span class="i-ok" data-ic="check"></span></span><div><b>Шаг 2 · от +45%</b><p>+ Самара–Екатеринбург</p></div><div class="sp">+0,17<small>млрд ₽/год</small></div></li>
+              <li class="step" data-step="3"><span class="sb"><span class="i-lock" data-ic="lock"></span><span class="i-ok" data-ic="check"></span></span><div><b>Шаг 3 · от +60%</b><p>+ Омск и Оренбург</p></div><div class="sp">+0,32<small>млрд ₽/год</small></div></li>
+            </ol>
+            <p class="note">Пороги и прибыль шагов — из модели сети команды.</p>
+          </div>
+          <figure class="map" style="margin:0">
+            <svg viewBox="0 0 560 240" role="img" aria-label="Схема сети: Казань, Самара, Оренбург и Омск соединены с хабом Кольцово в Екатеринбурге">
+              <path class="ln" id="ln-kzn" d="M70 92 Q185 52 300 70"/>
+              <path class="ln" id="ln-kuf" d="M120 166 Q205 98 300 70"/>
+              <path class="ln" id="ln-ren" d="M215 205 Q245 125 300 70"/>
+              <path class="ln" id="ln-oms" d="M500 118 Q405 68 300 70"/>
+              <circle class="hubr" cx="300" cy="70" r="17"/><circle class="hubc" cx="300" cy="70" r="10"/>
+              <circle class="ct" id="ct-kzn" cx="70" cy="92" r="6.5"/><circle class="ct" id="ct-kuf" cx="120" cy="166" r="6.5"/>
+              <circle class="ct" id="ct-ren" cx="215" cy="205" r="6.5"/><circle class="ct" id="ct-oms" cx="500" cy="118" r="6.5"/>
+              <text class="c" x="310" y="26" text-anchor="middle">Екатеринбург</text><text x="310" y="44" text-anchor="middle">хаб Кольцово</text>
+              <text class="c" x="18" y="120">Казань</text><text x="18" y="138">19% пересадок</text>
+              <text class="c" x="120" y="194" text-anchor="middle">Самара</text><text x="120" y="212" text-anchor="middle">38% пересадок</text>
+              <text class="c" x="232" y="208">Оренбург</text><text x="232" y="226">47% пересадок</text>
+              <text class="c" x="500" y="146" text-anchor="middle">Омск</text><text x="500" y="164" text-anchor="middle">55% пересадок</text>
+              <text class="f" id="kznFreq" x="150" y="50" text-anchor="middle">7 рейсов/нед</text>
+            </svg>
+            <figcaption>Доля пассажиров рейса, пересаживающихся в Кольцово — <span class="tagf">факт</span>. Схема не в масштабе. Синим — направления открытых шагов.</figcaption>
+          </figure>
+        </div>
+
+        <div class="caveat">
+          <p><b>Это сценарий, а не обещание.</b> Текущий уровень ≈ +15% оценён по «Азимуту» и уже включает его допуслуги. Стартовая доля a₀ и средний тариф — допущения: фактическая доля допуслуг Red Wings не раскрыта, для точного расчёта нужны данные авиакомпании. Уровень сравнивается с порогами после округления до целого процента.</p>
+          <a class="btn btn-soft" href="https://andreyv105105105.github.io/Puhososy/calculator.html" target="_blank" rel="noopener">Калькулятор сети <span data-ic="ext"></span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  Крылья+ — концепт команды fluffuums (МАИ) для кейса Red Wings, кейс-чемпионат «Моделирование связанности территорий на базе ИИ». Демо без реальных билетов, платежей и персональных данных; не является официальным продуктом Red Wings. Цены тарифов, расписание, номера рейсов, уровни и правила начисления баллов — условные.
+</footer>
+
+<div class="tour" id="tour" role="region" aria-label="Сценарий для жюри" hidden>
+  <div class="tour-bar"><i id="tourBar"></i></div>
+  <div class="tour-in">
+    <span class="tour-step" id="tourStep"></span>
+    <p class="tour-cap" id="tourCap" aria-live="polite"></p>
+    <div class="tour-ctl">
+      <button type="button" id="tourPause">Пауза</button>
+      <button type="button" id="tourNext">Далее</button>
+      <button type="button" id="tourStop">Остановить</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(()=>{'use strict';
+/* ================= Утилиты ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const nf=new Intl.NumberFormat('ru-RU');
+const num=n=>nf.format(Math.round(n));
+const rub=n=>num(n)+' ₽';
+const plural=(n,a,b,c)=>{n=Math.abs(Math.round(n));const d=n%100;if(d>=11&&d<=14)return c;const e=n%10;return e===1?a:(e>=2&&e<=4?b:c)};
+const pts=n=>num(n)+' '+plural(n,'балл','балла','баллов');
+const pct1=x=>(x*100).toFixed(1).replace('.',',')+'%';
+const signed=p=>(p>=0?'+':'−')+Math.abs(p)+'%';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const reduce=()=>!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+const svg=p=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const IC={
+  check:svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+  minus:svg('<path d="M7 12h10"/>'),
+  lock:svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>'),
+  plane:svg('<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'),
+  bag:svg('<rect x="6" y="7" width="12" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M10 11v5M14 11v5"/>'),
+  seat:svg('<path d="M7 4v8a3 3 0 003 3h5a3 3 0 013 3v2M7 12H6a2 2 0 00-2 2v6M10 15v5"/>'),
+  bell:svg('<path d="M6 16v-5a6 6 0 1112 0v5l1.5 2h-15zM10 21h4"/>'),
+  spark:svg('<path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/>'),
+  arrow:svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
+  swap:svg('<path d="M4 8h14l-3-3M20 16H6l3 3"/>'),
+  undo:svg('<path d="M9 7l-4 4 4 4M5 11h9a5 5 0 010 10h-2"/>'),
+  play:svg('<path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/>'),
+  stop:svg('<rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor"/>'),
+  card:svg('<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h4"/>'),
+  shield:svg('<path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M9 12l2.2 2.2L15 10"/>'),
+  ext:svg('<path d="M14 5h5v5M19 5l-8 8M11 7H6a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-5"/>')
+};
+
+/* ================= Данные демо (условные, кроме помеченных фактами) ================= */
+const SEG1={from:'KZN',fromCity:'Казань',to:'SVX',toCity:'Екатеринбург',dep:'10:00',arr:'13:45',dur:'1 ч 45 мин',flight:'КР 101',gate:'A3',board:'09:20'};
+const SEG2={from:'SVX',fromCity:'Екатеринбург',to:'OMS',toCity:'Омск',dep:'15:20',arr:'18:00',dur:'1 ч 40 мин',flight:'КР 205',gate:'B2',board:'14:50'};
+const ROUTES={
+  direct:{id:'direct',title:'Казань → Екатеринбург',from:'Казань',to:'Екатеринбург',via:'прямой рейс',
+    fares:{light:7600,standard:9900,max:12400},bag:2700,seat:1500,bonus:0,segs:[SEG1]},
+  hub:{id:'hub',title:'Казань → Екатеринбург → Омск',from:'Казань',to:'Омск',via:'через Екатеринбург (Кольцово) · единый билет',
+    fares:{light:13900,standard:17900,max:21900},bag:2700,seat:3000,bonus:300,segs:[SEG1,SEG2]}
+};
+const FARES=[
+  {id:'light',name:'Лайт',rate:2,note:'Только перелёт',
+    feats:[[1,'Ручная кладь'],[0,'Багаж 20 кг — за доплату'],[0,'Место назначается при регистрации'],[0,'Обмен и возврат — со сбором']]},
+  {id:'standard',name:'Стандарт',rate:4,note:'Перелёт с багажом',
+    feats:[[1,'Ручная кладь'],[1,'Багаж 20 кг'],[1,'Стандартное место на выбор'],[0,'Обмен и возврат — со сбором']]},
+  {id:'max',name:'Максимум',rate:6,note:'Всё включено',
+    feats:[[1,'Ручная кладь'],[1,'Багаж 20 кг'],[1,'Комфортное место'],[1,'Гибкий билет: обмен и возврат без сбора']]}
+];
+const EXTRAS=[
+  {id:'bag',name:'Багаж 20 кг',inc:['standard','max'],price:r=>r.bag,
+    desc:r=>r.id==='hub'?'Одна оплата на весь маршрут — багаж едет до Омска':'Сдаётся при регистрации · от 2 700 ₽'},
+  {id:'seat',name:'Комфортное место',inc:['max'],price:r=>r.seat,
+    desc:r=>r.id==='hub'?'На обоих рейсах · 2 × 1 500 ₽':'Больше места для ног · от 1 500 ₽'}
+];
+const EXTRA_RATE=5;                       // % баллами с услуг, оплаченных деньгами
+const LEVELS=[
+  {name:'Взлёт',from:0,perk:'Баллы за тарифы и услуги'},
+  {name:'Эшелон',from:2000,perk:'Бесплатный выбор стандартного места'},
+  {name:'Высота',from:6000,perk:'Приоритетная посадка, обмен без сбора'}
+];
+const fareById=id=>FARES.find(f=>f.id===id)||FARES[0];
+
+/* ================= Состояние ================= */
+const KEY='fluffuums-krylia-plus-v2';
+const store={
+  load(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}},
+  save(d){try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}},
+  clear(){try{localStorage.removeItem(KEY)}catch(e){}}
+};
+const fresh=()=>({balance:1200,status:1200,ledger:[{t:'Приветственные баллы',p:1200}],booking:null});
+function restore(){
+  const s=store.load();
+  if(!s||!Number.isFinite(s.balance)||!Number.isFinite(s.status)||!Array.isArray(s.ledger))return fresh();
+  const b=s.booking;
+  const okB=b&&ROUTES[b.route]&&FARES.some(f=>f.id===b.fare)&&Array.isArray(b.items)&&Number.isFinite(b.earn)&&Number.isFinite(b.used);
+  return {balance:Math.max(0,Math.round(s.balance)),status:Math.max(0,Math.round(s.status)),
+    ledger:s.ledger.filter(x=>x&&typeof x.t==='string'&&Number.isFinite(x.p)).slice(0,30),booking:okB?b:null};
+}
+const state=Object.assign(restore(),{route:'direct',fare:'light',extras:[],redeem:false,tab:'home'});
+const persist=()=>store.save({balance:state.balance,status:state.status,ledger:state.ledger,booking:state.booking});
+
+/* ================= Расчёт покупки ================= */
+function calc(){
+  const r=ROUTES[state.route],f=fareById(state.fare),farePrice=r.fares[f.id];
+  const items=EXTRAS.filter(x=>!x.inc.includes(f.id)&&state.extras.includes(x.id)).map(x=>({id:x.id,name:x.name,price:x.price(r)}));
+  const add=items.reduce((s,x)=>s+x.price,0);
+  const maxUse=Math.min(state.balance,Math.floor(add/2));           // до 50% стоимости услуг
+  const used=state.redeem?maxUse:0;
+  const earnFare=Math.floor(farePrice*f.rate/100);
+  const earnExtra=Math.floor((add-used)*EXTRA_RATE/100);
+  return {r,f,farePrice,items,add,maxUse,used,total:farePrice+add-used,earnFare,earnExtra,bonus:r.bonus,earn:earnFare+earnExtra+r.bonus};
+}
+
+/* ================= Анимация чисел ================= */
+function tween(el,to,fmt,from){
+  if(!el)return;
+  if(from===undefined)from=(typeof el._v==='number')?el._v:to;
+  el._v=to;cancelAnimationFrame(el._raf);
+  if(reduce()||from===to){el.textContent=fmt(to);return}
+  const t0=performance.now(),D=480;
+  const step=t=>{const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)el._raf=requestAnimationFrame(step)};
+  el.textContent=fmt(from);el._raf=requestAnimationFrame(step);
+}
+let toastT;
+function toast(msg){if(tour.on)return;const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3600)}
+
+/* ================= Вкладки ================= */
+const TABS=['home','shop','trip','wallet','biz'];
+function go(tab,focusPanel){
+  if(!TABS.includes(tab))tab='home';
+  state.tab=tab;
+  $$('.tab').forEach(t=>{const on=t.dataset.tab===tab;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1});
+  $$('.view').forEach(v=>{v.hidden=v.id!=='panel-'+tab});
+  window.scrollTo(0,0);
+  try{history.replaceState(null,'','#'+tab)}catch(e){}
+  if(focusPanel)$('#panel-'+tab).focus({preventScroll:true});
+}
+
+/* ================= Покупка: отрисовка ================= */
+function syncRoute(){$$('input[name=route]').forEach(i=>{i.checked=i.value===state.route;i.closest('.seg-opt').classList.toggle('is-on',i.checked)})}
+function renderRoute(){
+  const r=ROUTES[state.route],hub=r.id==='hub';
+  const stops=[{code:'KZN',city:'Казань'},{code:'SVX',city:'Екатеринбург',hub:hub}].concat(hub?[{code:'OMS',city:'Омск'}]:[]);
+  const line=s=>`<div class="rv-line">${IC.plane}<i></i><span>${s.dur}</span></div>`;
+  $('#routeViz').innerHTML=`<div class="rv">${stops.map((s,i)=>(i?line(r.segs[i-1]):'')+
+    `<div class="rv-stop${s.hub?' is-hub':''}"><b>${s.code}</b><span>${s.city}</span>${s.hub?'<span class="hubtag">пересадка 1 ч 35 мин</span>':''}</div>`).join('')}</div>
+    <div class="rv-meta">${hub
+      ?`<span class="chip chip-green">${IC.spark} +300 баллов за стыковку</span><span class="chip">Один билет, один багаж, одна карточка поездки</span><span class="chip chip-blue">19% пассажиров из Казани уже пересаживаются в Кольцово <span class="tagf">факт</span></span>`
+      :`<span class="chip">Прямой перелёт · 1 ч 45 мин</span><span class="chip chip-blue">Red Wings — единственный перевозчик, 7 рейсов в неделю <span class="tagf">факт</span></span>`}</div>`;
+}
+function renderFares(){
+  const r=ROUTES[state.route];
+  $('#fares').innerHTML=FARES.map(f=>{const p=r.fares[f.id];return `<label class="fare${state.fare===f.id?' is-on':''}" data-fare="${f.id}">
+    <input type="radio" name="fare" value="${f.id}"${state.fare===f.id?' checked':''}><span class="ring"></span>
+    <span class="fare-top"><span class="fare-name">${f.name}</span><span class="fare-radio" aria-hidden="true"></span></span>
+    <span class="fare-price">${rub(p)}</span><span class="fare-note">${f.note}</span>
+    <span class="fare-feats">${f.feats.map(([ok,t])=>`<span class="${ok?'y':'n'}">${ok?IC.check:IC.minus}<span>${t}</span></span>`).join('')}</span>
+    <span class="fare-pts">${IC.spark}<span>${f.rate}% баллами · +${num(Math.floor(p*f.rate/100))}</span></span></label>`}).join('');
+}
+function syncFares(){$$('#fares .fare').forEach(l=>{const on=l.dataset.fare===state.fare;l.classList.toggle('is-on',on);l.querySelector('input').checked=on})}
+function renderExtras(){
+  const r=ROUTES[state.route],f=fareById(state.fare);
+  $('#extras').innerHTML=EXTRAS.map(x=>{const inc=x.inc.includes(f.id),on=state.extras.includes(x.id);
+    return `<label class="extra${inc?' is-inc':''}${on?' is-on':''}">
+      <input type="checkbox" value="${x.id}"${on?' checked':''}${inc?' disabled':''}><span class="ring"></span>
+      <span class="box" aria-hidden="true">${IC.check}</span><span class="extra-ic" aria-hidden="true">${IC[x.id]}</span>
+      <span class="extra-txt"><b>${x.name}</b><small>${inc?`Уже входит в тариф «${f.name}»`:x.desc(r)}</small></span>
+      <span class="extra-price">${inc?'Включено':'+'+rub(x.price(r))}</span></label>`}).join('');
+}
+function renderSummary(){
+  let c=calc();
+  if(c.maxUse===0&&state.redeem){state.redeem=false;c=calc()}
+  const sw=$('#redeem');sw.disabled=c.maxUse===0;sw.setAttribute('aria-checked',String(state.redeem));
+  $('#redeemHint').textContent=!c.add?'Добавьте услугу — баллами можно оплатить до 50% её стоимости'
+    :(state.balance===0?'На счёте пока нет баллов':`Спишем ${pts(c.maxUse)} — до 50% стоимости услуг · 1 балл = 1 ₽`);
+  $('#sumRows').innerHTML=`<div class="row"><span>Тариф «${c.f.name}» · ${c.r.from} → ${c.r.to}</span><b>${rub(c.farePrice)}</b></div>`
+    +(c.items.length?c.items.map(x=>`<div class="row"><span>${x.name}</span><b>${rub(x.price)}</b></div>`).join(''):'<div class="row mut"><span>Услуги не выбраны</span><b></b></div>')
+    +(c.used?`<div class="row g"><span>Оплата баллами</span><b>−${rub(c.used)}</b></div>`:'');
+  tween($('#sumTotal'),c.total,rub);
+  tween($('#sumEarn'),c.earn,v=>'+'+pts(v));
+  tween($('#sumBalance'),state.balance,num);
+  $('#earnRows').innerHTML=`<li><span>Тариф «${c.f.name}» · ${c.f.rate}%</span><span>+${num(c.earnFare)}</span></li>`
+    +(c.add?`<li><span>Услуги, оплаченные деньгами · ${EXTRA_RATE}%</span><span>+${num(c.earnExtra)}</span></li>`:'')
+    +(c.bonus?`<li><span>Бонус за стыковку в Кольцово</span><span>+${num(c.bonus)}</span></li>`:'');
+}
+
+/* ================= Покупка: действия ================= */
+function setRoute(id){if(!ROUTES[id])return;state.route=id;syncRoute();renderRoute();renderFares();renderExtras();renderSummary()}
+function setFare(id){
+  state.fare=fareById(id).id;
+  state.extras=state.extras.filter(e=>!EXTRAS.find(x=>x.id===e).inc.includes(state.fare));
+  syncFares();renderExtras();renderSummary();
+}
+function toggleExtra(id,on,rerender){
+  state.extras=state.extras.filter(e=>e!==id);if(on)state.extras.push(id);
+  if(rerender)renderExtras();renderSummary();
+}
+function setRedeem(on){state.redeem=!!on;renderSummary()}
+function refundPoints(b,label){if(b&&!b.flown&&b.used){state.balance+=b.used;state.ledger.unshift({t:label,p:b.used})}}
+function buy(){
+  const c=calc();
+  refundPoints(state.booking,'Возврат баллов · поездка заменена');
+  state.balance-=c.used;
+  if(c.used)state.ledger.unshift({t:`Оплата услуг баллами · ${c.r.from} → ${c.r.to}`,p:-c.used});
+  state.booking={route:c.r.id,fare:c.f.id,items:c.items,used:c.used,total:c.total,farePrice:c.farePrice,
+    earnFare:c.earnFare,earnExtra:c.earnExtra,bonus:c.bonus,earn:c.earn,flown:false,levelUp:null,code:'KR7F2M'};
+  state.extras=[];state.redeem=false;persist();
+  renderExtras();renderSummary();renderTrip();renderWallet();
+  go('trip',true);toast('Билет оформлен в демо — вся поездка собрана в одной карточке');
+}
+
+/* ================= Карточка поездки ================= */
+const levelIdx=s=>{let i=0;LEVELS.forEach((l,k)=>{if(s>=l.from)i=k});return i};
+function tripEvents(b){
+  const r=ROUTES[b.route],s=r.segs,hasBag=b.fare!=='light'||b.items.some(i=>i.id==='bag');
+  const ev=[
+    {t:'Сегодня',w:1,h:'Билет оформлен',d:`Код брони ${b.code} сохранён в карточке`},
+    {t:'За 24 ч',w:1,h:'Онлайн-регистрация',d:'Посадочный появится здесь автоматически'},
+    {t:s[0].board,h:`Посадка в Казани · выход ${s[0].gate}`,d:`Рейс ${s[0].flight}`},
+    {t:s[0].dep,h:'Вылет из Казани',d:`В пути ${s[0].dur}`}];
+  if(r.id==='hub')ev.push(
+    {t:s[0].arr,h:'Прилёт в Кольцово',d:hasBag?'Багаж получать не нужно — он едет до Омска':'С ручной кладью — сразу к выходу на посадку',hub:1,tag:'Пересадка · 1 ч 35 мин'},
+    {t:'13:55',h:`Переход к выходу ${s[1].gate}`,d:'Повторная регистрация не нужна: второй посадочный уже в карточке',hub:1},
+    {t:s[1].board,h:'Посадка на рейс в Омск',d:`Рейс ${s[1].flight}. Если первый рейс задержится — пересадим на следующий без доплаты (концепт)`,hub:1},
+    {t:s[1].dep,h:'Вылет из Екатеринбурга',d:`В пути ${s[1].dur}`},
+    {t:s[1].arr,h:'Прилёт в Омск',d:hasBag?'Багаж — на ленте в Омске':'Хорошей поездки'});
+  else ev.push({t:s[0].arr,h:'Прилёт в Екатеринбург (Кольцово)',d:hasBag?'Багаж — на ленте в зоне прилёта':'Хорошей поездки'});
+  ev.push({t:'После рейса',w:1,h:`Начисление: +${pts(b.earn)}`,d:b.bonus?`Включая ${num(b.bonus)} за стыковку в Кольцово`:'За тариф и услуги',pts:1});
+  return ev;
+}
+function renderTrip(){
+  const el=$('#trip'),b=state.booking;
+  $('#tab-trip').classList.toggle('has-dot',!!b&&!b.flown);
+  if(!b){el.innerHTML=`<div class="card empty"><div class="empty-ic">${IC.plane}</div><h3>Поездки пока нет</h3>
+    <p>Оформите билет в демо — и вся поездка соберётся в одной карточке: статус рейса, посадочный, услуги, пересадка и уведомления.</p>
+    <div class="empty-cta"><button class="btn btn-primary btn-lg" type="button" data-go="shop">Перейти к покупке</button>
+    <button class="btn btn-soft btn-lg" type="button" data-act="sample">Показать пример поездки</button></div></div>`;return}
+  const r=ROUTES[b.route],f=fareById(b.fare),hub=r.id==='hub';
+  const comfort=b.fare==='max'||b.items.some(i=>i.id==='seat');
+  const seatOf=k=>comfort?(k?'3C':'2A')+' · комфорт':(b.fare==='standard'?(k?'14C':'12A'):'при регистрации');
+  const passes=r.segs.map((s,k)=>`<div class="pass"><div class="pass-main">
+      <div class="pass-route"><div><b>${s.from}</b><span>${s.fromCity}</span><time>${s.dep}</time></div>
+        <div class="pass-mid">${IC.plane}<i></i><small>${s.dur}</small></div>
+        <div class="r"><b>${s.to}</b><span>${s.toCity}</span><time>${s.arr}</time></div></div>
+      <dl class="pass-grid"><div><dt>Пассажир</dt><dd>Иван П.</dd></div><div><dt>Рейс</dt><dd>${s.flight}</dd></div>
+        <div><dt>Посадка</dt><dd>${s.board}</dd></div><div><dt>Выход</dt><dd>${s.gate}</dd></div><div><dt>Место</dt><dd>${seatOf(k)}</dd></div></dl>
+    </div><div class="pass-stub"><div class="barcode" aria-hidden="true"></div><small>МАКЕТ · НЕ ДЛЯ ПОСАДКИ</small></div></div>`).join('');
+  const ev=tripEvents(b);
+  const tl=ev.map((e,i)=>{const cls=[b.flown||i===0?'done':'',!b.flown&&i===1?'now':'',e.hub?'hub':'',e.pts?'pts':''].filter(Boolean).join(' ');
+    return `<li class="${cls}"><time class="${e.w?'w':''}">${e.t}</time><span class="dot" aria-hidden="true"></span>
+      <div class="tl-body">${e.tag?`<span class="tl-tag">${e.tag}</span>`:''}<b>${e.h}</b><small>${e.d}</small></div></li>`}).join('');
+  const feed=[];
+  if(b.flown){if(b.levelUp)feed.push([`Новый уровень: «${esc(b.levelUp)}»`,'только что',1]);feed.push([`Начислено +${pts(b.earn)} за перелёт`,'только что',1])}
+  if(hub)feed.push(['Пересадка в Кольцово: выход B2, между рейсами 1 ч 35 мин','напомним за 30 минут до посадки']);
+  feed.push(['Онлайн-регистрация: посадочный придёт сюда за 24 часа до вылета','запланировано']);
+  feed.push([`Билет оформлен${b.used?' · за услуги списано '+pts(b.used):''}`,'сегодня']);
+  const inc=f.feats.filter(x=>x[0]).map(x=>`<li><span>${IC.check}${x[1]}</span><em>в тарифе</em></li>`).join('');
+  const bought=b.items.map(x=>`<li><span>${IC.check}${esc(x.name)}</span><b>${rub(x.price)}</b></li>`).join('');
+  el.innerHTML=`<div class="trip">
+    <div class="trip-col">
+      <div class="card pad" id="tripHead">
+        <div class="th-top"><div><p class="eyebrow">Моя поездка · всё в одном месте</p>
+          <h3 class="th-route">${r.from} <span>→</span> ${r.to}</h3><p class="th-sub">${r.via} · тариф «${f.name}» · дата условная</p></div>
+          <span class="status${b.flown?' done':''}"><i></i>${b.flown?'Перелёт завершён':'По расписанию'}</span></div>
+        <div class="th-chips"><span class="chip">${IC.check}<span>Код брони <b>${esc(b.code)}</b> уже в карточке — вводить повторно не нужно</span></span>
+          <span class="chip"><span>Пассажир: Иван П. <span class="taga">мок</span></span></span></div>
+        <div class="th-cta">${b.flown
+          ?`<span class="accr">${IC.spark} Начислено +${pts(b.earn)}</span><button class="btn btn-soft" type="button" data-go="wallet" id="toWallet">Открыть кошелёк ${IC.arrow}</button>`
+          :`<button class="btn btn-primary" type="button" data-act="fly" id="flyBtn">${IC.plane} Смоделировать перелёт</button><span class="th-hint">После перелёта начислим +${pts(b.earn)}</span>`}</div>
+      </div>
+      <div class="card pad"><h3>${hub?'Посадочные талоны':'Посадочный талон'} <span class="taga">макет</span></h3><div class="passes">${passes}</div></div>
+      <div class="two">
+        <div class="card pad"><h3>Услуги в поездке</h3><ul class="svc">${inc}${bought}</ul>
+          <p class="paid">Оплачено <b>${rub(b.total)}</b>${b.used?` · списано <b>${pts(b.used)}</b>`:''}</p></div>
+        <div class="card pad"><h3>Обмен и возврат</h3><div class="manage">
+          <button class="btn btn-ghost" type="button" data-act="disc" data-target="discEx" aria-expanded="false" aria-controls="discEx"${b.flown?' disabled':''}>${IC.swap} Обменять билет</button>
+          <div class="disc" id="discEx" hidden><p>Тариф «${f.name}»: ${b.fare==='max'?'обмен без сбора':'обмен со сбором по правилам тарифа'}. В продукте новый рейс выбирается прямо в карточке — без звонка в колл-центр и повторного ввода данных. В демо обмен не выполняется.</p></div>
+          <button class="btn btn-ghost" type="button" data-act="disc" data-target="discRet" aria-expanded="false" aria-controls="discRet"${b.flown?' disabled':''}>${IC.undo} Оформить возврат</button>
+          <div class="disc" id="discRet" hidden><p>Вернём <b>${rub(b.total)}</b> на карту${b.used?` и <b>${pts(b.used)}</b> на бонусный счёт`:''}. В демо возврат полный; в продукте — по правилам тарифа.</p>
+            <button class="btn btn-soft" type="button" data-act="refund">Подтвердить возврат в демо</button></div>
+          ${b.flown?'<p class="note">Поездка завершена — обмен и возврат недоступны.</p>':''}
+        </div></div>
+      </div>
+    </div>
+    <div class="trip-col">
+      <div class="card pad" id="tripTimeline"><h3>${hub?'Ход поездки и пересадка в Кольцово':'Ход поездки'} <span class="taga">время условное</span></h3><ol class="tl">${tl}</ol></div>
+      <div class="card pad"><h3>${IC.bell} Уведомления</h3><ul class="feed">${feed.map(x=>`<li class="${x[2]?'new':''}"><span class="fi">${x[2]?IC.spark:IC.bell}</span><div><b>${x[0]}</b><small>${x[1]}</small></div></li>`).join('')}</ul></div>
+    </div></div>`;
+}
+function simulateFlight(quiet){
+  const b=state.booking;if(!b||b.flown)return;
+  const before=levelIdx(state.status);
+  b.flown=true;state.balance+=b.earn;state.status+=b.earn;
+  const r=ROUTES[b.route];
+  state.ledger.unshift({t:`Тариф «${fareById(b.fare).name}» · ${r.from} → ${r.to}`,p:b.earnFare});
+  if(b.earnExtra)state.ledger.unshift({t:'Услуги, оплаченные деньгами',p:b.earnExtra});
+  if(b.bonus)state.ledger.unshift({t:'Бонус за стыковку в Кольцово',p:b.bonus});
+  const after=levelIdx(state.status);b.levelUp=after>before?LEVELS[after].name:null;
+  persist();renderTrip();renderWallet(true);renderSummary();
+  if(!quiet){const w=$('#toWallet');if(w)w.focus()}
+  toast(`Перелёт завершён: +${pts(b.earn)}`+(b.levelUp?` · новый уровень «${b.levelUp}»`:''));
+}
+function refund(){
+  const b=state.booking;if(!b||b.flown)return;
+  refundPoints(b,'Возврат баллов · билет возвращён');
+  state.booking=null;persist();renderTrip();renderWallet();renderSummary();
+  toast('Возврат оформлен в демо — баллы вернулись на счёт');
+  const btn=$('#trip [data-go]');if(btn)btn.focus();
+}
+function sampleTrip(){setRoute('hub');setFare('standard');toggleExtra('seat',true,true);setRedeem(true);buy()}
+
+/* ================= Кошелёк ================= */
+let shownBalance=state.balance;
+function renderWallet(animate){
+  const i=levelIdx(state.status),lv=LEVELS[i],next=LEVELS[i+1];
+  const prog=next?(state.status-lv.from)/(next.from-lv.from):0;
+  const fill=Math.min(100,(i+prog)/(LEVELS.length-1)*100);
+  const b=state.booking,pend=b&&!b.flown;
+  $('#wallet').innerHTML=`<div class="wal">
+    <div class="trip-col">
+      <div class="balance-card" id="balanceCard">
+        <div class="bc-top"><span>Бонусный счёт Крылья+</span><span>Иван П. · уровень «${lv.name}»</span></div>
+        <div class="bc-num" id="bcNum">${num(state.balance)}</div>
+        <p class="bc-sub">${plural(state.balance,'балл','балла','баллов')} · 1 балл = 1 ₽ при оплате услуг (до 50% стоимости)</p>
+        ${pend?`<span class="bc-pend">${IC.plane} Ожидает перелёта: +${pts(b.earn)}</span>`:''}
+      </div>
+      <div class="card pad"><h3>Уровень участника <span class="taga">уровни — допущение команды</span></h3>
+        <div class="lvl-track"><div class="lvl-fill" id="lvlFill" style="width:${fill}%"></div>
+          ${LEVELS.map((l,k)=>`<span class="lvl-node${k<=i?' on':''}" style="left:${k/(LEVELS.length-1)*100}%"><b>${l.name}</b><small>${k?'от '+num(l.from):'старт'}</small></span>`).join('')}</div>
+        <p class="lvl-msg">${next?`Набрано ${pts(state.status)} за год. До уровня «${next.name}» — ещё <b>${pts(next.from-state.status)}</b>`:`Набрано ${pts(state.status)} за год — <b>высший уровень</b>`}</p>
+        <ul class="perks">${LEVELS.map((l,k)=>`<li class="${k===i?'cur':''}"><b>${l.name}</b><span>${l.perk}</span></li>`).join('')}</ul>
+        <p class="note">Уровень считается по баллам, начисленным за 12 месяцев; списания его не уменьшают.</p>
+      </div>
+    </div>
+    <div class="trip-col">
+      <div class="card pad"><h3>История</h3><ul class="ledger">${state.ledger.slice(0,10).map(x=>`<li class="${x.p<0?'out':'in'}"><span>${esc(x.t)}</span><b>${x.p>0?'+':'−'}${num(Math.abs(x.p))}</b></li>`).join('')}</ul></div>
+      <div class="card pad"><h3>Как начисляются баллы <span class="taga">допущение команды</span></h3>
+        <table class="rules"><tbody>
+          <tr><td>Тариф «Лайт»</td><td>2% от цены</td></tr><tr><td>Тариф «Стандарт»</td><td>4% от цены</td></tr><tr><td>Тариф «Максимум»</td><td>6% от цены</td></tr>
+          <tr><td>Услуги, оплаченные деньгами</td><td>${EXTRA_RATE}%</td></tr><tr><td>Стыковка в Кольцово по единому билету</td><td>+300 баллов</td></tr>
+        </tbody></table>
+        <p class="note">Баллы — за пакеты и услуги, а не за километры: на коротких рейсах мили почти ничего не дают пассажиру.</p>
+      </div>
+    </div></div>`;
+  if(animate){tween($('#bcNum'),state.balance,num,shownBalance)}
+  shownBalance=state.balance;
+}
+
+/* ================= Бизнес-кейс ================= */
+const BIZ_IDS=['bagShare','bagPay','seatShare','seatPay','a0','fare'];
+const PRESETS={
+  today:{bagShare:8,bagPay:2700,seatShare:7,seatPay:1500,a0:4,fare:7600},
+  s1:{bagShare:33,bagPay:2700,seatShare:30,seatPay:1500,a0:4,fare:7600},
+  s2:{bagShare:55,bagPay:3000,seatShare:52,seatPay:1700,a0:4,fare:7600},
+  s3:{bagShare:68,bagPay:3400,seatShare:66,seatPay:1800,a0:4,fare:7600}
+};
+const STEP_INFO=[
+  {th:30,title:'Шаг 0 — сеть без изменений',profit:''},
+  {th:45,title:'Открыт шаг 1 из 3',profit:'+0,08'},
+  {th:60,title:'Открыт шаг 2 из 3',profit:'+0,17'},
+  {th:null,title:'Открыты все 3 шага',profit:'+0,32'}
+];
+/* Формула команды: уровень = 1,15 × (1 − a0) / (1 − a) − 1 */
+const revLevel=(a,a0)=>1.15*(1-a0)/(1-a)-1;
+function model(v){
+  const A=v.bagShare/100*v.bagPay+v.seatShare/100*v.seatPay;   // допвыручка на пассажира, ₽
+  const a=A/(v.fare+A),a0=v.a0/100;                            // доля допуслуг в выручке
+  const level=revLevel(a,a0),pct=Math.round(level*100);
+  const step=pct>=60?3:pct>=45?2:pct>=30?1:0;
+  return {A,a,a0,level,pct,step,A0:v.fare*a0/(1-a0)};
+}
+const readBiz=()=>{const v={};BIZ_IDS.forEach(id=>v[id]=parseFloat($('#'+id).value));return v};
+let lastStep=0,bizRaf=0;
+function updateBiz(){
+  const v=readBiz(),m=model(v),a0s=String(v.a0).replace('.',',')+'%';
+  BIZ_IDS.forEach(id=>{const i=$('#'+id);i.style.setProperty('--p',((i.value-i.min)/(i.max-i.min)*100)+'%')});
+  $('#bagShareOut').textContent=v.bagShare+'%';$('#seatShareOut').textContent=v.seatShare+'%';
+  $('#bagPayOut').textContent=rub(v.bagPay);$('#seatPayOut').textContent=rub(v.seatPay);
+  $('#a0Out').textContent=a0s;$('#fareOut').textContent=rub(v.fare);
+  $('#kA').textContent=rub(m.A);
+  $('#kAs').textContent=`${v.bagShare}% × ${rub(v.bagPay)} + ${v.seatShare}% × ${rub(v.seatPay)} · сегодня ≈ ${rub(m.A0)} при a₀ = ${a0s}`;
+  $('#kShare').textContent=pct1(m.a);
+  $('#kLevel').textContent=signed(m.pct);
+  const ok=m.step>=1;
+  $('#kMain').classList.toggle('ok',ok);
+  const f3=x=>x.toFixed(3).replace('.',',');
+  $('#formula').innerHTML=`Уровень = <code>1,15 × (1 − a₀) / (1 − a) − 1</code> = <code>1,15 × (1 − ${f3(m.a0)}) / (1 − ${f3(m.a)}) − 1</code> = <b>${signed(m.pct)}</b>`;
+  const pos=Math.max(0,Math.min(75,m.level*100))/75*100;
+  $('#gFill').style.width=pos+'%';$('#gFill').classList.toggle('ok',ok);
+  $('#gPin').style.left=pos+'%';$('#gPin').classList.toggle('ok',ok);$('#gPinV').textContent=signed(m.pct);
+  $$('.g-tick[data-th]').forEach(t=>t.classList.toggle('on',m.step>=+t.dataset.th));
+  $('#gauge').setAttribute('aria-label',`Уровень выручки на пассажира ${signed(m.pct)} к минимальным тарифам АТОР. Пороги: шаг 1 — плюс 30%, шаг 2 — плюс 45%, шаг 3 — плюс 60%. Открыт шаг ${m.step}.`);
+  const info=STEP_INFO[m.step],sn=$('#stepNum');
+  sn.textContent=m.step;sn.classList.toggle('ok',ok);
+  if(m.step>lastStep&&!reduce()){sn.classList.remove('pop');void sn.offsetWidth;sn.classList.add('pop')}
+  lastStep=m.step;
+  $('#stepTitle').textContent=info.title;
+  const gap=info.th!==null?info.th-m.pct:0;
+  $('#stepSub').textContent=(info.profit?`Прибыль шага ${info.profit} млрд ₽/год · `:'')
+    +(info.th!==null?`до шага ${m.step+1} не хватает ${gap} п.п. уровня выручки`:'открыты все шаги модели');
+  $$('#steps .step').forEach(s=>s.classList.toggle('open',m.step>=+s.dataset.step));
+  const on=(id,flag)=>$(id).classList.toggle('on',flag);
+  on('#ln-kzn',m.step>=1);on('#ct-kzn',m.step>=1);on('#kznFreq',m.step>=1);
+  $('#kznFreq').textContent=m.step>=1?'14 рейсов/нед':'7 рейсов/нед';
+  on('#ln-kuf',m.step>=2);on('#ct-kuf',m.step>=2);
+  on('#ln-ren',m.step>=3);on('#ct-ren',m.step>=3);on('#ln-oms',m.step>=3);on('#ct-oms',m.step>=3);
+  $$('[data-preset]').forEach(b=>{const p=PRESETS[b.dataset.preset];b.setAttribute('aria-pressed',String(BIZ_IDS.every(id=>p[id]===v[id])))});
+}
+function applyPreset(key,animate,dur){
+  const target=PRESETS[key];if(!target)return;
+  cancelAnimationFrame(bizRaf);
+  const from=readBiz();
+  if(!animate||reduce()){BIZ_IDS.forEach(id=>{$('#'+id).value=target[id]});updateBiz();return}
+  const t0=performance.now(),D=dur||900;
+  const frame=t=>{
+    const k=Math.min(1,(t-t0)/D),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    BIZ_IDS.forEach(id=>{const i=$('#'+id),st=parseFloat(i.step)||1;i.value=k===1?target[id]:Math.round((from[id]+(target[id]-from[id])*e)/st)*st});
+    updateBiz();if(k<1)bizRaf=requestAnimationFrame(frame);
+  };
+  bizRaf=requestAnimationFrame(frame);
+}
+
+/* ================= Сценарий для жюри ================= */
+function clearSpot(){$$('.spot').forEach(e=>e.classList.remove('spot'))}
+function spot(sel,block,scrollSel){
+  clearSpot();const el=$(sel);if(!el)return;
+  el.classList.add('spot');
+  (scrollSel?$(scrollSel):el).scrollIntoView({behavior:reduce()?'auto':'smooth',block:block||'center'});
+}
+const STEPS=[
+  {d:6000,cap:'Red Wings сегодня: приложение на 3,0 и нет своей программы лояльности. Наш ответ — Крылья+.',
+    run(){go('home');spot('#facts','nearest')}},
+  {d:4500,cap:'Пассажир покупает билет Казань → Екатеринбург. Это пилот: здесь Red Wings — единственный перевозчик.',
+    run(){go('shop');setRoute('direct');spot('#sec-route')}},
+  {d:5000,cap:'Тариф «Стандарт»: что включено — видно сразу. Баллы начисляются за пакет, а не за километры.',
+    run(){setFare('standard');spot('#sec-fares')}},
+  {d:6000,cap:'Тот же билет дальше — до Омска через Кольцово: единый продукт и +300 баллов за стыковку.',
+    run(){setRoute('hub');spot('#sec-route')}},
+  {d:5000,cap:'Услуги — только по выбору пассажира, ничего не отмечено заранее. Добавляем комфортное место.',
+    run(){toggleExtra('seat',true,true);spot('#sec-extras')}},
+  {d:5500,cap:'До 50% услуг — баллами. Итоговая цена и будущие баллы видны до оплаты.',
+    run(){setRedeem(true);spot('#summary','nearest')}},
+  {d:8500,cap:'После покупки — одна карточка поездки: статус, посадочные, услуги и пересадка в Кольцово. Код брони вводить не нужно.',
+    run(){buy();spot('#tripHead','start')},at:[[4300,()=>spot('#tripTimeline','center')]]},
+  {d:6500,cap:'Перелёт завершён: баллы начислены, пассажир переходит на следующий уровень. Есть повод вернуться.',
+    run(){simulateFlight(true);go('wallet');spot('#balanceCard','start')}},
+  {d:5500,cap:'Для Red Wings. Сегодня допуслуги — около 4% выручки (допущение), уровень выручки ≈ +15%: сеть без изменений.',
+    run(){go('biz');applyPreset('today');spot('#kpis','center')}},
+  {d:9000,cap:'Крылья+ доводит долю допуслуг до 15%, как у «Победы»: уровень +30%, открывается шаг 1 — Казань–Екатеринбург, 7 → 14 рейсов в неделю.',
+    run(){applyPreset('s1',true,2600)},at:[[3300,()=>spot('#stepsCard','start','#gaugeCard')]]}
+];
+const TOTAL=STEPS.reduce((a,s)=>a+s.d,0);
+const tour={on:false,paused:false,i:0,el:0,last:0,fired:0,iv:0,speed:1};
+function tourBtnSync(){
+  $('#tourBtn').firstElementChild.innerHTML=tour.on?IC.stop:IC.play;
+  $('#tourBtnTxt').innerHTML=tour.on?'Остановить':'Сценарий<span class="long"> для жюри</span>';
+  $('#tourPause').textContent=tour.paused?'Продолжить':'Пауза';
+}
+function tourPaint(){
+  const done=STEPS.slice(0,tour.i).reduce((a,s)=>a+s.d,0)+Math.min(tour.el,STEPS[tour.i].d);
+  $('#tourBar').style.width=(done/TOTAL*100)+'%';
+}
+function tourGo(i){
+  if(i>=STEPS.length){tourStop(true);return}
+  tour.i=i;tour.el=0;tour.fired=0;
+  const s=STEPS[i];
+  $('#tourStep').textContent=`Шаг ${i+1} из ${STEPS.length}`;
+  $('#tourCap').textContent=s.cap;
+  s.run();tourPaint();
+}
+function tourTick(){
+  const now=performance.now(),dt=(now-tour.last)*tour.speed;tour.last=now;
+  if(!tour.on||tour.paused)return;
+  tour.el+=dt;
+  const s=STEPS[tour.i];
+  while(s.at&&tour.fired<s.at.length&&tour.el>=s.at[tour.fired][0]){s.at[tour.fired][1]();tour.fired++}
+  if(tour.el>=s.d)tourGo(tour.i+1);else tourPaint();
+}
+function tourStart(){
+  if(tour.on)return;
+  resetDemo(true);
+  tour.on=true;tour.paused=false;
+  $('#tour').hidden=false;document.body.classList.add('touring');tourBtnSync();
+  tour.last=performance.now();tourGo(0);
+  tour.iv=setInterval(tourTick,80);
+}
+function tourStop(finished){
+  if(!tour.on)return;
+  tour.on=false;clearInterval(tour.iv);
+  $('#tour').hidden=true;document.body.classList.remove('touring');clearSpot();tourBtnSync();
+  toast(finished?'Сценарий завершён — дальше можно показывать вручную':'Сценарий остановлен');
+}
+
+/* ================= Сброс ================= */
+function renderAll(){syncRoute();renderRoute();renderFares();renderExtras();renderSummary();renderTrip();renderWallet();updateBiz()}
+function resetDemo(silent){
+  if(tour.on)tourStop();
+  Object.assign(state,fresh(),{route:'direct',fare:'light',extras:[],redeem:false});
+  store.clear();shownBalance=state.balance;lastStep=0;
+  renderAll();applyPreset('today');go('home');
+  if(!silent)toast('Демо сброшено: счёт, поездка и ползунки — в исходном состоянии');
+}
+
+/* ================= События ================= */
+$$('[data-ic]').forEach(e=>{e.innerHTML=IC[e.dataset.ic]||''});
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tour],[data-go],[data-act],[data-preset]');if(!t)return;
+  if(t.hasAttribute('data-tour')){tour.on?tourStop():tourStart();return}
+  if(t.dataset.go){go(t.dataset.go,true);return}
+  if(t.dataset.preset){applyPreset(t.dataset.preset,true);return}
+  switch(t.dataset.act){
+    case 'fly':simulateFlight();break;
+    case 'sample':sampleTrip();break;
+    case 'refund':refund();break;
+    case 'disc':{const p=$('#'+t.dataset.target),open=p.hidden;p.hidden=!open;t.setAttribute('aria-expanded',String(open));break}
+  }
+});
+$$('.tab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.tab)));
+$('.tabs').addEventListener('keydown',e=>{
+  const i=TABS.indexOf(state.tab);let n=-1;
+  if(e.key==='ArrowRight')n=(i+1)%TABS.length;else if(e.key==='ArrowLeft')n=(i+TABS.length-1)%TABS.length;
+  else if(e.key==='Home')n=0;else if(e.key==='End')n=TABS.length-1;
+  if(n<0)return;e.preventDefault();go(TABS[n]);$('#tab-'+TABS[n]).focus();
+});
+$$('input[name=route]').forEach(i=>i.addEventListener('change',()=>{if(i.checked)setRoute(i.value)}));
+$('#fares').addEventListener('change',e=>{if(e.target.name==='fare')setFare(e.target.value)});
+$('#extras').addEventListener('change',e=>{const i=e.target;if(i.type!=='checkbox')return;i.closest('.extra').classList.toggle('is-on',i.checked);toggleExtra(i.value,i.checked,false)});
+$('#redeem').addEventListener('click',()=>setRedeem(!state.redeem));
+$('#buy').addEventListener('click',buy);
+$('#resetBtn').addEventListener('click',()=>resetDemo(false));
+BIZ_IDS.forEach(id=>$('#'+id).addEventListener('input',()=>{cancelAnimationFrame(bizRaf);updateBiz()}));
+$('#tourPause').addEventListener('click',()=>{tour.paused=!tour.paused;tourBtnSync()});
+$('#tourNext').addEventListener('click',()=>{if(tour.on)tourGo(tour.i+1)});
+$('#tourStop').addEventListener('click',()=>tourStop());
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&tour.on)tourStop()});
+
+/* ================= Старт ================= */
+renderAll();
+const q=new URLSearchParams(location.search);
+const sp=parseFloat(q.get('speed'));if(sp>0)tour.speed=sp;
+go((location.hash||'').slice(1)||'home');
+if(q.get('tour')==='1')tourStart();
+window.__krylia={model,revLevel,calc,state,tour,PRESETS};   // для самопроверки расчётов в консоли
+})();
+
+</script>
+</body>
+</html>
