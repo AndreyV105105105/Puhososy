@@ -320,6 +320,98 @@ def greedy(net0, M, mode, n_aircraft, case):
     return history[k][0], log
 
 
+# ---------------- два сезона (P["seasons"]; используется в step7_seasons.py) ----------------
+SEASON_SUM_KEYS = ("пассажиров", "перевозок", "выручка", "затраты", "субсидии", "прибыль", "блок_часы",
+                   "перегоны_бч", "база_хаба", "пасс_часы", "через_Москву")
+
+
+def summer_ratio(p):
+    """Во сколько раз недельный спрос летом выше зимнего для пары (1 для некурортных пар)."""
+    r = P["resort_summer_ratio"]
+    return max([r[c] for c in p if c in r] or [1.0])
+
+
+def season_models(M):
+    """Два набора данных модели: лето и зима. Спрос в M["demand"] годовой; для каждого сезона пишем
+    «годовой эквивалент» недельного спроса сезона (недельный × 52), чтобы evaluate() считала как обычно,
+    а потом умножаем результат на долю сезона в году. Годовой спрос пары сохраняется:
+    summer_weeks × D_лето + (52 − summer_weeks) × D_зима = годовой."""
+    ws = P["summer_weeks"]
+    ww = 52 - ws
+    out = []
+    for name, weeks, summer in (("лето", ws, True), ("зима", ww, False)):
+        Ms = dict(M)
+        dem = {}
+        for p, D in M["demand"].items():
+            r = summer_ratio(p)
+            week_winter = D / (ws * r + ww)
+            dem[p] = 52 * (week_winter * r if summer else week_winter)
+        Ms["demand"] = dem
+        out.append((name, Ms, weeks / 52))
+    return out
+
+
+def combine_seasons(res, nets, SM):
+    """Год = сумма сезонов. База хаба — постоянный расход: если хаб работает хотя бы в одном сезоне,
+    платим её за весь год."""
+    tot = {k: sum(res[s][k] * w for s, _, w in SM) for k in SEASON_SUM_KEYS}
+    active = [w for s, _, w in SM if nets[s].get("hub") and nets[s]["hub"].get("active")]
+    if active:
+        extra = P["hub_base_fixed_rub_year"] * (1 - sum(active))
+        tot["затраты"] += extra
+        tot["база_хаба"] += extra
+        tot["прибыль"] -= extra
+    return tot
+
+
+def evaluate_seasons(nets, SM, case):
+    res = {s: evaluate(nets[s], Ms, case) for s, Ms, _ in SM}
+    return combine_seasons(res, nets, SM), res
+
+
+def greedy_seasons(net0, M, mode, n_aircraft, case):
+    """Как greedy(), но ход — (сезон, пара, уровень частоты). Флот общий: в каждом сезоне блок-часы новых
+    рейсов (в пересчёте на год) не больше N × налёт × 365, т.е. в каждый день сезона летает не больше N бортов.
+    Выбор — по прибыли за год на реальный блок-час хода. Возвращает {сезон: сеть}, журнал, сезоны модели."""
+    SM = season_models(M)
+    budget = n_aircraft * BH_PER_AIRCRAFT
+    bh0 = block_hours(net0, M)
+    nets = {s: net0 for s, _, _ in SM}
+    res = {s: evaluate(net0, Ms, case) for s, Ms, _ in SM}
+    tot = combine_seasons(res, nets, SM)
+    history = [(dict(nets), tot["прибыль"])]
+    log = []
+    while True:
+        best = None
+        for s, Ms, w in SM:
+            net = nets[s]
+            bh_now = block_hours(net, Ms)
+            for mv in candidate_moves(net, Ms, mode):
+                cand = apply(net, mv)
+                bh = block_hours(cand, Ms)
+                if bh - bh0 > budget:
+                    continue
+                opens_hub = mv[0] == "спица" and not net["hub"].get("active")
+                r = evaluate(cand, Ms, case, cache=None if opens_hub else res[s]["_pairs"], changed=mv[1])
+                nn = dict(nets); nn[s] = cand
+                rr = dict(res); rr[s] = r
+                t = combine_seasons(rr, nn, SM)
+                gain = (t["прибыль"] - tot["прибыль"]) / max((bh - bh_now) * w, 1)
+                if best is None or gain > best[0]:
+                    best = (gain, s, mv, nn, rr, t)
+        if best is None:
+            break
+        gain, s, mv, nets, res, tot = best
+        history.append((dict(nets), tot["прибыль"]))
+        log.append(dict(сезон=s, ход=mv[0], пара=f"{mv[1][0]}-{mv[1][1]}", рейсов_нед=mv[2],
+                        прибыль_на_блок_час=round(gain), прибыль_сети_млрд=round(tot["прибыль"] / 1e9, 3),
+                        самолётов_занято=round((block_hours(nets[s], M) - bh0) / BH_PER_AIRCRAFT, 2)))
+    k = int(np.argmax([h[1] for h in history]))
+    for i, x in enumerate(log):
+        x["принят"] = i < k
+    return history[k][0], log, SM
+
+
 # ---------------- запуск ----------------
 def base_network(M, mode):
     net = ch.network_from_boards(M["ap"])
